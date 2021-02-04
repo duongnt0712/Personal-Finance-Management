@@ -13,11 +13,11 @@ import domainapp.basics.model.meta.DAttr.Type;
  * @author dmle
  * 
  */
-@DClass(schema="courseman")
+@DClass(schema = "courseman")
 public class CompulsoryModule extends CourseModule {
 
-	//attribute
-	@DAttr(name="lecturerName",type=Type.String,length=30,optional=false)
+	// attribute
+	@DAttr(name = "lecturerName", type = Type.String, length = 30, optional = false)
 	private String lecturerName;
   // constructor method
   // the order of the arguments must be this: 
@@ -31,18 +31,18 @@ public class CompulsoryModule extends CourseModule {
 // the order of the arguments must be this: 
   // - super-class arguments first, then sub-class
   @DOpt(type=DOpt.Type.ObjectFormConstructor)
-  public CompulsoryModule(@AttrRef("name") String name, 
-      @AttrRef("semester") Integer semester, @AttrRef("credits") Integer credits, String lecturerName) {
-    this(null, null, name, semester, credits, null);
-  }
+	public CompulsoryModule(@AttrRef("name") String name, @AttrRef("semester") Integer semester,
+			@AttrRef("credits") Integer credits, String lecturerName) {
+		this(null, null, name, semester, credits, null);
+	}
 
-  @DOpt(type=DOpt.Type.DataSourceConstructor)
-  public CompulsoryModule(Integer id, String code, String name, Integer semester, Integer credits, String lecturerName) 
-    throws ConstraintViolationException {
-    super(id, code, name, semester, credits);
-  }
-  
-  public String getLecturerName() {
+	@DOpt(type = DOpt.Type.DataSourceConstructor)
+	public CompulsoryModule(Integer id, String code, String name, Integer semester, Integer credits,
+			String lecturerName) throws ConstraintViolationException {
+		super(id, code, name, semester, credits);
+	}
+
+	public String getLecturerName() {
 		return lecturerName;
 	}
 
