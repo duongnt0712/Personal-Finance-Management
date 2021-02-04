@@ -27,9 +27,12 @@ public class DomMainUtilities {
       // delete a domain class
 //      deleteClass(sw, Student.class);
       
-      // delete the domain model
-//      deleteDomainModel(sw);
+      // delete the domain model fragment
+//      deleteDomainModel(sw, Student.class);
       
+      // delete multiple domain model fragments 
+      deleteDomainModel(sw, Main.model);
+
 //      printMaterialisedDomainModel(sw);
     } catch (Exception e) {
       e.printStackTrace();
@@ -55,8 +58,8 @@ public class DomMainUtilities {
    * @version 
    * 
    */
-  private static void deleteDomainModel(DomSoftware sw) {
-    String modelName = sw.getDomainModelName(Student.class);
+  private static void deleteDomainModel(DomSoftware sw, Class c) {
+    String modelName = sw.getDomainModelName(c);
     if (modelName != null) {
       try {
         sw.deleteDomainModel(modelName);
@@ -66,6 +69,14 @@ public class DomMainUtilities {
     }
   }
 
+  private static void deleteDomainModel(DomSoftware sw, Class... classes) {
+    try {
+      sw.deleteDomainModel(classes);
+    } catch (DataSourceException e) {
+      e.printStackTrace();
+    }
+  }
+  
   /**
    * @effects 
    * 

@@ -21,25 +21,25 @@ import vn.com.courseman.services.student.reports.StudentsByNameReport;
  */
 public class Main {
   
+  // 1. initialise the model
+  static final Class[] model = {
+      CourseModule.class, 
+      CompulsoryModule.class, 
+      ElectiveModule.class, 
+      Enrolment.class, 
+      Student.class, 
+      City.class, 
+      SClass.class,
+      // reports
+      StudentsByNameReport.class,
+      StudentsByCityJoinReport.class
+  };
+  
   /**
    * @effects 
    *  create and run a UI-based {@link DomSoftware} for a pre-defined model. 
    */
   public static void main(String[] args){
-    // 1. initialise the model
-    Class[] model = {
-        CourseModule.class, 
-        CompulsoryModule.class, 
-        ElectiveModule.class, 
-        Enrolment.class, 
-        Student.class, 
-        City.class, 
-        SClass.class,
-        // reports
-        StudentsByNameReport.class,
-        StudentsByCityJoinReport.class
-    };
-    
     // 2. create UI software
     DomSoftware sw = SoftwareFactory.createUIDomSoftware();
     

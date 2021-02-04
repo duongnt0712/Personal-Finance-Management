@@ -49,11 +49,11 @@ public class DomMainStudents {
     	Student s = new Student("Nguyen Thuy Dung", Gender.Female, Toolkit.getDateZeroTime(1, 1, 1970), city, "duongn@gmail.com");
     	sw.addObject(Student.class, s);
       
-    	CompulsoryModule cmodule = new CompulsoryModule("SEG", 6, 3);
-        sw.addObject(CompulsoryModule.class, cmodule);
+//    	CompulsoryModule cmodule = new CompulsoryModule("SEG", 6, 3);
+//        sw.addObject(CompulsoryModule.class, cmodule);
       
-        Enrolment e = new Enrolment(s, cmodule);
-        sw.addObject(Enrolment.class, e); 
+//        Enrolment e = new Enrolment(s, cmodule);
+//        sw.addObject(Enrolment.class, e); 
       
       // create some Student objects
 //      createStudent(sw);

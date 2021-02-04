@@ -16,6 +16,9 @@ public class ElectiveModule extends CourseModule {
   @DAttr(name="deptName",type=Type.String,length=50,optional=false)
   private String deptName;
   
+  @DAttr(name="credits",type=Type.Integer,length=2,optional=false,min=3,max=5)
+  private int credits;
+  
   // constructor method
   // the order of the arguments must be this: 
   // - super-class arguments first, then sub-class
