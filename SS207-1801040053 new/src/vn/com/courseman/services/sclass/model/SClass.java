@@ -29,17 +29,19 @@ public class SClass {
   private int id;
   private static int idCounter;
   
+  // Chapter 3 - Exercise 8
   // candidate identifier
   @DAttr(name="name",length=5,type=Type.String,optional=false, cid=true)
   private String name;
   
+  // Chapter 3 - Exercise 5
   @DAttr(name="students",type=Type.Collection,
       serialisable=false,optional=false,
       filter=@Select(clazz=Student.class))
   @DAssoc(ascName="class-has-student",role="class",
       ascType=AssocType.One2Many,endType=AssocEndType.One,
       associate=@Associate(type=Student.class,
-      cardMin=1,cardMax=25))  
+      cardMin=1,cardMax=3))  
   private Collection<Student> students;
   
   // derived attributes

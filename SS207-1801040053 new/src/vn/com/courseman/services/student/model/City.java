@@ -33,7 +33,8 @@ public class City {
   private int id;
   private static int idCounter;
   
-  @DAttr(name=A_name,type=Type.String,length=20,optional=false)
+  // Chapter 3 - Exercise 1
+  @DAttr(name=A_name,type=Type.String,length=20,optional=true)
   private String name;
   
   @DAttr(name="student",type=Type.Domain,serialisable=false)

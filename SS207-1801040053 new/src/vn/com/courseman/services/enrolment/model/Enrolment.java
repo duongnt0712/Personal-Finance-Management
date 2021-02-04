@@ -45,10 +45,11 @@ public class Enrolment implements Comparable {
     associate = @Associate(type = CourseModule.class, cardMin = 1, cardMax = 1), dependsOn = true)
   private CourseModule module;
 
-  @DAttr(name = AttributeName_InternalMark, type = Type.Double, length = 4, optional = true, min = 0.0)
+  @DAttr(name = AttributeName_InternalMark, type = Type.Double, length = 4, optional = true, min = 0.0, max = 10.0)
   private Double internalMark;
   
-  @DAttr(name = AttributeName_ExamMark, type = Type.Double, length = 4, optional = true, min = 0.0)
+  // Chapter 3 - Exercise 4, 6
+  @DAttr(name = AttributeName_ExamMark, type = Type.Double, length = 4, mutable = false, optional = true, min = 0.0, max = 10.0)
   private Double examMark;
 
   @DAttr(name="finalGrade",auto = true, type = Type.Char, length = 1,mutable = false, optional = true 

@@ -58,13 +58,15 @@ public class Student {
   @DAttr(name = A_dob, type = Type.Date, length = 15, optional = false)
   private Date dob;
   
-  @DAttr(name = A_address, type = Type.Domain, length = 20, optional = true)
+  // Chapter 3 - Exercise 2
+  @DAttr(name = A_address, type = Type.Domain, length = 20, optional = false)
   @DAssoc(ascName="student-has-city",role="student",
       ascType=AssocType.One2One, endType=AssocEndType.One,
   associate=@Associate(type=City.class,cardMin=1,cardMax=1))
   private City address;
 
-  @DAttr(name = A_email, type = Type.String, length = 30, optional = false)
+  // Chapter 3 - Exercise 3
+  @DAttr(name = A_email, type = Type.String, length = 30, mutable = false, optional = false)
   private String email;
 
   @DAttr(name="sclass",type=Type.Domain,length = 6)

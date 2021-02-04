@@ -32,9 +32,11 @@ public abstract class CourseModule {
   
   @DAttr(name="name",type=Type.String,length=30,optional=false)
   private String name;
-  @DAttr(name="semester",type=Type.Integer,length = 2,optional=false,min = 1)
+  
+  // Chapter 3 - Exercise 7
+  @DAttr(name="semester",type=Type.Integer,length = 2,optional=false,min = 1, max = 8)
   private int semester;
-  @DAttr(name="credits",type=Type.Integer,length=2,optional=false,min=1)
+  @DAttr(name="credits",type=Type.Integer,length=2,optional=false,min=1, max = 10)
   private int credits;
 
   
