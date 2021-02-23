@@ -15,6 +15,7 @@ import domainapp.basics.util.Toolkit;
 import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
 import vn.com.courseman.services.coursemodule.model.CompulsoryModule;
+import vn.com.courseman.services.coursemodule.model.CourseModule;
 import vn.com.courseman.services.enrolment.model.Enrolment;
 import vn.com.courseman.services.student.model.City;
 import vn.com.courseman.services.student.model.Gender;
@@ -37,29 +38,36 @@ public class DomMainStudents {
     
     try {
       // register a domain model fragment concerning Student
-//      Class[] domFrag = {
-//          Student.class
-//      };
-//      sw.addClasses(domFrag);
+		Class[] domFrag = { 
+			Student.class,
+			City.class,
+			CompulsoryModule.class,
+			Enrolment.class
+		};
+		sw.addClasses(domFrag);
+		// Chapter 3 - Exercise 2
 //      sw.loadAndPrintObjects(domFrag);
       
-    	City city = new City(20, "Hanoi");
+		// Chapter 3 - Exercise 4
+    	City city = new City(1, "Hanoi");
         sw.addObject(City.class, city); 
         
     	Student s = new Student("Nguyen Thuy Dung", Gender.Female, Toolkit.getDateZeroTime(1, 1, 1970), city, "duongn@gmail.com");
     	sw.addObject(Student.class, s);
       
-//    	CompulsoryModule cmodule = new CompulsoryModule("SEG", 6, 3);
-//        sw.addObject(CompulsoryModule.class, cmodule);
+    	CourseModule cmodule = new CompulsoryModule("SEG", 6, 3, "Le Duc");
+        sw.addObject(CourseModule.class, cmodule);
       
-//        Enrolment e = new Enrolment(s, cmodule);
-//        sw.addObject(Enrolment.class, e); 
+        Enrolment e = new Enrolment(s, cmodule);
+        sw.addObject(Enrolment.class, e); 
       
       // create some Student objects
 //      createStudent(sw);
 
       // read object:
 //    querySimple(sw, Student.class, Student.A_id, Op.EQ, "S2020");
+        
+      // Chapter 3 - Exercise 3
 //    queryStudentsByCity("Hue");
       
 //      queryStudents(sw);

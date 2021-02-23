@@ -16,7 +16,8 @@ public class ElectiveModule extends CourseModule {
   @DAttr(name="deptName",type=Type.String,length=50,optional=false)
   private String deptName;
   
-  @DAttr(name="credits",type=Type.Integer,length=2,optional=false,min=3,max=5)
+  //Chapter 3 - Exercise 10
+  @DAttr(name="credits",type=Type.Integer,length=2,optional=false, min=3, max=5)
   private int credits;
   
   // constructor method

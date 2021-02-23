@@ -28,10 +28,10 @@ public class DomMainUtilities {
 //      deleteClass(sw, Student.class);
       
       // delete the domain model fragment
-//      deleteDomainModel(sw, Student.class);
+      deleteDomainModel(sw, Student.class);
       
       // delete multiple domain model fragments 
-      deleteDomainModel(sw, Main.model);
+//      deleteDomainModel(sw, Main.model);
 
 //      printMaterialisedDomainModel(sw);
     } catch (Exception e) {
