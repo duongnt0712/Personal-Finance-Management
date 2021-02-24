@@ -19,6 +19,7 @@ public class ElectiveModule extends CourseModule {
   //Chapter 3 - Exercise 10
   @DAttr(name="credits",type=Type.Integer,length=2,optional=false, min=3, max=5)
   @Override public int getCredits() { return super.getCredits(); }
+ 
   
   // constructor method
   // the order of the arguments must be this: 
