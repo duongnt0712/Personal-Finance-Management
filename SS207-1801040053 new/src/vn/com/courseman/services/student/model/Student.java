@@ -15,6 +15,7 @@ import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
 import domainapp.basics.util.Tuple;
 import vn.com.courseman.exceptions.DExCode;
@@ -58,11 +59,11 @@ public class Student {
   @DAttr(name = A_dob, type = Type.Date, length = 15, optional = false)
   private Date dob;
   
-  // Chapter 3 - Exercise 2
+  // Chapter 3 - Exercise 2 , 11
   @DAttr(name = A_address, type = Type.Domain, length = 20, optional = false)
   @DAssoc(ascName="student-has-city",role="student",
-      ascType=AssocType.One2One, endType=AssocEndType.One,
-  associate=@Associate(type=City.class,cardMin=1,cardMax=1))
+      ascType=AssocType.One2Many, endType=AssocEndType.One,
+  associate=@Associate(type=City.class,cardMin=1,cardMax=MetaConstants.CARD_MORE))
   private City address;
 
   // Chapter 3 - Exercise 3

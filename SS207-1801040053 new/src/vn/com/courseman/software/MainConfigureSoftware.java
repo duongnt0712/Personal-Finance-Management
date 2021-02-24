@@ -19,7 +19,7 @@ public class MainConfigureSoftware {
       
       sw.configure();
       
-//      sw.deleteConfig();
+      //sw.deleteConfig();
       
     } catch (Exception e) {
       e.printStackTrace();

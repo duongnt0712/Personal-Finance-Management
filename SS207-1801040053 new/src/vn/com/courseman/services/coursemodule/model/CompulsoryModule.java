@@ -16,6 +16,7 @@ import domainapp.basics.model.meta.DAttr.Type;
 @DClass(schema = "courseman")
 public class CompulsoryModule extends CourseModule {
 
+	// Chapter 3 - Exercise 9
 	// attribute
 	@DAttr(name = "lecturerName", type = Type.String, length = 30, optional = false)
 	private String lecturerName;

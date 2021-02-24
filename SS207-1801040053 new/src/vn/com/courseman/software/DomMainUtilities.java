@@ -3,6 +3,7 @@ package vn.com.courseman.software;
 import domainapp.basics.exceptions.DataSourceException;
 import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
+import vn.com.courseman.services.coursemodule.model.CompulsoryModule;
 import vn.com.courseman.services.student.model.Student;
 
 /**
@@ -22,13 +23,14 @@ public class DomMainUtilities {
     
     try {
       // print materialised domain model
-      printMaterialisedDomainModel(sw);
+//      printMaterialisedDomainModel(sw);
       
       // delete a domain class
 //      deleteClass(sw, Student.class);
       
       // delete the domain model fragment
-      deleteDomainModel(sw, Student.class);
+    	//Chapter 3 - Exercise 9
+      deleteDomainModel(sw, CompulsoryModule.class);
       
       // delete multiple domain model fragments 
 //      deleteDomainModel(sw, Main.model);

@@ -1,15 +1,22 @@
 package vn.com.courseman.services.coursemodule.model;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
+import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.Select;
+import domainapp.basics.model.meta.DAssoc.AssocEndType;
+import domainapp.basics.model.meta.DAssoc.AssocType;
+import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.util.Tuple;
+import vn.com.courseman.services.enrolment.model.Enrolment;
 
 /**
  * Represents a course module. The module id is auto-incremented from a base
@@ -38,6 +45,18 @@ public abstract class CourseModule {
   private int semester;
   @DAttr(name="credits",type=Type.Integer,length=2,optional=false,min=1, max = 10)
   private int credits;
+  
+  //Chapter 3 - Exercise 12
+  @DAttr(name="enrolments",type=Type.Collection,optional = false,
+	      serialisable=false,filter=@Select(clazz=Enrolment.class))
+  @DAssoc(ascName="module-has-enrolments",role="coursemodule",
+	      ascType=AssocType.One2Many,endType=AssocEndType.One,
+	    associate=@Associate(type=Enrolment.class,cardMin=0,cardMax=30))
+  private Collection<Enrolment> enrolments;  
+  //derived
+  private int enrolmentCount;
+  //v2.6.4b: derived: average of the final mark of all enrolments
+  private double averageMark;
 
   
   // static variable to keep track of module code
@@ -219,4 +238,155 @@ public abstract class CourseModule {
       }
     }    
   }
+  
+  // ENROLMENT REFERENCE
+  // Chapter 3 - Exercise 12
+  public Collection<Enrolment> getEnrolments() {
+	    return enrolments;
+	  }
+
+  @DOpt(type=DOpt.Type.LinkCountGetter)
+  public Integer getEnrolmentsCount() {
+    return enrolmentCount;
+    //return enrolments.size();
+  }
+
+  @DOpt(type=DOpt.Type.LinkCountSetter)
+  public void setEnrolmentsCount(int count) {
+    enrolmentCount = count;
+  }
+  
+  @DOpt(type=DOpt.Type.LinkAdder)
+  //only need to do this for reflexive association: @MemberRef(name="enrolments")
+  public boolean addEnrolment(Enrolment e) {
+    if (!enrolments.contains(e))
+      enrolments.add(e);
+    
+    // IMPORTANT: enrolment count must be updated separately by invoking setEnrolmentCount
+    // otherwise computeAverageMark (below) can not be performed correctly
+    // WHY? average mark is not serialisable
+//    enrolmentCount++;
+//    
+//    // v2.6.4.b
+//    computeAverageMark();
+    
+    // no other attributes changed
+    return false; 
+  }
+
+  @DOpt(type=DOpt.Type.LinkAdderNew)
+  public boolean addNewEnrolment(Enrolment e) {
+    enrolments.add(e);
+    
+    enrolmentCount++;
+    
+    // v2.6.4.b
+    computeAverageMark();
+    
+    // no other attributes changed (average mark is not serialisable!!!)
+    return false; 
+  }
+  
+  @DOpt(type=DOpt.Type.LinkAdder)
+  //@MemberRef(name="enrolments")
+  public boolean addEnrolment(Collection<Enrolment> enrols) {
+    boolean added = false;
+    for (Enrolment e : enrols) {
+      if (!enrolments.contains(e)) {
+        if (!added) added = true;
+        enrolments.add(e);
+      }
+    }
+    // IMPORTANT: enrolment count must be updated separately by invoking setEnrolmentCount
+    // otherwise computeAverageMark (below) can not be performed correctly
+    // WHY? average mark is not serialisable
+//    enrolmentCount += enrols.size();
+
+//    if (added) {
+//      // avg mark is not serialisable so we need to compute it here
+//      computeAverageMark();
+//    }
+
+    // no other attributes changed
+    return false; 
+  }
+
+  @DOpt(type=DOpt.Type.LinkAdderNew)
+  public boolean addNewEnrolment(Collection<Enrolment> enrols) {
+    enrolments.addAll(enrols);
+    enrolmentCount+=enrols.size();
+    
+    // v2.6.4.b
+    computeAverageMark();
+
+    // no other attributes changed (average mark is not serialisable!!!)
+    return false; 
+  }
+  
+  @DOpt(type=DOpt.Type.LinkRemover)
+  //@MemberRef(name="enrolments")
+  public boolean removeEnrolment(Enrolment e) {
+    boolean removed = enrolments.remove(e);
+    
+    if (removed) {
+      enrolmentCount--;
+      
+      // v2.6.4.b
+      computeAverageMark();
+    }
+    // no other attributes changed
+    return false; 
+  }
+
+  @DOpt(type=DOpt.Type.LinkUpdater)
+  //@MemberRef(name="enrolments")
+  public boolean updateEnrolment(Enrolment e)  throws IllegalStateException {
+    // recompute using just the affected enrolment
+    double totalMark = averageMark * enrolmentCount;
+    
+    int oldFinalMark = e.getFinalMark(true);
+    
+    int diff = e.getFinalMark() - oldFinalMark;
+    
+    // TODO: cache totalMark if needed 
+    
+    totalMark += diff;
+    
+    averageMark = totalMark / enrolmentCount;
+    
+    // no other attributes changed
+    return true; 
+  }
+
+  public void setEnrolments(Collection<Enrolment> en) {
+    this.enrolments = en;
+    enrolmentCount = en.size();
+    
+    // v2.6.4.b
+    computeAverageMark();
+  }
+  
+//v2.6.4.b
+ /**
+  * @effects 
+  *  computes {@link #averageMark} of all the {@link Enrolment#getFinalMark()}s 
+  *  (in {@link #enrolments}.  
+  */
+ private void computeAverageMark() {
+   if (enrolmentCount > 0) {
+     double totalMark = 0d;
+     for (Enrolment e : enrolments) {
+       totalMark += e.getFinalMark();
+     }
+     
+     averageMark = totalMark / enrolmentCount;
+   } else {
+     averageMark = 0;
+   }
+ }
+ 
+ // v2.6.4.b
+ public double getAverageMark() {
+   return averageMark;
+ }
 }
