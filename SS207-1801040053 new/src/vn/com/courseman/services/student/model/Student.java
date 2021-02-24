@@ -88,7 +88,7 @@ public class Student {
 
   // v2.6.4b: derived: average of the final mark of all enrolments
   private double averageMark;
-
+  
   
   // v5.3: to realise link to report
   @DAttr(name=A_rptStudentByName,type=Type.Domain, serialisable=false, 
