@@ -4,6 +4,7 @@ import domainapp.basics.exceptions.DataSourceException;
 import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
 import vn.com.courseman.services.coursemodule.model.CompulsoryModule;
+import vn.com.courseman.services.sclass.model.SClass;
 import vn.com.courseman.services.student.model.Student;
 
 /**
@@ -30,7 +31,7 @@ public class DomMainUtilities {
       
       // delete the domain model fragment
     	//Chapter 3 - Exercise 9
-//      deleteDomainModel(sw, CompulsoryModule.class);
+//      deleteDomainModel(sw, SClass.class);
       
       // delete multiple domain model fragments 
 //      deleteDomainModel(sw, Main.model);

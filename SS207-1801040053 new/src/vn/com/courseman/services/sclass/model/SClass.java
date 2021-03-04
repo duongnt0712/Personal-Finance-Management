@@ -25,6 +25,7 @@ import vn.com.courseman.services.student.model.Student;
  */
 @DClass(schema="courseman")
 public class SClass {
+	public static final String A_averageMark = "averageMark";
   @DAttr(name="id",id=true,auto=true,length=6,mutable=false,type=Type.Integer)
   private int id;
   private static int idCounter;
@@ -47,20 +48,28 @@ public class SClass {
   // derived attributes
   private int studentsCount;
   
+  //Chapter 3 -Exercise 15-16
+  @DAttr(name= "averageMark",type=Type.Double, auto = true, serialisable = true, mutable = false,optional = true)
+  private double averageMark;
+  
   @DOpt(type=DOpt.Type.ObjectFormConstructor)
   @DOpt(type=DOpt.Type.RequiredConstructor)
   public SClass(@AttrRef("name") String name) {
-    this(null, name);
+    this(null, name, 0.0);
   }
 
   // constructor to create objects from data source
+  //Chapter 3 - Exercise 16
   @DOpt(type=DOpt.Type.DataSourceConstructor)
-  public SClass(@AttrRef("id") Integer id,@AttrRef("name") String name) {
+  public SClass(@AttrRef("id") Integer id,@AttrRef("name") String name, 
+		  		@AttrRef("averageMark") Double averageMark) {
     this.id = nextID(id);
     this.name = name;
     
     students = new ArrayList<>();
     studentsCount = 0;
+
+    this.averageMark = averageMark;
   }
 
   @DOpt(type=DOpt.Type.Setter)
@@ -84,6 +93,8 @@ public class SClass {
     students.add(s);
     studentsCount++;
     
+  //Chapter 3 - Exercise 15
+    computeAverageMark();
     // no other attributes changed
     return false; 
   }
@@ -105,6 +116,8 @@ public class SClass {
     this.students.addAll(students);
     studentsCount += students.size();
 
+    ///Chapter 3 - Exercise 15
+    computeAverageMark();
     // no other attributes changed
     return false; 
   }
@@ -116,6 +129,8 @@ public class SClass {
     
     if (removed) {
       studentsCount--;
+    //Chapter 3 - Exercise 15
+      computeAverageMark();
     }
     
     // no other attributes changed
@@ -127,6 +142,8 @@ public class SClass {
     this.students = students;
     
     studentsCount = students.size();
+  //Chapter 3 - Exercise 15
+    computeAverageMark();
   }
     
   /**
@@ -156,6 +173,28 @@ public class SClass {
   @DOpt(type=DOpt.Type.Getter)
   public int getId() {
     return id;
+  }
+  
+  public double getAverageMark() {
+	    return averageMark;
+  }
+  
+  //Chapter 3 -Exercise 15
+  /**
+   * @effects 
+   *  computes {@link #averageMark} of all the {@link Student#getAverageMark()}s 
+   *  (in {@link #students}.  
+   */
+  private void computeAverageMark() {
+    if (studentsCount > 0) {
+      double totalMark = 0d;
+      for (Student s : students) {
+    	  totalMark += s.getAverageMark();
+      }
+      averageMark = totalMark / studentsCount;
+    } else {
+      averageMark = 0;
+    }
   }
   
   @Override

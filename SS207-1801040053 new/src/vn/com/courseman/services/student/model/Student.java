@@ -92,10 +92,8 @@ public class Student {
 
   // v2.6.4b: derived: average of the final mark of all enrolments
   //Chapter 3 -Exercise 14
-  @DAttr(name= A_averageMark,type=Type.Double, auto = true, mutable = false,optional = true)
+  @DAttr(name= A_averageMark,type=Type.Double, auto = true, serialisable = true, mutable = false,optional = true)
   private double averageMark;
-  
-  //private StateHistory<String, Object> stateHist;
   
   // v5.3: to realise link to report
   @DAttr(name=A_rptStudentByName,type=Type.Domain, serialisable=false, 
@@ -156,8 +154,7 @@ public class Student {
     enrolments = new ArrayList<>();
     enrolmentCount = 0;
 //    averageMark = 0D;
-    //stateHist = new StateHistory<>();
-    computeAverageMark();
+    this.averageMark = averageMark;
   }
 
   // setter methods
@@ -199,17 +196,6 @@ public class Student {
   public void setSclass(SClass cls) {
     this.sclass = cls;
   }
-  
-  /*public void setAverageMark(Double mark) {
-	  setAverageMark(mark, false);
-  }
-  
-  public void setAverageMark (Double mark, boolean updateAverageMark) {
-	  this.averageMark = mark;
-	  if (updateAverageMark) {
-		  computeAverageMark();
-	  }
-  }*/
   
   @DOpt(type=DOpt.Type.LinkAdder)
   //only need to do this for reflexive association: @MemberRef(name="enrolments")
@@ -328,8 +314,6 @@ public class Student {
    *  computes {@link #averageMark} of all the {@link Enrolment#getFinalMark()}s 
    *  (in {@link #enrolments}.  
    */
-  @DOpt(type=DOpt.Type.DerivedAttributeUpdater)
-  @AttrRef(value=A_averageMark)
   private void computeAverageMark() {
     if (enrolmentCount > 0) {
       double totalMark = 0d;
@@ -341,35 +325,12 @@ public class Student {
     } else {
       averageMark = 0;
     }
-    //stateHist.put(A_averageMark, averageMark);
   }
   
   // v2.6.4.b
   public double getAverageMark() {
 	    return averageMark;
   }
-  
-  //Chapter 3 - Exercise 14
-  /*public double getAverageMark() {
-    return getAverageMark(false);
-  }
-  
-	public double getAverageMark(boolean cached) throws IllegalStateException {
-		if (cached) {
-			Object val = stateHist.get(A_averageMark);
-	
-			if (val == null)
-				throw new IllegalStateException("Student.getAverageMark: cached value is null");
-	
-			return (Double) val;
-		} else {
-			if (averageMark != 0D)
-				return averageMark;
-			else
-				return 0;
-		}
-	
-	}*/
  
   // getter methods
   public String getId() {
@@ -516,7 +477,7 @@ public class Student {
     
     if (minVal != null && maxVal != null) {
       //TODO: update this for the correct attribute if there are more than one auto attributes of this class 
-    	if (attrib.name().equals("id")) {
+    	if (attrib.name().equals("id")) { 
 		  String maxId = (String) maxVal;
 		  
 		  try {
@@ -530,25 +491,6 @@ public class Student {
 		        ConstraintViolationException.Code.INVALID_VALUE, e, new Object[] {maxId});
 		  }
     	}
-    	
-		/*if (attrib.name().equals("id")) {
-			int maxIdVal = (Integer) maxVal;
-			if (maxIdVal > idCounter)
-				idCounter = maxIdVal;
-	
-		} else if (attrib.name().equals("averageMark")) {
-			String maxMark = (String) maxVal;
-	
-			try {
-				double maxMarkNum = Double.parseDouble(maxMark.substring(1));
-	
-			} catch (RuntimeException e) {
-				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
-						new Object[] { maxMark });
-			}
-		}*/
-      
-      
     }
   }
 }
