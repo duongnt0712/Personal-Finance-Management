@@ -12,6 +12,7 @@ import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
 import domainapp.basics.util.Tuple;
 import domainapp.basics.util.cache.StateHistory;
+import vn.com.courseman.exceptions.DExCode;
 import vn.com.courseman.services.coursemodule.model.CourseModule;
 import vn.com.courseman.services.student.model.Student;
 
@@ -27,6 +28,9 @@ public class Enrolment implements Comparable {
   private static final String AttributeName_InternalMark = "internalMark";
   private static final String AttributeName_ExamMark = "examMark";
   private static final String AttributeName_FinalMark = "finalMark";
+  
+  private static final int MIN_MARK = 0;
+  private static final int MAX_MARK = 0;
   
   // attributes
   @DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
@@ -45,11 +49,11 @@ public class Enrolment implements Comparable {
     associate = @Associate(type = CourseModule.class, cardMin = 1, cardMax = 1), dependsOn = true)
   private CourseModule module;
 
-  @DAttr(name = AttributeName_InternalMark, type = Type.Double, length = 4, optional = true, min = 0.0, max = 10.0)
+  @DAttr(name = AttributeName_InternalMark, type = Type.Double, length = 4, min = 0.0, max = 10.0)
   private Double internalMark;
   
   // Chapter 3 - Exercise 4, 6
-  @DAttr(name = AttributeName_ExamMark, type = Type.Double, length = 4, mutable = false, optional = true, min = 0.0, max = 10.0)
+  @DAttr(name = AttributeName_ExamMark, type = Type.Double, length = 4, min = 0.0, max = 10.0)
   private Double examMark;
 
   @DAttr(name="finalGrade",auto = true, type = Type.Char, length = 1,mutable = false, optional = true 
@@ -115,6 +119,10 @@ public class Enrolment implements Comparable {
   }
 
   public void setInternalMark(Double mark) {
+	// Chapter 3 - Exercise 13
+	if (mark < MIN_MARK || mark > MAX_MARK) {
+		throw new ConstraintViolationException(DExCode.INVALID_INTERNAL_MARK, mark);
+	}
     // update final grade = false: to keep the integrity of its cached value 
     setInternalMark(mark, false);
   }
@@ -126,6 +134,10 @@ public class Enrolment implements Comparable {
   }
 
   public void setExamMark(Double mark) {
+	// Chapter 3 - Exercise 13
+	if (mark < MIN_MARK || mark > MAX_MARK) {
+		throw new ConstraintViolationException(DExCode.INVALID_EXAM_MARK, mark);
+	}
     // update final grade = false: to keep the integrity of its cached value 
     setExamMark(mark, false);
   }

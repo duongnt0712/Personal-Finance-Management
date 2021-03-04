@@ -23,14 +23,14 @@ public class DomMainUtilities {
     
     try {
       // print materialised domain model
-//      printMaterialisedDomainModel(sw);
+      printMaterialisedDomainModel(sw);
       
       // delete a domain class
 //      deleteClass(sw, Student.class);
       
       // delete the domain model fragment
     	//Chapter 3 - Exercise 9
-      deleteDomainModel(sw, CompulsoryModule.class);
+//      deleteDomainModel(sw, CompulsoryModule.class);
       
       // delete multiple domain model fragments 
 //      deleteDomainModel(sw, Main.model);

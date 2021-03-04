@@ -20,7 +20,6 @@ import vn.com.courseman.services.student.reports.StudentsByNameReport;
  * @author dmle
  */
 public class Main {
-  // dsajfhef
   // 1. initialise the model
   static final Class[] model = {
       CourseModule.class, 

@@ -10,6 +10,7 @@ import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.util.Tuple;
 
 /**
@@ -37,10 +38,11 @@ public class City {
   @DAttr(name=A_name,type=Type.String,length=20,optional=true)
   private String name;
   
+//Chapter 3 - Exercise 11
   @DAttr(name="student",type=Type.Domain,serialisable=false)
   @DAssoc(ascName="student-has-city",role="city",
-  ascType=AssocType.One2One, endType=AssocEndType.One,
-  associate=@Associate(type=Student.class,cardMin=1,cardMax=1,determinant=true))
+  ascType=AssocType.One2Many, endType=AssocEndType.One,
+  associate=@Associate(type=Student.class,cardMin=1,cardMax= MetaConstants.CARD_MORE,determinant=true))
   private Student student;
 
   // from object form: Student is not included 

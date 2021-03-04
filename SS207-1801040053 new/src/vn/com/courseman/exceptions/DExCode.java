@@ -30,7 +30,28 @@ public enum DExCode implements InfoCode {
   /**
    * 0: date of birth
    */
-  INVALID_DOB("Date of birth {0} is not a valid date")
+  INVALID_DOB("Date of birth {0} is not a valid date"),
+  
+  // Chapter 3 - Exercise 13
+  /**
+   * 0: internal mark
+   */
+  INVALID_INTERNAL_MARK("Internal mark {0} is not a valid mark"),
+  
+  /**
+   * 0: exam mark
+   */
+  INVALID_EXAM_MARK("Exam mark {0} is not a valid mark"),
+  
+  /**
+   * 0: semester
+   */
+  INVALID_SEMESTER("Semester {0} is not a valid semester"),
+  
+  /**
+   * 0: credits
+   */
+  INVALID_CREDITS("Credit {0} is not a valid credit")
   ;
   
   /**

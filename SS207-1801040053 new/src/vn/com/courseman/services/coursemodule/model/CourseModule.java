@@ -16,6 +16,7 @@ import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.util.Tuple;
+import vn.com.courseman.exceptions.DExCode;
 import vn.com.courseman.services.enrolment.model.Enrolment;
 
 /**
@@ -27,7 +28,11 @@ import vn.com.courseman.services.enrolment.model.Enrolment;
  */
 @DClass(schema="courseman")
 public abstract class CourseModule {
-
+	private static final int MIN_SEMESTER = 1;
+	private static final int MAX_SEMESTER = 8;
+	private static final int  MIN_CREDITS = 1;
+	private static final int  MAX_CREDITS = 10;
+	
   // attributes
   @DAttr(name="id",id=true,auto=true,type=Type.Integer,length=3,mutable=false,optional=false)
   private int id;
@@ -113,10 +118,18 @@ public abstract class CourseModule {
   }
 
   public void setSemester(int semester) {
+	// Chapter 3 - Exercise 13
+	if (semester < MIN_SEMESTER || semester > MAX_SEMESTER) {
+		throw new ConstraintViolationException(DExCode.INVALID_SEMESTER, semester);
+	}
     this.semester = semester;
   }
 
   public void setCredits(int credits) {
+	// Chapter 3 - Exercise 13
+	if (credits < MIN_CREDITS || credits > MAX_CREDITS) {
+		throw new ConstraintViolationException(DExCode.INVALID_CREDITS, credits);
+	}
     this.credits = credits;
   }
 

@@ -34,13 +34,14 @@ public class CompulsoryModule extends CourseModule {
   @DOpt(type=DOpt.Type.ObjectFormConstructor)
 	public CompulsoryModule(@AttrRef("name") String name, @AttrRef("semester") Integer semester,
 			@AttrRef("credits") Integer credits, String lecturerName) {
-		this(null, null, name, semester, credits, null);
+		this(null, null, name, semester, credits, lecturerName);
 	}
 
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
 	public CompulsoryModule(Integer id, String code, String name, Integer semester, Integer credits,
 			String lecturerName) throws ConstraintViolationException {
 		super(id, code, name, semester, credits);
+		this.lecturerName = lecturerName;
 	}
 
 	public String getLecturerName() {
