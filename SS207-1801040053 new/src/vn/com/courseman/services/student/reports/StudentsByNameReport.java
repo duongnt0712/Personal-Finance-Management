@@ -147,12 +147,16 @@ public class StudentsByNameReport {
     Map<Oid, Student> result = qrm.getDom().retrieveObjects(Student.class, q);
     Map<Oid, Student> result1 = qrm.getDom().retrieveObjects(Student.class, q1);
     //TODO: merge 2 maps
-    Map<Oid, Student> result2 = new HashMap<>(result);
-    result2.putAll(result1);
-    
+    Map<Oid, Student> result2 = new HashMap<>();
     if (result != null) {
+    	result2.putAll(result);
+    }
+    if(result1 != null) {
+    	result2.putAll(result1);
+    }
+    if (!result2.isEmpty()) {
       // update the main output data 
-      students = result.values();
+      students = result2.values();
       // update other output (if any)
       numStudents = students.size();
     } else {
