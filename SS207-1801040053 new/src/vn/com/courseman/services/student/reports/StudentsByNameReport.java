@@ -1,6 +1,7 @@
 package vn.com.courseman.services.student.reports;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import domainapp.basics.core.dodm.dsm.DSMBasic;
@@ -133,14 +134,27 @@ public class StudentsByNameReport {
     Query q = QueryToolKit.createSearchQuery(dsm, Student.class, 
         new String[] {Student.A_name}, 
         new Op[] {Op.MATCH}, 
-        new Object[] {"%"+name+"%"});
+        //new Object[] {"%"+name+"%"});
+        //Chapter 3 - Exercise 1
+    	new Object[] {name+"%"});
+    
+    //Chapter 6 - Exercise 2
+    Query q1 = QueryToolKit.createSearchQuery(dsm, Student.class, 
+            new String[] {Student.A_name}, 
+            new Op[] {Op.MATCH}, 
+            //new Object[] {"%"+name+"%"});
+            //Chapter 3 - Exercise 1
+        	new Object[] {"%"+name});
     
     Map<Oid, Student> result = qrm.getDom().retrieveObjects(Student.class, q);
+    Map<Oid, Student> result1 = qrm.getDom().retrieveObjects(Student.class, q1);
+    Map<Oid, Student> result2 = new HashMap<>(result);
+    result2.putAll(result1);
     
+    //TODO: merge 2 maps
     if (result != null) {
       // update the main output data 
       students = result.values();
-      
       // update other output (if any)
       numStudents = students.size();
     } else {
