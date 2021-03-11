@@ -46,11 +46,11 @@ public class StudentsByNameReport {
   
   /**output: students whose names match {@link #name} */
   @DAttr(name="students",type=Type.Collection,optional=false, mutable=false,
-      serialisable=false,filter=@Select(clazz=Student.class, 
-      attributes={Student.A_id, Student.A_name, Student.A_dob, Student.A_address, 
-          Student.A_email, Student.A_rptStudentByName})
-      ,derivedFrom={"name"}
-      )
+      serialisable=false,filter=@Select(clazz=Student.class 
+      //Chapter 6 - Exercise 3
+      //,attributes={Student.A_id, Student.A_name, Student.A_dob, Student.A_address, 
+      //    Student.A_email, Student.A_rptStudentByName}
+      ), derivedFrom={"name"})
   @DAssoc(ascName="students-by-name-report-has-students",role="report",
       ascType=AssocType.One2Many,endType=AssocEndType.One,
     associate=@Associate(type=Student.class,cardMin=0,cardMax=MetaConstants.CARD_MORE
@@ -142,16 +142,14 @@ public class StudentsByNameReport {
     Query q1 = QueryToolKit.createSearchQuery(dsm, Student.class, 
             new String[] {Student.A_name}, 
             new Op[] {Op.MATCH}, 
-            //new Object[] {"%"+name+"%"});
-            //Chapter 3 - Exercise 1
         	new Object[] {"%"+name});
     
     Map<Oid, Student> result = qrm.getDom().retrieveObjects(Student.class, q);
     Map<Oid, Student> result1 = qrm.getDom().retrieveObjects(Student.class, q1);
+    //TODO: merge 2 maps
     Map<Oid, Student> result2 = new HashMap<>(result);
     result2.putAll(result1);
     
-    //TODO: merge 2 maps
     if (result != null) {
       // update the main output data 
       students = result.values();
