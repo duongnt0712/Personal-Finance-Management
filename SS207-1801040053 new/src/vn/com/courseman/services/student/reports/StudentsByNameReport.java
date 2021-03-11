@@ -48,8 +48,8 @@ public class StudentsByNameReport {
   @DAttr(name="students",type=Type.Collection,optional=false, mutable=false,
       serialisable=false,filter=@Select(clazz=Student.class 
       //Chapter 6 - Exercise 3
-      //,attributes={Student.A_id, Student.A_name, Student.A_dob, Student.A_address, 
-      //    Student.A_email, Student.A_rptStudentByName}
+      /*,attributes={Student.A_id, Student.A_name, Student.A_dob, Student.A_address, 
+          Student.A_email, Student.A_rptStudentByName}*/
       ), derivedFrom={"name"})
   @DAssoc(ascName="students-by-name-report-has-students",role="report",
       ascType=AssocType.One2Many,endType=AssocEndType.One,
