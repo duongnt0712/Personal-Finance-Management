@@ -22,7 +22,7 @@ import domainapp.basics.model.meta.Select;
 import domainapp.basics.model.query.Expression.Op;
 import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
-import domainapp.modules.report.model.meta.Output;
+import domainapp.basics.modules.report.model.meta.Output;
 import vn.com.courseman.it5.model.Student;
 
 /**

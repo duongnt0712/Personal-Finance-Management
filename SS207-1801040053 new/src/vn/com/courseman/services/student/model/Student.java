@@ -24,6 +24,7 @@ import domainapp.basics.util.cache.StateHistory;
 import vn.com.courseman.exceptions.DExCode;
 import vn.com.courseman.services.enrolment.model.Enrolment;
 import vn.com.courseman.services.sclass.model.SClass;
+import vn.com.courseman.services.student.reports.StudentProfilesReport;
 import vn.com.courseman.services.student.reports.StudentsByCityJoinReport;
 import vn.com.courseman.services.student.reports.StudentsByNameReport;
 import vn.com.courseman.utils.DToolkit;
@@ -46,6 +47,7 @@ public class Student {
   public static final String A_averageMark = "averageMark";
   public static final String A_rptStudentByName = "rptStudentByName";
   public static final String A_rptStudentByCity = "rptStudentByCity";
+  public static final String A_rptStudentProfile = "rptStudentProfile";
 
   // attributes of students
   @DAttr(name = A_id, id = true, type = Type.String, auto = true, length = 6, 
@@ -108,6 +110,13 @@ public class Student {
       // (avoiding the view having to load this attribute's value from data source)
       virtual=true)
   private StudentsByCityJoinReport rptStudentByCity;
+  
+  //v5.0: to realise link to report
+  @DAttr(name=A_rptStudentProfile,type=Type.Domain, serialisable=false, 
+     // IMPORTANT: set virtual=true to exclude this attribute from the object state
+     // (avoiding the view having to load this attribute's value from data source)
+     virtual=true)
+  private StudentProfilesReport rptStudentProfile;
   
   // constructor methods
   // for creating in the application
@@ -388,6 +397,13 @@ public class Student {
    */
   public StudentsByCityJoinReport getRptStudentByCity() {
     return rptStudentByCity;
+  }
+  
+  /**
+   * @effects return rptStudentByCity
+   */
+  public StudentProfilesReport getRptStudentProfile() {
+    return rptStudentProfile;
   }
   
   // override toString

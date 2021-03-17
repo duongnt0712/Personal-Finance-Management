@@ -9,6 +9,7 @@ import vn.com.courseman.services.enrolment.model.Enrolment;
 import vn.com.courseman.services.sclass.model.SClass;
 import vn.com.courseman.services.student.model.City;
 import vn.com.courseman.services.student.model.Student;
+import vn.com.courseman.services.student.reports.StudentProfilesReport;
 import vn.com.courseman.services.student.reports.StudentsByCityJoinReport;
 import vn.com.courseman.services.student.reports.StudentsByNameReport;
 
@@ -31,7 +32,8 @@ public class Main {
       SClass.class,
       // reports
       StudentsByNameReport.class,
-      StudentsByCityJoinReport.class
+      StudentsByCityJoinReport.class,
+      StudentProfilesReport.class
   };
   
   /**

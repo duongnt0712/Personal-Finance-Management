@@ -2,6 +2,8 @@ package vn.com.courseman.it5.software;
 
 import domainapp.basics.exceptions.NotPossibleException;
 import domainapp.basics.software.DomainAppToolSoftware;
+import domainapp.software.SoftwareFactory;
+import domainapp.softwareimpl.DomSoftware;
 import vn.com.courseman.it5.model.City;
 import vn.com.courseman.it5.model.CompulsoryModule;
 import vn.com.courseman.it5.model.CourseModule;
@@ -19,7 +21,7 @@ import vn.com.courseman.it5.model.reports.StudentsByNameReport;
  *
  * @version 
  */
-public class CourseManSoftware extends DomainAppToolSoftware {
+public class CourseManSoftware {
   
   // the domain model of software
   private static final Class[] model = {
@@ -34,27 +36,24 @@ public class CourseManSoftware extends DomainAppToolSoftware {
       StudentsByNameReport.class
   };
   
-  /* (non-Javadoc)
-   * @see vn.com.courseman.software.Software#getModel()
-   */
   /**
    * @effects 
-   *  return {@link #model}.
+   *  create and run a UI-based {@link DomSoftware} for a pre-defined model. 
    */
-  @Override
-  protected Class[] getModel() {
-    return model;
-  }
-
-  /**
-   * The main method
-   * @effects 
-   *  run software with a command specified in args[0] and with the model 
-   *  specified by {@link #getModel()}. 
-   *  
-   *  <br>Throws NotPossibleException if failed for some reasons.
-   */
-  public static void main(String[] args) throws NotPossibleException {
-    new CourseManSoftware().exec(args);
+  public static void main(String[] args){
+    // 2. create UI software
+    DomSoftware sw = SoftwareFactory.createUIDomSoftware();
+    
+    // 3. run
+    // create in memory configuration
+    System.setProperty("domainapp.setup.SerialiseConfiguration", "false");
+    
+    // 3. run it
+    try {
+      sw.run(model);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }   
   }
 }
