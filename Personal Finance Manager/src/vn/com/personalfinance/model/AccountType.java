@@ -42,7 +42,7 @@ public class AccountType {
 	private String name;
 	
 	@DAttr(name = "accounts", type = Type.Collection, serialisable = false, 
-			optional = false, filter = @Select(clazz = Account.class))
+			optional = true, filter = @Select(clazz = Account.class))
 	@DAssoc(ascName = "account-type-has-account", role = "type", ascType = AssocType.One2Many, 
 	endType = AssocEndType.One, associate = @Associate(type = Account.class, cardMin = 1, cardMax = 25))
 	private Collection<Account> accounts;
@@ -70,6 +70,8 @@ public class AccountType {
 		this.name = name;
 	}
 	
+	// add exist object into collection
+	
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
 	public boolean addAccount(Account a) {
@@ -79,6 +81,7 @@ public class AccountType {
 		// no other attributes changed
 		return false;
 	}
+	// add new object into collection directly
 	
 	@DOpt(type = DOpt.Type.LinkAdderNew)
 	public boolean addNewAccount(Account a) {

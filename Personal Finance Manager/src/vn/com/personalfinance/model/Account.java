@@ -37,7 +37,7 @@ public class Account {
 	@DAttr(name = A_name, type = Type.String, length = 15, optional = false)
 	private String name;
 	
-	@DAttr(name = A_type, type = Type.Domain, length = 20, optional = false)
+	@DAttr(name = A_type, type = Type.Domain, length = 20)
 	@DAssoc(ascName = "account-has-account-type", role = "account", ascType = AssocType.One2Many, 
 	endType = AssocEndType.Many, associate = @Associate(type = AccountType.class, cardMin = 1, cardMax = 1))
 	private AccountType type;
@@ -46,6 +46,7 @@ public class Account {
 	private double balance;
 	
 	// constructor methods
+	// form constructor into an object
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	@DOpt(type=DOpt.Type.RequiredConstructor)
 	public Account(@AttrRef("name") String name, 
@@ -55,6 +56,7 @@ public class Account {
 	}
 	
 	// a shared constructor that is invoked by other constructors
+	// load db 
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
 	public Account (String id, String name, AccountType type, Double balance) {
 		// generate an id
