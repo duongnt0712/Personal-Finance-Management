@@ -34,12 +34,12 @@ public class Account {
 	// static variable to keep track of account id
 	private static int idCounter = 0;
 	
-	@DAttr(name = A_name, type = Type.String, length = 15, optional = false)
+	@DAttr(name = A_name, type = Type.String, length = 15, optional = false, cid=true)
 	private String name;
 	
 	@DAttr(name = A_type, type = Type.Domain, length = 20)
-	@DAssoc(ascName = "account-has-account-type", role = "account", ascType = AssocType.One2Many, 
-	endType = AssocEndType.Many, associate = @Associate(type = AccountType.class, cardMin = 1, cardMax = 1))
+	@DAssoc(ascName = "account-has-type", role = "account", ascType = AssocType.One2Many,
+	endType = AssocEndType.Many, associate = @Associate(type = AccountType.class, cardMin = 1, cardMax = 1), dependsOn=true)
 	private AccountType type;
 	
 	@DAttr(name = A_balance, type = Type.Double, length = 15, optional = false)
@@ -50,15 +50,21 @@ public class Account {
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	@DOpt(type=DOpt.Type.RequiredConstructor)
 	public Account(@AttrRef("name") String name, 
+			@AttrRef("balance") Double balance) {
+		this(null, name, null, balance);
+	}
+	
+	@DOpt(type=DOpt.Type.ObjectFormConstructor)
+	public Account(@AttrRef("name") String name, 
 			@AttrRef("type") AccountType type,
 			@AttrRef("balance") Double balance) {
-		this(null, name, type, balance);
+		this(null, name, type, 0.0);
 	}
 	
 	// a shared constructor that is invoked by other constructors
 	// load db 
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	public Account (String id, String name, AccountType type, Double balance) {
+	public Account (String id, String name, AccountType type, Double balance) throws ConstraintViolationException{
 		// generate an id
 	    this.id = nextID(id);
 	    
@@ -94,10 +100,10 @@ public class Account {
 	public void setType(AccountType type) {
 		this.type = type;
 	}
-	
-	public void setNewType(AccountType type) {
-		setType(type);
-	}
+//	
+//	public void setNewType(AccountType type) {
+//		setType(type);
+//	}
 
 	public void setBalance(double balance) {
 		this.balance = balance;
@@ -116,11 +122,11 @@ public class Account {
 	 * @effects returns <code>Account(id,name,type,balance)</code>.
 	 */
 	public String toString(boolean full) {
-		if (full)
-			return "Account(" + id + "," + name + "," + type + "," + balance + ")";
-		else
-			return "Account(" + id + ")";
-	}
+	    if (full)
+	      return "Account(" + id + "," + name + "," +  ((type != null) ? "," + type.getName() : "") + "," + balance + ")";
+	    else
+	      return "Account(" + id + ")";
+	  }
 
 	@Override
 	public int hashCode() {
@@ -190,18 +196,20 @@ public class Account {
 	    if (minVal != null && maxVal != null) {
 	      //TODO: update this for the correct attribute if there are more than one auto attributes of this class 
 
-	      String maxId = (String) maxVal;
-	      
-	      try {
-	        int maxIdNum = Integer.parseInt(maxId.substring(1));
-	        
-	        if (maxIdNum > idCounter) // extra check
-	          idCounter = maxIdNum;
-	        
-	      } catch (RuntimeException e) {
-	        throw new ConstraintViolationException(
-	            ConstraintViolationException.Code.INVALID_VALUE, e, new Object[] {maxId});
-	      }
+	    	if (attrib.name().equals("id")) {
+	  		  String maxId = (String) maxVal;
+	  		  
+	  		  try {
+	  		    int maxIdNum = Integer.parseInt(maxId.substring(1));
+	  		    
+	  		    if (maxIdNum > idCounter) // extra check
+	  		      idCounter = maxIdNum;
+	  		    
+	  		  } catch (RuntimeException e) {
+	  		    throw new ConstraintViolationException(
+	  		        ConstraintViolationException.Code.INVALID_VALUE, e, new Object[] {maxId});
+	  		  }
+	      	}	    
 	    }
-	  }
+	 }
 }

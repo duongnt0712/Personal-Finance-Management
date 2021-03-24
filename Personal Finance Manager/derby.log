@@ -1,11 +1,22 @@
 ----------------------------------------------------------------
+<<<<<<< Upstream, based on origin/master
 Thu Mar 18 14:12:59 ICT 2021:
 Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.3.0 - (1405108): instance a816c00e-0178-442e-29cc-00000397fdc0 
 on database directory C:\Users\MyPC\git\project-ss207-g2\Personal Finance Manager\data\domainds  with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@73d16e93 
 Loaded from file:/E:/SS2/domainapptool_20201217_5.4/derby.jar
+=======
+Wed Mar 24 21:32:45 ICT 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.3.0 - (1405108): instance a816c00e-0178-64a6-f0e3-00000510eed8 
+on database directory C:\Users\Admin\git\project-ss207-g2\project-ss207-g2\Personal Finance Manager\data\domainds  with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@4e0e2f2a 
+Loaded from file:/C:/Users/Admin/eclipse-workspace/Personal%20Finance%20Manager/libs/derby.jar
+>>>>>>> 84b35b6 Overcome error Account & AccountType: dependsOn
 java.vendor=Oracle Corporation
 java.runtime.version=15.0.2+7-27
+<<<<<<< Upstream, based on origin/master
 user.dir=C:\Users\MyPC\git\project-ss207-g2\Personal Finance Manager
+=======
+user.dir=C:\Users\Admin\git\project-ss207-g2\project-ss207-g2\Personal Finance Manager
+>>>>>>> 84b35b6 Overcome error Account & AccountType: dependsOn
 os.name=Windows 10
 os.arch=amd64
 os.version=10.0

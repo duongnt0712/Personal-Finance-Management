@@ -33,18 +33,20 @@ import vn.com.personalfinance.model.Account;
 @DClass(schema="personalfinancemanagement")
 public class AccountType {
 
-	@DAttr(name = "id", id = true, auto = true, length = 3, mutable = false, optional = false, type = Type.Integer)
+	@DAttr(name="id",id=true,auto=true,length=6,mutable=false,type=Type.Integer)
 	private int id;
 	
 	private static int idCounter;
 	
-	@DAttr(name = "name", type = Type.String, length = 20, optional = false)
+	@DAttr(name = "name", type = Type.String, length = 20, optional = false, cid=true)
 	private String name;
 	
-	@DAttr(name = "accounts", type = Type.Collection, serialisable = false, 
-			optional = true, filter = @Select(clazz = Account.class))
-	@DAssoc(ascName = "account-type-has-account", role = "type", ascType = AssocType.One2Many, 
-	endType = AssocEndType.One, associate = @Associate(type = Account.class, cardMin = 1, cardMax = 25))
+	@DAttr(name = "accounts", type = Type.Collection, 
+			serialisable = false, optional = false, 
+			filter = @Select(clazz = Account.class))
+	@DAssoc(ascName = "type-has-account", role = "type", 
+		ascType = AssocType.One2Many, endType = AssocEndType.One, 
+		associate = @Associate(type = Account.class, cardMin = 1, cardMax = 25))
 	private Collection<Account> accounts;
 	// derived attributes
 	 private int accountsCount;
@@ -66,6 +68,7 @@ public class AccountType {
 		accountsCount = 0;
 	}
 	
+	@DOpt(type=DOpt.Type.Setter)
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -103,7 +106,7 @@ public class AccountType {
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewStudent(Collection<Account> accounts) {
+	public boolean addNewAccount(Collection<Account> accounts) {
 		this.accounts.addAll(accounts);
 		accountsCount += accounts.size();
 		// no other attributes changed
@@ -112,7 +115,7 @@ public class AccountType {
 	
 	@DOpt(type = DOpt.Type.LinkRemover)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeStudent(Account a) {
+	public boolean removeAccount(Account a) {
 		boolean removed = accounts.remove(a);
 
 		if (removed) {
@@ -157,9 +160,9 @@ public class AccountType {
 	}
 
 	@Override
-	public String toString() {
-		return name;
-	}
+	  public String toString() {
+	    return "AccountType("+getId()+","+getName()+")";
+	  }
 	
 	@Override
 	  public int hashCode() {
@@ -212,8 +215,5 @@ public class AccountType {
 			if (maxIdVal > idCounter)
 				idCounter = maxIdVal;
 		}
-	}
-	
-	
-	
+	}	
 }
