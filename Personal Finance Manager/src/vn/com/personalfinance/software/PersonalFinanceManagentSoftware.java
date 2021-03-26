@@ -4,6 +4,9 @@ import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
 import vn.com.personalfinance.model.Account;
 import vn.com.personalfinance.model.AccountType;
+import vn.com.personalfinance.model.Accumulate;
+import vn.com.personalfinance.model.Savings;
+import vn.com.personalfinance.model.SavingsBook;
 
 /**
  * @overview 
@@ -19,6 +22,9 @@ public class PersonalFinanceManagentSoftware {
 	  private static final Class[] model = {
 	      Account.class, 
 	      AccountType.class, 
+	      Savings.class,
+	      SavingsBook.class,
+	      Accumulate.class
 	  };
 	  
 	  /**
