@@ -32,15 +32,16 @@ public class Accumulate extends Savings {
 			@AttrRef("purpose") String purpose,
 			@AttrRef("startDate") Date startDate,
 			@AttrRef("monthlyDuration") Integer monthlyDuration,
+			@AttrRef("account") Account account,
 			Double expectedAmount) {
-		this(null, null, amount, name, purpose, startDate, monthlyDuration, expectedAmount);
+		this(null, null, amount, name, purpose, startDate, monthlyDuration, account, expectedAmount);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
 	public Accumulate(Integer id, String code, Double amount, String name,
-			String purpose, Date startDate, Integer monthlyDuration, Double expectedAmount) throws ConstraintViolationException {
-		super(id, code, amount, name, purpose, startDate, monthlyDuration);
+			String purpose, Date startDate, Integer monthlyDuration, Account account, Double expectedAmount) throws ConstraintViolationException {
+		super(id, code, amount, name, purpose, startDate, monthlyDuration, account);
 		this.expectedAmount = expectedAmount;
 		computeRemainedAmount();
 	}

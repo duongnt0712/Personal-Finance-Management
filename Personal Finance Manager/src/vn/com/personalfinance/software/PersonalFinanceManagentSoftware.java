@@ -19,12 +19,12 @@ import vn.com.personalfinance.model.SavingsBook;
 public class PersonalFinanceManagentSoftware {
 	  
 	  // the domain model of software
-	  private static final Class[] model = {
+	  static final Class[] model = {
 	      Account.class, 
 	      AccountType.class, 
 	      Savings.class,
 	      SavingsBook.class,
-	      Accumulate.class
+	      Accumulate.class,
 	  };
 	  
 	  /**

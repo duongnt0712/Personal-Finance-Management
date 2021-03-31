@@ -1,6 +1,8 @@
 package vn.com.personalfinance.model;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
@@ -8,6 +10,7 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.Select;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
@@ -45,6 +48,19 @@ public class Account {
 	@DAttr(name = A_balance, type = Type.Double, length = 15, optional = false)
 	private double balance;
 	
+	@DAttr(name = "savingsBook", type = Type.Collection, optional = false,
+	serialisable = false, filter = @Select(clazz = SavingsBook.class 
+//	,attributes = {SavingsBook.S_id, SavingsBook.S_amount, SavingsBook.S_name,
+//			SavingsBook.S_monthlyDuration, SavingsBook.S_interestRate, 
+//			SavingsBook.S_finalBalance}
+	))
+	@DAssoc(ascName = "account-has-savingsBook", role = "account",
+	ascType = AssocType.One2Many, endType = AssocEndType.One, 
+	associate = @Associate(type = SavingsBook.class, cardMin = 0, cardMax = 30))
+	private Collection<SavingsBook> savingsBook;
+	// derived
+	private int savingsBookCount;
+	
 	// constructor methods
 	// form constructor into an object
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
@@ -72,6 +88,59 @@ public class Account {
 	    this.name = name;
 	    this.type = type;
 	    this.balance = balance;
+	    
+	    savingsBook = new ArrayList<>();
+	    savingsBookCount = 0;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean addSavingsBook(SavingsBook s) {
+		if (!this.savingsBook.contains(s)) {
+			savingsBook.add(s);
+		}
+		// no other attributes changed
+		return false;
+	}
+	// add new object into collection directly
+	
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewSavingsBook(SavingsBook s) {
+		savingsBook.add(s);
+		savingsBookCount++;
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addSavingsBook(Collection<SavingsBook> savingsBook) {
+		for (SavingsBook s : savingsBook) {
+			if (!this.savingsBook.contains(s)) {
+				this.savingsBook.add(s);
+			}
+		}
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewSavingsBook(Collection<SavingsBook> savingsBook) {
+		this.savingsBook.addAll(savingsBook);
+		savingsBookCount += savingsBook.size();
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean removeSavingsBook(SavingsBook s) {
+		boolean removed = savingsBook.remove(s);
+
+		if (removed) {
+			savingsBookCount--;
+		}
+		// no other attributes changed
+		return false;
 	}
 
 	// getter methods
@@ -91,6 +160,14 @@ public class Account {
 		return balance ;
 	}
 
+	public Collection<SavingsBook> getSavingsBook() {
+		return savingsBook;
+	}
+	
+	public int getSavingsCount() {
+		return savingsBookCount;
+	}
+
 	// setter methods
 
 	public void setName(String name) {
@@ -107,6 +184,15 @@ public class Account {
 
 	public void setBalance(double balance) {
 		this.balance = balance;
+	}
+	
+	public void setSavingsBook(Collection<SavingsBook> savingsBook) {
+		this.savingsBook = savingsBook;
+		savingsBookCount = savingsBook.size();
+	}
+
+	public void setSavingsBookCount(int savingsBookCount) {
+		this.savingsBookCount = savingsBookCount;
 	}
 	
 	// override toString

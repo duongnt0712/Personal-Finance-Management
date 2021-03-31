@@ -17,12 +17,14 @@ import domainapp.basics.model.meta.DAttr.Type;
  */
 @DClass(schema="personalfinancemanagement")
 public class SavingsBook extends Savings {
+	public static final String S_interestRate = "interestRate";
+	public static final String S_finalBalance = "finalBalance";
 	
 	// attributes of savings book
-	@DAttr(name = "interestRate", type = Type.Double, length = 15, optional = false)
+	@DAttr(name = S_interestRate, type = Type.Double, length = 15, optional = false)
 	private double interestRate;
 	
-	@DAttr(name = "finalBalance", type = Type.Double, auto = true, length = 15, mutable = false, optional = false)
+	@DAttr(name = S_finalBalance, type = Type.Double, auto = true, length = 15, mutable = false, optional = false)
 	private double finalBalance;
 
 	// constructor methods
@@ -32,15 +34,18 @@ public class SavingsBook extends Savings {
 			@AttrRef("purpose") String purpose,
 			@AttrRef("startDate") Date startDate,
 			@AttrRef("monthlyDuration") Integer monthlyDuration,
-			Double interestRate) {
-		this(null, null, amount, name, purpose, startDate, monthlyDuration, interestRate);
+			@AttrRef("account") Account account,
+			Double interestRate)
+			{
+		this(null, null, amount, name, purpose, startDate, monthlyDuration, account, interestRate);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
 	public SavingsBook(Integer id, String code, Double amount, String name,
-		String purpose, Date startDate, Integer monthlyDuration, Double interestRate) throws ConstraintViolationException {
-		super(id, code, amount, name, purpose, startDate, monthlyDuration);
+		String purpose, Date startDate, Integer monthlyDuration, Account account, 
+		Double interestRate) throws ConstraintViolationException {
+		super(id, code, amount, name, purpose, startDate, monthlyDuration, account);
 		this.interestRate = interestRate;
 		computeFinalBalance();
 	}

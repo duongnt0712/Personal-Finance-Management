@@ -6,9 +6,13 @@ import java.util.Map;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
+import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.DAssoc.AssocEndType;
+import domainapp.basics.model.meta.DAssoc.AssocType;
+import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 
@@ -26,7 +30,6 @@ public abstract class Savings {
 	public static final String S_amount = "amount";
 	public static final String S_name = "name";
 	public static final String S_purpose = "purpose";
-	public static final String S_time = "time";
 	public static final String S_startDate = "startDate";
 	public static final String S_monthlyDuration = "monthlyDuration";
 
@@ -54,6 +57,13 @@ public abstract class Savings {
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
 	private int monthlyDuration;
 	
+	@DAttr(name = "account", type = Type.Domain, length = 20)
+	@DAssoc(ascName = "account-has-savingsBook", role = "savingsBook",
+	ascType = AssocType.One2Many, endType = AssocEndType.Many,
+	associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1),
+	dependsOn=true)
+	private Account account;
+	
 	// static variable to keep track of savings code
 	private static Map<Tuple,Integer> currNums = new LinkedHashMap<Tuple,Integer>();
 	
@@ -64,14 +74,15 @@ public abstract class Savings {
 			@AttrRef("name") String name,
 			@AttrRef("purpose") String purpose,
 			@AttrRef("startDate") Date startDate,
-			@AttrRef("monthlyDuration") Integer monthlyDuration) {
-		this(null, null, amount, name, purpose, startDate, monthlyDuration);
+			@AttrRef("monthlyDuration") Integer monthlyDuration,
+			@AttrRef("account") Account account) {
+		this(null, null, amount, name, purpose, startDate, monthlyDuration, account);
 	}
 		
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
 	protected Savings (Integer id, String code, Double amount, String name,
-		String purpose, Date startDate, Integer monthlyDuration) {
+		String purpose, Date startDate, Integer monthlyDuration, Account account) {
 		// generate an id
 		this.id = nextID(id);
 		this.code = nextCode(code);    
@@ -81,6 +92,7 @@ public abstract class Savings {
 		this.purpose = purpose;
 		this.startDate = startDate;
 		this.monthlyDuration = monthlyDuration;
+		this.account = account;
 	}
 	
 	// getter methods
@@ -112,6 +124,10 @@ public abstract class Savings {
 	public int getMonthlyDuration() {
 		return monthlyDuration;
 	}
+	
+	public Account getAccount() {
+		return account;
+	}
 
 	// setter methods
 
@@ -133,6 +149,10 @@ public abstract class Savings {
 	
 	public void setMonthlyDuration(int monthlyDuration) {
 		this.monthlyDuration = monthlyDuration;
+	}
+	
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 	
 	@Override
