@@ -74,7 +74,7 @@ public class Account {
 	public Account(@AttrRef("name") String name, 
 			@AttrRef("type") AccountType type,
 			@AttrRef("balance") Double balance) {
-		this(null, name, type, balance);
+		this(null, name, type, 0.0);
 	}
 	
 	// a shared constructor that is invoked by other constructors
