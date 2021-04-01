@@ -7,12 +7,12 @@ import domainapp.softwareimpl.DomSoftware;
 import vn.com.personalfinance.model.Account;
 import vn.com.personalfinance.model.AccountType;
 import vn.com.personalfinance.model.Accumulate;
-import vn.com.personalfinance.model.DailyExpense;
-import vn.com.personalfinance.model.Expenditure;
-import vn.com.personalfinance.model.Income;
+//import vn.com.personalfinance.model.DailyExpense;
+//import vn.com.personalfinance.model.Expenditure;
+//import vn.com.personalfinance.model.Income;
 import vn.com.personalfinance.model.Savings;
 import vn.com.personalfinance.model.SavingsBook;
-import vn.com.personalfinance.model.Category;
+//import vn.com.personalfinance.model.Category;
 
 /**
  * @overview 
@@ -31,10 +31,10 @@ public class PersonalFinanceManagentSoftware {
 	      Savings.class,
 	      SavingsBook.class,
 	      Accumulate.class,
-	      DailyExpense.class,
-	      Expenditure.class,
-	      Income.class,
-	      Category.class
+//	      DailyExpense.class,
+//	      Expenditure.class,
+//	      Income.class,
+//	      Category.class
 	  };
 	  
 	  /**
