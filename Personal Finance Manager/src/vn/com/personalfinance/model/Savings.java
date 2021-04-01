@@ -32,6 +32,7 @@ public abstract class Savings {
 	public static final String S_purpose = "purpose";
 	public static final String S_startDate = "startDate";
 	public static final String S_monthlyDuration = "monthlyDuration";
+	public static final String S_account = "account";
 
 	// attributes of savings
 	@DAttr(name = S_id, id = true, type = Type.Integer, auto = true, length = 6, mutable = false, optional = false)
@@ -57,7 +58,7 @@ public abstract class Savings {
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
 	private int monthlyDuration;
 	
-	@DAttr(name = "account", type = Type.Domain, length = 20)
+	@DAttr(name = S_account, type = Type.Domain, length = 20)
 	@DAssoc(ascName = "account-has-savingsBook", role = "savingsBook",
 	ascType = AssocType.One2Many, endType = AssocEndType.Many,
 	associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1),
@@ -69,7 +70,6 @@ public abstract class Savings {
 	
 	// constructor methods
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
-	@DOpt(type=DOpt.Type.RequiredConstructor)
 	protected Savings(@AttrRef("amount") Double amount,
 			@AttrRef("name") String name,
 			@AttrRef("purpose") String purpose,
@@ -82,7 +82,7 @@ public abstract class Savings {
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
 	protected Savings (Integer id, String code, Double amount, String name,
-		String purpose, Date startDate, Integer monthlyDuration, Account account) {
+		String purpose, Date startDate, Integer monthlyDuration, Account account) throws ConstraintViolationException {
 		// generate an id
 		this.id = nextID(id);
 		this.code = nextCode(code);    
@@ -157,17 +157,7 @@ public abstract class Savings {
 	
 	@Override
 	public String toString() {
-		return toString(true);
-	}
-	
-	/**
-	 * @effects returns <code>Savings(id,code,amount,name,purpose,startDate,monthlyDuration)</code>.
-	 */
-	public String toString(boolean full) {
-		if (full)
-			return "Savings(" + id + "," + code + "," + amount + "," + name + "," + purpose + "," + startDate + monthlyDuration +")";
-		else
-			return "Savings(" + id + ")";
+		return this.getClass().getSimpleName() + "(" + getCode() + "," + getAmount() + "," + getName() + ")";
 	}
 
 	@Override

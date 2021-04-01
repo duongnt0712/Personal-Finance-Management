@@ -41,7 +41,7 @@ public class Account {
 	private String name;
 	
 	@DAttr(name = A_type, type = Type.Domain, length = 20)
-	@DAssoc(ascName = "account-has-type", role = "account", ascType = AssocType.One2Many,
+	@DAssoc(ascName = "type-has-account", role = "account", ascType = AssocType.One2Many,
 	endType = AssocEndType.Many, associate = @Associate(type = AccountType.class, cardMin = 1, cardMax = 1), dependsOn=true)
 	private AccountType type;
 	
@@ -74,7 +74,7 @@ public class Account {
 	public Account(@AttrRef("name") String name, 
 			@AttrRef("type") AccountType type,
 			@AttrRef("balance") Double balance) {
-		this(null, name, type, 0.0);
+		this(null, name, type, balance);
 	}
 	
 	// a shared constructor that is invoked by other constructors
