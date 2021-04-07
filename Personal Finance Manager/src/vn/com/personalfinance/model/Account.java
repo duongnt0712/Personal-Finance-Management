@@ -10,6 +10,7 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
@@ -49,17 +50,20 @@ public class Account {
 	private double balance;
 	
 	@DAttr(name = "savingsBook", type = Type.Collection, optional = false,
-	serialisable = false, filter = @Select(clazz = SavingsBook.class 
-//	,attributes = {SavingsBook.S_id, SavingsBook.S_amount, SavingsBook.S_name,
-//			SavingsBook.S_monthlyDuration, SavingsBook.S_interestRate, 
-//			SavingsBook.S_finalBalance}
-	))
+	serialisable = false, filter = @Select(clazz = SavingsBook.class))
 	@DAssoc(ascName = "account-has-savingsBook", role = "account",
 	ascType = AssocType.One2Many, endType = AssocEndType.One, 
 	associate = @Associate(type = SavingsBook.class, cardMin = 0, cardMax = 30))
 	private Collection<SavingsBook> savingsBook;
 	// derived
 	private int savingsBookCount;
+	
+//	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false,
+//	serialisable = false, filter = @Select(clazz = DailyExpense.class))
+	@DAssoc(ascName = "account-has-dailyExpense", role = "account",
+	ascType = AssocType.One2Many, endType = AssocEndType.One, 
+	associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
+	private Collection<DailyExpense> dailyExpense;
 	
 	// constructor methods
 	// form constructor into an object

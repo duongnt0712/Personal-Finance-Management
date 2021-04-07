@@ -1,7 +1,5 @@
 package vn.com.personalfinance.model;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
@@ -29,6 +27,7 @@ public abstract class DailyExpense {
 		public static final String D_date = "date";
 		public static final String D_category = "category";
 		public static final String D_account = "account";
+		public static final String D_description = "description";
 		// attributes of daily expense
 		@DAttr(name = D_id, id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
 		private String id;
@@ -54,20 +53,25 @@ public abstract class DailyExpense {
 		associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1),
 		dependsOn=true)
 		private Account account;
+		
+		@DAttr(name = D_description, type = Type.String, length = 30)
+		private String description;
+		
 		//constructor methods
 		@DOpt(type=DOpt.Type.ObjectFormConstructor)
 		@DOpt(type=DOpt.Type.RequiredConstructor)
 		protected DailyExpense(@AttrRef("amount") Double amount,
 				@AttrRef("date") Date date,
 				@AttrRef("category") Category category,
-				@AttrRef("account") Account account
+				@AttrRef("account") Account account,
+				@AttrRef("description") String description
 				) {
-			this(null, amount, date, category, account);
+			this(null, amount, date, category, account, description);
 		}
 			
 		// a shared constructor that is invoked by other constructors
 		@DOpt(type=DOpt.Type.DataSourceConstructor)
-		protected DailyExpense (String id, Double amount, Date date, Category category,Account account)
+		protected DailyExpense (String id, Double amount, Date date, Category category,Account account, String description)
 			 {
 			// generate an id
 			this.id = nextID(id);
@@ -76,8 +80,9 @@ public abstract class DailyExpense {
 			this.amount = amount;
 			this.date = date;
 			this.category = category;
-			
 			this.account = account;
+			this.description = description;
+			
 			computeNewBalance();
 		}
 		// getter and setter method
@@ -119,6 +124,15 @@ public abstract class DailyExpense {
 		public void setAccount(Account account) {
 			this.account = account;
 		}
+		
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
 		public abstract String nextID(String currID) ;
 		public abstract void computeNewBalance();
 		@Override

@@ -17,63 +17,53 @@ import domainapp.basics.model.meta.DAttr.Type;
 @DClass(schema="personalfinancemanagement")
 public class Income extends DailyExpense {
 	// constructor methods
-			@DOpt(type = DOpt.Type.ObjectFormConstructor)
-			public Income(@AttrRef("amount") Double amount, 
-					@AttrRef("date") Date date,
-					@AttrRef("category") Category category,
-					@AttrRef("account") Account account
-					
-					
-					)
-			{
-				this(null, amount, date,  category,account);
+	@DOpt(type = DOpt.Type.ObjectFormConstructor)
+	public Income(@AttrRef("amount") Double amount, 
+			@AttrRef("date") Date date, 
+			@AttrRef("category") Category category,
+			@AttrRef("account") Account account, 
+			@AttrRef("description") String description) {
+		this(null, amount, date, category, account, description);
+	}
+
+	// a shared constructor that is invoked by other constructors
+	@DOpt(type = DOpt.Type.DataSourceConstructor)
+	public Income(String id, Double amount, Date date, Category category, Account account, String description) {
+		super(id, amount, date, category, account, description);
+	}
+	
+	// automatically generate the next account id
+	@Override
+	public String nextID(String id) throws ConstraintViolationException {
+		if (id == null) { // generate a new id
+
+			idCounter++;
+
+			return "I" + idCounter;
+		} else {
+			// update id
+			int num;
+			try {
+				num = Integer.parseInt(id.substring(1));
+			} catch (RuntimeException e) {
+				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+						new Object[] { id });
 			}
 
-			// a shared constructor that is invoked by other constructors
-			@DOpt(type = DOpt.Type.DataSourceConstructor)
-			public Income(String id, Double amount, Date date,
-					  Category category, Account account)  {
-				super(id, amount, date, category,account);
-				
-				
-				
-				
+			if (num > idCounter) {
+				idCounter = num;
 			}
 
-			
-			
-			// automatically generate the next account id
-			@Override
-			public String nextID(String id) throws ConstraintViolationException {
-				if (id == null) { // generate a new id
-					
-						idCounter++;
-					
-					return "I" + idCounter;
-				} else {
-					// update id
-					int num;
-					try {
-						num = Integer.parseInt(id.substring(1));
-					} catch (RuntimeException e) {
-						throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
-								new Object[] { id });
-					}
+			return id;
+		}
+	}
 
-					if (num > idCounter) {
-						idCounter = num;
-					}
+	@Override
+	public void computeNewBalance() {
 
-					return id;
-				}
-			}
-			@Override
-			public void computeNewBalance()  {
-				
-				double newBalance = getAccount().getBalance()+getAmount(); 
-				getAccount().setBalance(newBalance);
-				
-				
-			}
+		double newBalance = getAccount().getBalance() + getAmount();
+		getAccount().setBalance(newBalance);
+
+	}
 
 }

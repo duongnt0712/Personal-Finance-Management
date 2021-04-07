@@ -1,17 +1,9 @@
 package vn.com.personalfinance.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
-import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DOpt;
-import domainapp.basics.model.meta.Select;
-import domainapp.basics.model.meta.DAssoc.AssocEndType;
-import domainapp.basics.model.meta.DAssoc.AssocType;
-import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 
@@ -22,8 +14,6 @@ public class Category {
 	
 	@DAttr(name = "name", type = Type.String, length = 20, optional = false, cid=true)
 	private String name;
-	
-	
 	
 	// from object form: Account is not included 
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
@@ -36,9 +26,7 @@ public class Category {
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
 	public Category(@AttrRef("id") Integer id, @AttrRef("name") String name ) {
 		this.id = nextId(id);
-		this.name = name;
-		
-		
+		this.name = name;	
 	}
 	
 	@DOpt(type=DOpt.Type.Setter)
@@ -46,87 +34,11 @@ public class Category {
 		this.name = name;
 	}
 	
-//	// add exist object into collection
-//	
-//	@DOpt(type = DOpt.Type.LinkAdder)
-//	// only need to do this for reflexive association: @MemberRef(name="accounts")
-//	public boolean addAccount(Account a) {
-//		if (!this.accounts.contains(a)) {
-//			accounts.add(a);
-//		}
-//		// no other attributes changed
-//		return false;
-//	}
-//	// add new object into collection directly
-//	
-//	@DOpt(type = DOpt.Type.LinkAdderNew)
-//	public boolean addNewAccount(Account a) {
-//		accounts.add(a);
-//		accountsCount++;
-//		// no other attributes changed
-//		return false;
-//	}
-//	
-//	@DOpt(type = DOpt.Type.LinkAdder)
-//	public boolean addAccount(Collection<Account> accounts) {
-//		for (Account a : accounts) {
-//			if (!this.accounts.contains(a)) {
-//				this.accounts.add(a);
-//			}
-//		}
-//		// no other attributes changed
-//		return false;
-//	}
-//	
-//	@DOpt(type = DOpt.Type.LinkAdderNew)
-//	public boolean addNewAccount(Collection<Account> accounts) {
-//		this.accounts.addAll(accounts);
-//		accountsCount += accounts.size();
-//		// no other attributes changed
-//		return false;
-//	}
-//	
-//	@DOpt(type = DOpt.Type.LinkRemover)
-//	// only need to do this for reflexive association: @MemberRef(name="accounts")
-//	public boolean removeAccount(Account a) {
-//		boolean removed = accounts.remove(a);
-//
-//		if (removed) {
-//			accountsCount--;
-//		}
-//		// no other attributes changed
-//		return false;
-//	}
-	
-//	@DOpt(type=DOpt.Type.Setter)
-//	public void setAccounts(Collection<Account> accounts) {
-//		this.accounts = accounts;
-//		accountsCount = accounts.size();
-//	}
-//	
-//	/**
-//	 * @effects return <tt>accountsCount</tt>
-//	 */
-//	@DOpt(type=DOpt.Type.LinkCountGetter)
-//	public int getAccountsCount() {
-//		return accountsCount;
-//	}
-//	
-//	@DOpt(type=DOpt.Type.LinkCountSetter)
-//	public void setAccountsCount(int accountsCount) {
-//		this.accountsCount = accountsCount;
-//	}
-	
 	@DOpt(type=DOpt.Type.Getter)
 	public String getName() {
 		return name;
 	}
 
-//	@DOpt(type=DOpt.Type.Getter)
-//	public Collection<Account> getAccounts() {
-//		return accounts;
-//	}
-	
 	@DOpt(type=DOpt.Type.Getter)
 	public int getId() {
 		return id;
@@ -189,6 +101,4 @@ public class Category {
 				idCounter = maxIdVal;
 		}
 	}	
-	
-
 }

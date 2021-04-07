@@ -7,6 +7,7 @@ import vn.com.personalfinance.model.AccountType;
 import vn.com.personalfinance.model.Accumulate;
 import vn.com.personalfinance.model.DailyExpense;
 import vn.com.personalfinance.model.Expenditure;
+import vn.com.personalfinance.model.ExpenditureSavings;
 import vn.com.personalfinance.model.Income;
 import vn.com.personalfinance.model.Savings;
 import vn.com.personalfinance.model.SavingsBook;
@@ -21,7 +22,6 @@ import vn.com.personalfinance.model.Category;
  * @version 
  */
 public class PersonalFinanceManagentSoftware {
-	  
 	  // the domain model of software
 	  static final Class[] model = {
 	      Account.class, 
@@ -31,6 +31,7 @@ public class PersonalFinanceManagentSoftware {
 	      Accumulate.class,
 	      DailyExpense.class,
 	      Expenditure.class,
+	      ExpenditureSavings.class,
 	      Income.class,
 	      Category.class
 	  };

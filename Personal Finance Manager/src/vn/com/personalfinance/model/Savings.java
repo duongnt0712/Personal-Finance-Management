@@ -1,5 +1,6 @@
 package vn.com.personalfinance.model;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.Select;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
@@ -31,8 +33,8 @@ public abstract class Savings {
 	public static final String S_name = "name";
 	public static final String S_purpose = "purpose";
 	public static final String S_startDate = "startDate";
-	public static final String S_monthlyDuration = "monthlyDuration";
 	public static final String S_account = "account";
+	public static final String S_expenditureSavings = "expenditureSavings";
 
 	// attributes of savings
 	@DAttr(name = S_id, id = true, type = Type.Integer, auto = true, length = 6, mutable = false, optional = false)
@@ -46,7 +48,7 @@ public abstract class Savings {
 	@DAttr(name = S_amount, type = Type.Double, length = 15, optional = false)
 	private double amount;
 		
-	@DAttr(name = S_name, type = Type.String, length = 15, optional = false)
+	@DAttr(name = S_name, type = Type.String, length = 15, optional = false, cid=true)
 	private String name;
 	
 	@DAttr(name = S_purpose, type = Type.String, length = 30, optional = true)
@@ -55,15 +57,15 @@ public abstract class Savings {
 	@DAttr(name = S_startDate, type = Type.Date, length = 15, optional = false) 
 	private Date startDate;
 	
-	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
-	private int monthlyDuration;
+	@DAttr(name = S_expenditureSavings, type = Type.Collection, serialisable = false, optional = false, 
+			filter = @Select(clazz = ExpenditureSavings.class))
+	@DAssoc(ascName = "savings-has-expenditureSavings", role = "savings", 
+		ascType = AssocType.One2Many, endType = AssocEndType.One, 
+		associate = @Associate(type = ExpenditureSavings.class, cardMin = 1, cardMax = 25))
+	private Collection<ExpenditureSavings> expenditureSavings;
 	
-	@DAttr(name = S_account, type = Type.Domain, length = 20)
-	@DAssoc(ascName = "account-has-savingsBook", role = "savingsBook",
-	ascType = AssocType.One2Many, endType = AssocEndType.Many,
-	associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1),
-	dependsOn=true)
-	private Account account;
+	// derived attributes
+	private int expenditureSavingsCount;
 	
 	// static variable to keep track of savings code
 	private static Map<Tuple,Integer> currNums = new LinkedHashMap<Tuple,Integer>();
@@ -73,16 +75,14 @@ public abstract class Savings {
 	protected Savings(@AttrRef("amount") Double amount,
 			@AttrRef("name") String name,
 			@AttrRef("purpose") String purpose,
-			@AttrRef("startDate") Date startDate,
-			@AttrRef("monthlyDuration") Integer monthlyDuration,
-			@AttrRef("account") Account account) {
-		this(null, null, amount, name, purpose, startDate, monthlyDuration, account);
+			@AttrRef("startDate") Date startDate) {
+		this(null, null, amount, name, purpose, startDate);
 	}
 		
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
 	protected Savings (Integer id, String code, Double amount, String name,
-		String purpose, Date startDate, Integer monthlyDuration, Account account) throws ConstraintViolationException {
+		String purpose, Date startDate) throws ConstraintViolationException {
 		// generate an id
 		this.id = nextID(id);
 		this.code = nextCode(code);    
@@ -91,8 +91,6 @@ public abstract class Savings {
 		this.name = name;
 		this.purpose = purpose;
 		this.startDate = startDate;
-		this.monthlyDuration = monthlyDuration;
-		this.account = account;
 	}
 	
 	// getter methods
@@ -120,16 +118,13 @@ public abstract class Savings {
 	public Date getStartDate() {
 		return startDate ;
 	}
-	
-	public int getMonthlyDuration() {
-		return monthlyDuration;
-	}
-	
-	public Account getAccount() {
-		return account;
+
+	public Collection<ExpenditureSavings> getExpenditureSavings() {
+		return expenditureSavings;
 	}
 
 	// setter methods
+
 
 	public void setAmount(double amount) {
 		this.amount = amount;
@@ -147,13 +142,120 @@ public abstract class Savings {
 		this.startDate = startDate;
 	}
 	
-	public void setMonthlyDuration(int monthlyDuration) {
-		this.monthlyDuration = monthlyDuration;
+	public void setExpenditureSavings(Collection<ExpenditureSavings> eS) {
+		this.expenditureSavings = eS;
+		expenditureSavingsCount = eS.size();
+
+		// v2.6.4.b
+		//computeAverageMark();
 	}
 	
-	public void setAccount(Account account) {
-		this.account = account;
+	//expenditureSavings
+	@DOpt(type = DOpt.Type.LinkCountGetter)
+	public Integer getExpenditureSavingsCount() {
+		return expenditureSavingsCount;
+		// return enrolments.size();
 	}
+
+	@DOpt(type = DOpt.Type.LinkCountSetter)
+	public void setExpenditureSavingsCount(int count) {
+		expenditureSavingsCount = count;
+	}
+
+	/*@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="enrolments")
+	public boolean addExpenditureSavings(ExpenditureSavings e) {
+		if (!expenditureSavings.contains(e))
+			expenditureSavings.add(e);
+
+		// IMPORTANT: enrolment count must be updated separately by invoking
+		// setEnrolmentCount
+		// otherwise computeAverageMark (below) can not be performed correctly
+		// WHY? average mark is not serialisable
+//    enrolmentCount++;
+//    
+//    // v2.6.4.b
+//    computeAverageMark();
+
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewExpenditureSavings(ExpenditureSavings e) {
+		expenditureSavings.add(e);
+
+		expenditureSavingsCount++;
+
+		// v2.6.4.b
+		//computeAverageMark();
+
+		// no other attributes changed (average mark is not serialisable!!!)
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// @MemberRef(name="enrolments")
+	public boolean addExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
+		boolean added = false;
+		for (ExpenditureSavings e : expSavings) {
+			if (!expenditureSavings.contains(e)) {
+				if (!added)
+					added = true;
+				expenditureSavings.add(e);
+			}
+		}
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
+		expenditureSavings.addAll(expSavings);
+		expenditureSavingsCount += expSavings.size();
+
+		// v2.6.4.b
+		//computeAverageMark();
+
+		// no other attributes changed (average mark is not serialisable!!!)
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// @MemberRef(name="enrolments")
+	public boolean removeExpenditureSavings(ExpenditureSavings e) {
+		boolean removed = expenditureSavings.remove(e);
+
+		if (removed) {
+			expenditureSavingsCount--;
+
+			// v2.6.4.b
+			//computeAverageMark();
+		}
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkUpdater)
+	// @MemberRef(name="enrolments")
+	public boolean updateExpenditureSavings(ExpenditureSavings e) throws IllegalStateException {
+		// recompute using just the affected enrolment
+		/*
+		 * double totalMark = averageMark * enrolmentCount;
+		 * 
+		 * int oldFinalMark = e.getFinalMark(true);
+		 * 
+		 * int diff = e.getFinalMark() - oldFinalMark;
+		 * 
+		 * // TODO: cache totalMark if needed
+		 * 
+		 * totalMark += diff;
+		 * 
+		 * averageMark = totalMark / enrolmentCount;
+		 */
+
+		// no other attributes changed
+//		return true;
+//	}
 	
 	@Override
 	public String toString() {
@@ -194,12 +296,6 @@ public abstract class Savings {
 			// update
 			int num;
 			num = currID.intValue();
-
-			// if (num <= idCounter) {
-			// throw new
-			// ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE,
-			// "Lỗi giá trị thuộc tính ID: {0}", num + "<=" + idCounter);
-			// }
 
 			if (num > idCounter) {
 				idCounter = num;

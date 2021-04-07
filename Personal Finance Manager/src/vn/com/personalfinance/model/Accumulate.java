@@ -1,5 +1,7 @@
 package vn.com.personalfinance.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
@@ -18,15 +20,10 @@ import domainapp.basics.util.cache.StateHistory;
  */
 @DClass(schema="personalfinancemanagement")
 public class Accumulate extends Savings {
-	public static final String S_expectedAmount = "expectedAmount";
 	public static final String S_remainedAmount = "remainedAmount";
 	
-	// attributes of accumulate
-	@DAttr(name = S_expectedAmount, type = Type.Double, length = 15, optional = false)
-	private double expectedAmount;
-	
 	@DAttr(name = S_remainedAmount, type = Type.Double, auto = true, length = 15, mutable = false, optional = true,
-			serialisable=false, derivedFrom={S_amount, S_expectedAmount})
+			serialisable=false, derivedFrom={S_amount})
 	private Double remainedAmount;
 
 	private StateHistory<String, Object> stateHist;
@@ -36,31 +33,25 @@ public class Accumulate extends Savings {
 	public Accumulate(@AttrRef("amount") Double amount, 
 			@AttrRef("name") String name,
 			@AttrRef("purpose") String purpose,
-			@AttrRef("startDate") Date startDate,
-			@AttrRef("monthlyDuration") Integer monthlyDuration,
-			@AttrRef("account") Account account,
-			Double expectedAmount) {
-		this(null, null, amount, name, purpose, startDate, monthlyDuration, account, expectedAmount);
+			@AttrRef("startDate") Date startDate) {
+		this(null, null, amount, name, purpose, startDate);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
 	public Accumulate(Integer id, String code, Double amount, String name,
-					String purpose, Date startDate, Integer monthlyDuration, Account account, 
-					Double expectedAmount) throws ConstraintViolationException {
+					String purpose, Date startDate) throws ConstraintViolationException {
+		super(id, code, amount, name, purpose, startDate);
 		
-		super(id, code, amount, name, purpose, startDate, monthlyDuration, account);
-		this.expectedAmount = expectedAmount;
+		Collection<ExpenditureSavings> expenditureSavings = getExpenditureSavings();
+		setExpenditureSavings(expenditureSavings = new ArrayList<>());
+		setExpenditureSavingsCount(0);
 		
 		stateHist = new StateHistory<>();
 		computeRemainedAmount();
 	}
 	
-	// getter methods
-	public double getExpectedAmount() {
-		return expectedAmount;
-	}
-
+	//getter
 	//devired attribute
 	public double getRemainedAmount() {
 		return getRemainedAmount(false);
@@ -93,25 +84,114 @@ public class Accumulate extends Savings {
 			computeRemainedAmount();
 	}
 	
-	public void setExpectedAmount(double expectedAmount) {
-		setExpectedAmount(expectedAmount, false);
-	}
-	
-	public void setExpectedAmount(double expectedAmount, boolean computeRemainedAmount) {
-		this.expectedAmount = expectedAmount;
-		if (computeRemainedAmount)
-			computeRemainedAmount();
-	}
-	
 	// calculate accumulate
-	public void computeRemainedAmount() {
+	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
+	@AttrRef(value=S_remainedAmount)
+	private void computeRemainedAmount() {
 		stateHist.put(S_remainedAmount, remainedAmount);
 		
-		if(expectedAmount <= getAmount()) {
-			remainedAmount = 0.0;
-		} else {
-		remainedAmount = expectedAmount - getAmount();
+//		if(getExpenditureSavingsCount() > 0 && remainedAmount > getAmount()) { 
+		if(getExpenditureSavings().size() > 0 && remainedAmount > 0) { 
+			double accumAmount = 0d;
+			for(ExpenditureSavings eS : getExpenditureSavings()) {
+				accumAmount += eS.getAmount();
+			}
+			remainedAmount = getAmount() - accumAmount;
+		} else if (getExpenditureSavings().size() == 0){
+			remainedAmount = getAmount();
+		} 
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="enrolments")
+	public boolean addExpenditureSavings(ExpenditureSavings e) {
+		if (!getExpenditureSavings().contains(e))
+			getExpenditureSavings().add(e);
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewExpenditureSavings(ExpenditureSavings e) {
+		getExpenditureSavings().add(e);
+
+		int count = getExpenditureSavingsCount();
+		setExpenditureSavingsCount(count + 1);
+
+		// v2.6.4.b
+		computeRemainedAmount();
+
+		// no other attributes changed (average mark is not serialisable!!!)
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// @MemberRef(name="enrolments")
+	public boolean addExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
+		boolean added = false;
+		for (ExpenditureSavings e : expSavings) {
+			if (!getExpenditureSavings().contains(e)) {
+				if (!added)
+					added = true;
+				getExpenditureSavings().add(e);
+			}
 		}
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
+		getExpenditureSavings().addAll(expSavings);
+		int count = getExpenditureSavingsCount();
+		count += expSavings.size();
+		setExpenditureSavingsCount(count);
+
+		// v2.6.4.b
+		computeRemainedAmount();
+
+		// no other attributes changed (average mark is not serialisable!!!)
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// @MemberRef(name="enrolments")
+	public boolean removeExpenditureSavings(ExpenditureSavings e) {
+		boolean removed = getExpenditureSavings().remove(e);
+
+		if (removed) {
+			int count = getExpenditureSavingsCount();
+			setExpenditureSavingsCount(count - 1);
+			
+			double currentAccountBalance = e.getAccount().getBalance();
+			e.getAccount().setBalance(currentAccountBalance += e.getAmount());
+
+			// v2.6.4.b
+			computeRemainedAmount();
+		}
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkUpdater)
+	// @MemberRef(name="enrolments")
+	public boolean updateExpenditureSavings(ExpenditureSavings e) throws IllegalStateException {
+		// recompute using just the affected enrolment
+		/*
+		 * double totalMark = averageMark * enrolmentCount;
+		 * 
+		 * int oldFinalMark = e.getFinalMark(true);
+		 * 
+		 * int diff = e.getFinalMark() - oldFinalMark;
+		 * 
+		 * // TODO: cache totalMark if needed
+		 * 
+		 * totalMark += diff;
+		 * 
+		 * averageMark = totalMark / enrolmentCount;
+		 */
+
+		// no other attributes changed
+		return true;
 	}
 	
 }
