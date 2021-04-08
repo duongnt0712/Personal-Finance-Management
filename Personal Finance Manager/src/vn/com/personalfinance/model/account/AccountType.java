@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model;
+package vn.com.personalfinance.model.account;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,8 +15,6 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-
-import vn.com.personalfinance.model.Account;
 
 /**
  * A domain class whose objects are account types. This class is used as 

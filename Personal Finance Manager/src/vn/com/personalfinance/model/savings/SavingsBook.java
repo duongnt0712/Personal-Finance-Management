@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model;
+package vn.com.personalfinance.model.savings;
 
 import java.util.Collection;
 import java.util.Date;
@@ -14,6 +14,8 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.cache.StateHistory;
+import vn.com.personalfinance.model.account.Account;
+import vn.com.personalfinance.model.expenditure.ExpenditureSavings;
 
 /**
  * Represents a saving book.

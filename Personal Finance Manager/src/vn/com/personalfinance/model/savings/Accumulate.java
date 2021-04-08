@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model;
+package vn.com.personalfinance.model.savings;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +11,7 @@ import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.cache.StateHistory;
+import vn.com.personalfinance.model.expenditure.ExpenditureSavings;
 
 /**
  * Represents an accumulation.

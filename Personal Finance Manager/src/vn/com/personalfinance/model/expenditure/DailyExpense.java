@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model;
+package vn.com.personalfinance.model.expenditure;
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
@@ -12,6 +12,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
+import vn.com.personalfinance.model.account.Account;
 
 /**
  * Represents daily expense. The account ID is auto-incremented.

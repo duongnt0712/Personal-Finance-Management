@@ -1,12 +1,14 @@
-package vn.com.personalfinance.model;
+package vn.com.personalfinance.model.expenditure;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
 import domainapp.basics.model.meta.DAttr;
+import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 
+@DClass(schema="personalfinancemanagement")
 public class Category {
 	@DAttr(name="id",id=true,auto=true,length=6,mutable=false,type=Type.Integer)
 	private int id;
