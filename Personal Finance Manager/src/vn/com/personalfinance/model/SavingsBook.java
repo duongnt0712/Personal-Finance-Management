@@ -42,7 +42,7 @@ public class SavingsBook extends Savings {
 	private double interestRate;
 	
 	@DAttr(name = S_finalBalance, type = Type.Double, auto = true, length = 15, mutable = false, optional = true,
-			serialisable=false, derivedFrom={S_amount, S_interestRate})
+			serialisable=false, derivedFrom={S_amount, S_interestRate, S_monthlyDuration})
 	private Double finalBalance;
 
 	private StateHistory<String, Object> stateHist;
@@ -50,24 +50,24 @@ public class SavingsBook extends Savings {
 	
 	// constructor methods	
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
-	public SavingsBook(@AttrRef("amount") Double amount,
-						@AttrRef("name") String name,
-						@AttrRef("purpose") String purpose,
-						@AttrRef("startDate") Date startDate,
-						@AttrRef("monthlyDuration") Integer monthlyDuration,
-						Account account,
-						Double interestRate) {
-		this(null, null, amount, name, purpose, startDate, monthlyDuration, account, interestRate);
+	public SavingsBook(@AttrRef("name") String name,
+					   @AttrRef("purpose") String purpose,
+					   @AttrRef("amount") Double amount,	
+				       @AttrRef("startDate") Date startDate,
+					   @AttrRef("monthlyDuration") Integer monthlyDuration,
+					   Account account,
+					   Double interestRate) {
+		this(null, name, purpose, amount, startDate, monthlyDuration, account, interestRate);
 //		addToExpenditureSavings();
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public SavingsBook(Integer id, String code, Double amount, String name,
-				String purpose, Date startDate, Integer monthlyDuration, Account account, 
-				Double interestRate) throws ConstraintViolationException {
+	public SavingsBook(Integer id, String name, String purpose, 
+		Double amount, Date startDate, Integer monthlyDuration, 
+		Account account, Double interestRate) throws ConstraintViolationException {
 		
-		super(id, code, amount, name, purpose, startDate);
+		super(id, name, purpose, amount, startDate);
 		this.monthlyDuration = monthlyDuration;
 		this.account = account;
 		this.interestRate = interestRate;

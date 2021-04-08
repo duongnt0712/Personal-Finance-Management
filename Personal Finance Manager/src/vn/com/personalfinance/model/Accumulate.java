@@ -30,18 +30,18 @@ public class Accumulate extends Savings {
 	
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
-	public Accumulate(@AttrRef("amount") Double amount, 
-			@AttrRef("name") String name,
+	public Accumulate(@AttrRef("name") String name,
 			@AttrRef("purpose") String purpose,
+			@AttrRef("amount") Double amount, 
 			@AttrRef("startDate") Date startDate) {
-		this(null, null, amount, name, purpose, startDate);
+		this(null, name, purpose, amount, startDate);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public Accumulate(Integer id, String code, Double amount, String name,
-					String purpose, Date startDate) throws ConstraintViolationException {
-		super(id, code, amount, name, purpose, startDate);
+	public Accumulate(Integer id, String name, String purpose, 
+		Double amount, Date startDate) throws ConstraintViolationException {
+		super(id, name, purpose, amount, startDate);
 		
 		Collection<ExpenditureSavings> expenditureSavings = getExpenditureSavings();
 		setExpenditureSavings(expenditureSavings = new ArrayList<>());

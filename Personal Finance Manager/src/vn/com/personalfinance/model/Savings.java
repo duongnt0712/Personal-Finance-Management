@@ -28,7 +28,6 @@ import domainapp.basics.util.Tuple;
 @DClass(schema="personalfinancemanagement")
 public abstract class Savings {
 	public static final String S_id = "id";
-	public static final String S_code = "code";
 	public static final String S_amount = "amount";
 	public static final String S_name = "name";
 	public static final String S_purpose = "purpose";
@@ -42,17 +41,14 @@ public abstract class Savings {
 	// static variable to keep track of account id
 	private static int idCounter = 0;
 	
-	@DAttr(name = S_code, auto = true, type = Type.String, length = 15, mutable = false, optional = false)
-	private String code;
-		
-	@DAttr(name = S_amount, type = Type.Double, length = 15, optional = false)
-	private double amount;
-		
 	@DAttr(name = S_name, type = Type.String, length = 15, optional = false, cid=true)
 	private String name;
 	
 	@DAttr(name = S_purpose, type = Type.String, length = 30, optional = true)
 	private String purpose;
+		
+	@DAttr(name = S_amount, type = Type.Double, length = 15, optional = false)
+	private double amount;
 		
 	@DAttr(name = S_startDate, type = Type.Date, length = 15, optional = false) 
 	private Date startDate;
@@ -72,24 +68,23 @@ public abstract class Savings {
 	
 	// constructor methods
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
-	protected Savings(@AttrRef("amount") Double amount,
-			@AttrRef("name") String name,
+	protected Savings(@AttrRef("name") String name,
 			@AttrRef("purpose") String purpose,
+			@AttrRef("amount") Double amount,
 			@AttrRef("startDate") Date startDate) {
-		this(null, null, amount, name, purpose, startDate);
+		this(null, name, purpose, amount, startDate);
 	}
 		
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	protected Savings (Integer id, String code, Double amount, String name,
-		String purpose, Date startDate) throws ConstraintViolationException {
+	protected Savings (Integer id, String name, String purpose, 
+		Double amount,  Date startDate) throws ConstraintViolationException {
 		// generate an id
-		this.id = nextID(id);
-		this.code = nextCode(code);    
+		this.id = nextID(id);   
 		// assign other values
-		this.amount = amount;
 		this.name = name;
 		this.purpose = purpose;
+		this.amount = amount;
 		this.startDate = startDate;
 	}
 	
@@ -99,20 +94,16 @@ public abstract class Savings {
 		return id;
 	}
 	
-	public String getCode() {
-		return code;
-	}
-	
-	public double getAmount() {
-		return amount;
-	}
-
 	public String getName() {
 		return name;
 	}
 
 	public String getPurpose() {
 		return purpose;
+	}
+	
+	public double getAmount() {
+		return amount;
 	}
 
 	public Date getStartDate() {
@@ -124,12 +115,7 @@ public abstract class Savings {
 	}
 
 	// setter methods
-
-
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
-		
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -138,6 +124,11 @@ public abstract class Savings {
 		this.purpose = purpose;
 	}
 	
+
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+		
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
@@ -259,7 +250,7 @@ public abstract class Savings {
 	
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + "(" + getCode() + "," + getAmount() + "," + getName() + ")";
+		return this.getClass().getSimpleName() + "(" + getId() + "," + getAmount() + "," + getName() + ")";
 	}
 
 	@Override
@@ -301,38 +292,6 @@ public abstract class Savings {
 				idCounter = num;
 			}
 			return currID;
-		}
-	}
-	
-	// automatically generate a next savings code
-	private String nextCode(String currCode) throws ConstraintViolationException {
-		Tuple derivingVal = Tuple.newInstance(id);
-		if (currCode == null) { 
-			// generate one
-			Integer currNum = currNums.get(derivingVal);
-			if (currNum == null) {
-				currNum = id * 100;
-			} else {
-				currNum++;
-			}
-			currNums.put(derivingVal, currNum);
-			return "S" + currNum;
-		} else { 
-			// update
-			int num;
-			try {
-				num = Integer.parseInt(currCode.substring(1));
-			} catch (RuntimeException e) {
-				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
-						"Lỗi giá trị thuộc tính: {0}", currCode);
-			}
-
-			Integer currMaxVal = currNums.get(derivingVal);
-			if (currMaxVal == null || num > currMaxVal) {
-				currNums.put(derivingVal, num);
-			}
-
-			return currCode;
 		}
 	}
 	 
