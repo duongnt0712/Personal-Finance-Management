@@ -150,6 +150,7 @@ public class SavingsBook extends Savings {
 		double interestAmount = getAmount() * interestRate / 12 * getMonthlyDuration();
 		finalBalance = (Double)(getAmount() + interestAmount);
 	}
+	
 
 //	private void addToExpenditureSavings() {
 //		ExpenditureSavings eS = new ExpenditureSavings(getAmount(), getStartDate(), null, getAccount(), null, null);
