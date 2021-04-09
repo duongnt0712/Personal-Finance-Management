@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model.expenditure;
+package vn.com.personalfinance.model.expenditure.model;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;

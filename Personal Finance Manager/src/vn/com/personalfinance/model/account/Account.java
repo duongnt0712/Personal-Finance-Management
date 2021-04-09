@@ -17,7 +17,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-import vn.com.personalfinance.model.expenditure.DailyExpense;
+import vn.com.personalfinance.model.expenditure.model.DailyExpense;
 import vn.com.personalfinance.model.savings.SavingsBook;
 
 /**
@@ -59,12 +59,14 @@ public class Account {
 	// derived
 	private int savingsBookCount;
 	
-//	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false,
-//	serialisable = false, filter = @Select(clazz = DailyExpense.class))
+	
+	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false,
+	serialisable = false, filter = @Select(clazz = DailyExpense.class))
 	@DAssoc(ascName = "account-has-dailyExpense", role = "account",
 	ascType = AssocType.One2Many, endType = AssocEndType.One, 
-	associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
+	associate = @Associate(type = DailyExpense.class, cardMin = 1, cardMax = MetaConstants.CARD_MORE ))
 	private Collection<DailyExpense> dailyExpense;
+	private int dailyExpenseCount;
 	
 	// constructor methods
 	// form constructor into an object
@@ -96,6 +98,8 @@ public class Account {
 	    
 	    savingsBook = new ArrayList<>();
 	    savingsBookCount = 0;
+	    dailyExpense = new ArrayList<>();
+	    dailyExpenseCount = 0;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
@@ -147,6 +151,62 @@ public class Account {
 		// no other attributes changed
 		return false;
 	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean addDailyExpense(DailyExpense s) {
+		if (!this.dailyExpense.contains(s)) {
+			dailyExpense.add(s);
+		}
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewDailyExpense(DailyExpense s) {
+		dailyExpense.add(s);
+		dailyExpenseCount++;
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addDailyExpense(Collection<DailyExpense> dailyExpense) {
+		for (DailyExpense s : dailyExpense) {
+			if (!this.dailyExpense.contains(s)) {
+				this.dailyExpense.add(s);
+			}
+		}
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewDailyExpense(Collection<DailyExpense> dailyExpense) {
+		this.dailyExpense.addAll(dailyExpense);
+		dailyExpenseCount += dailyExpense.size();
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean removeDailyExpense(DailyExpense s) {
+		boolean removed = dailyExpense.remove(s);
+
+		if (removed) {
+			savingsBookCount--;
+			if(s.getId().contains("I")) {
+				balance-=s.getAmount();
+			} else {
+				balance+=s.getAmount();
+			}
+			
+		}
+		// no other attributes changed
+		return false;
+	}
+
 
 	// getter methods
 	public String getId() {
@@ -171,6 +231,14 @@ public class Account {
 	
 	public int getSavingsCount() {
 		return savingsBookCount;
+	}
+	public Collection<DailyExpense> getDailyExpense() {
+		return dailyExpense;
+	}
+	
+	@DOpt(type=DOpt.Type.LinkCountGetter)
+	public int getDailyExpenseCount() {
+		return dailyExpenseCount;
 	}
 
 	// setter methods
@@ -198,6 +266,14 @@ public class Account {
 
 	public void setSavingsBookCount(int savingsBookCount) {
 		this.savingsBookCount = savingsBookCount;
+	}
+	public void setDailyExpense(Collection<DailyExpense> dailyExpense) {
+		this.dailyExpense = dailyExpense;
+		dailyExpenseCount = dailyExpense.size();
+	}
+	@DOpt(type=DOpt.Type.LinkCountSetter)
+	public void setDailyExpenseCount(int dailyExpenseCount) {
+		this.dailyExpenseCount = dailyExpenseCount;
 	}
 	
 	// override toString

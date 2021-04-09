@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model.expenditure;
+package vn.com.personalfinance.model.expenditure.model;
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
@@ -51,8 +51,7 @@ public abstract class DailyExpense {
 		@DAttr(name =D_account, type = Type.Domain,  optional = false) 
 		@DAssoc(ascName = "account-has-dailyExpense", role = "account",
 		ascType = AssocType.One2Many, endType = AssocEndType.Many,
-		associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1),
-		dependsOn=true)
+		associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn=true)
 		private Account account;
 		
 		@DAttr(name = D_description, type = Type.String, length = 30)
@@ -68,6 +67,7 @@ public abstract class DailyExpense {
 				@AttrRef("description") String description
 				) {
 			this(null, amount, date, category, account, description);
+			computeNewBalance();
 		}
 			
 		// a shared constructor that is invoked by other constructors

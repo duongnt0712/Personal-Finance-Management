@@ -15,7 +15,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.model.account.Account;
-import vn.com.personalfinance.model.expenditure.ExpenditureSavings;
+import vn.com.personalfinance.model.expenditure.model.ExpenditureSavings;
 
 /**
  * Represents a saving book.

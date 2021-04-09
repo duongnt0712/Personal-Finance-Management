@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model.expenditure;
+package vn.com.personalfinance.model.expenditure.model;
 
 import java.util.Date;
 
