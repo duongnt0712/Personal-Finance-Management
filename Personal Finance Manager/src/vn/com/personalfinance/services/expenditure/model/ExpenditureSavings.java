@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model.expenditure.model;
+package vn.com.personalfinance.services.expenditure.model;
 
 import java.util.Date;
 
@@ -8,12 +8,12 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
-import vn.com.personalfinance.model.account.Account;
-import vn.com.personalfinance.model.savings.Savings;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
+import vn.com.personalfinance.services.account.Account;
+import vn.com.personalfinance.services.savings.Savings;
 /**
  * Represents expenditure.
  * 

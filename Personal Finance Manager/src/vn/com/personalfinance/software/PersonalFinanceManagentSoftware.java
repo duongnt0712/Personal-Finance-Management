@@ -2,16 +2,17 @@ package vn.com.personalfinance.software;
 
 import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
-import vn.com.personalfinance.model.account.Account;
-import vn.com.personalfinance.model.account.AccountType;
-import vn.com.personalfinance.model.expenditure.model.Category;
-import vn.com.personalfinance.model.expenditure.model.DailyExpense;
-import vn.com.personalfinance.model.expenditure.model.Expenditure;
-import vn.com.personalfinance.model.expenditure.model.ExpenditureSavings;
-import vn.com.personalfinance.model.expenditure.model.Income;
-import vn.com.personalfinance.model.savings.Accumulate;
-import vn.com.personalfinance.model.savings.Savings;
-import vn.com.personalfinance.model.savings.SavingsBook;
+import vn.com.personalfinance.services.account.Account;
+import vn.com.personalfinance.services.account.AccountType;
+import vn.com.personalfinance.services.expenditure.model.Category;
+import vn.com.personalfinance.services.expenditure.model.DailyExpense;
+import vn.com.personalfinance.services.expenditure.model.Expenditure;
+import vn.com.personalfinance.services.expenditure.model.ExpenditureSavings;
+import vn.com.personalfinance.services.expenditure.model.Income;
+import vn.com.personalfinance.services.expenditure.report.DailyExpenseByCategoryReport;
+import vn.com.personalfinance.services.savings.Accumulate;
+import vn.com.personalfinance.services.savings.Savings;
+import vn.com.personalfinance.services.savings.SavingsBook;
 
 /**
  * @overview 
@@ -33,7 +34,9 @@ public class PersonalFinanceManagentSoftware {
 	      Expenditure.class,
 	      ExpenditureSavings.class,
 	      Income.class,
-	      Category.class
+	      Category.class,
+	      // report
+	      DailyExpenseByCategoryReport.class
 	  };
 	  
 	  /**

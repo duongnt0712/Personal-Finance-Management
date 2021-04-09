@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model.account;
+package vn.com.personalfinance.services.account;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,8 +17,8 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-import vn.com.personalfinance.model.expenditure.model.DailyExpense;
-import vn.com.personalfinance.model.savings.SavingsBook;
+import vn.com.personalfinance.services.expenditure.model.DailyExpense;
+import vn.com.personalfinance.services.savings.SavingsBook;
 
 /**
  * Represents an account. The account ID is auto-incremented from the current year.

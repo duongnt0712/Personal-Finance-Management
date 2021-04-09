@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model.savings;
+package vn.com.personalfinance.services.savings;
 
 import java.util.Collection;
 import java.util.Date;
@@ -17,7 +17,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-import vn.com.personalfinance.model.expenditure.model.ExpenditureSavings;
+import vn.com.personalfinance.services.expenditure.model.ExpenditureSavings;
 
 /**
  * Represents savings. The account ID is auto-incremented.

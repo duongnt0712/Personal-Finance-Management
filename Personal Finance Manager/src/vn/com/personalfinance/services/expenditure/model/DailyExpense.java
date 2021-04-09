@@ -1,4 +1,4 @@
-package vn.com.personalfinance.model.expenditure.model;
+package vn.com.personalfinance.services.expenditure.model;
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
@@ -12,7 +12,9 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-import vn.com.personalfinance.model.account.Account;
+import vn.com.personalfinance.services.account.Account;
+import vn.com.personalfinance.services.expenditure.report.DailyExpenseByCategoryReport;
+import vn.com.personalfinance.services.expenditure.report.DailyExpenseByDateReport;
 
 /**
  * Represents daily expense. The account ID is auto-incremented.
@@ -29,6 +31,9 @@ public abstract class DailyExpense {
 		public static final String D_category = "category";
 		public static final String D_account = "account";
 		public static final String D_description = "description";
+		public static final String D_rptDailyExpenseByCategory = "rptDailyExpenseByCategory";
+		public static final String D_rptDailyExpenseByDate = "rptDailyExpenseByDate";
+
 		// attributes of daily expense
 		@DAttr(name = D_id, id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
 		private String id;
@@ -51,12 +56,21 @@ public abstract class DailyExpense {
 		@DAttr(name =D_account, type = Type.Domain,  optional = false) 
 		@DAssoc(ascName = "account-has-dailyExpense", role = "account",
 		ascType = AssocType.One2Many, endType = AssocEndType.Many,
-		associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn=true)
+		associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1),
+		dependsOn=true)
 		private Account account;
 		
 		@DAttr(name = D_description, type = Type.String, length = 30)
 		private String description;
 		
+		@DAttr(name = D_rptDailyExpenseByCategory, type = Type.Domain,
+		serialisable = false, virtual = true)
+		private DailyExpenseByCategoryReport rptDailyExpenseByCategory;
+		
+		@DAttr(name = D_rptDailyExpenseByDate, type = Type.Domain,
+		serialisable = false, virtual = true)
+		private DailyExpenseByDateReport rptDailyExpenseByDate;
+
 		//constructor methods
 		@DOpt(type=DOpt.Type.ObjectFormConstructor)
 		@DOpt(type=DOpt.Type.RequiredConstructor)
@@ -67,7 +81,6 @@ public abstract class DailyExpense {
 				@AttrRef("description") String description
 				) {
 			this(null, amount, date, category, account, description);
-			computeNewBalance();
 		}
 			
 		// a shared constructor that is invoked by other constructors
@@ -132,6 +145,14 @@ public abstract class DailyExpense {
 
 		public void setDescription(String description) {
 			this.description = description;
+		}
+		
+		public DailyExpenseByCategoryReport getRptDailyExpenseByCategory() {
+			return rptDailyExpenseByCategory;
+		}
+		
+		public DailyExpenseByDateReport getRptDailyExpenseByDate() {
+			return rptDailyExpenseByDate;
 		}
 
 		public abstract String nextID(String currID) ;
