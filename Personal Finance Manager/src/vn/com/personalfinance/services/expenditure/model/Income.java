@@ -18,18 +18,18 @@ public class Income extends DailyExpense {
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
 	public Income(@AttrRef("amount") Double amount, 
-			@AttrRef("date") Date date, 
+			@AttrRef("date") Date date,
 			@AttrRef("category") Category category,
 			@AttrRef("account") Account account, 
 			@AttrRef("description") String description) {
-		this(null, amount, date, category, account, description);
+		this(null, amount, date, null, category, account, description);
 		
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public Income(String id, Double amount, Date date, Category category, Account account, String description) {
-		super(id, amount, date, category, account, description);
+	public Income(String id, Double amount, Date date, String dateToString, Category category, Account account, String description) {
+		super(id, amount, date, dateToString, category, account, description);
 		
 	}
 	

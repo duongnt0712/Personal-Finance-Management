@@ -1,5 +1,7 @@
 package vn.com.personalfinance.services.expenditure.report;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -24,6 +26,7 @@ import domainapp.basics.model.query.Expression.Op;
 import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
+import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.services.expenditure.model.DailyExpense;
 
 /**
@@ -36,20 +39,28 @@ import vn.com.personalfinance.services.expenditure.model.DailyExpense;
  */
 @DClass(schema="personalfinancemanagement",serialisable=false)
 public class DailyExpenseByDateReport {
+	public static final String R_dateToString = "dateToString";
+	public static final String R_date = "date";
 	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
 	private int id;
 	private static int idCounter = 0;
 
 	/** input: daily expense date */
-	@DAttr(name = "date", type = Type.Date, length = 15, optional = false)
+	@DAttr(name = R_date, type = Type.Date, length = 15, optional = false)
 	private Date date;
-
+	
+	@DAttr(name = R_dateToString, type = Type.String, length = 15, mutable= false, auto = true, derivedFrom = {R_date})
+	private String dateToString;
+	
 	/** output: daily expense which date match {@link #date} */
 	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false, mutable = false, serialisable = false, filter = @Select(clazz = DailyExpense.class), derivedFrom = {
 			"date" })
 	@DAssoc(ascName = "dailyExpense-by-date-report-has-dailyExpense", role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	@Output
 	private Collection<DailyExpense> dailyExpense;
+	
+	private StateHistory<String, Object> stateHist;
+
 
 	/**
 	 * output: number of daily expenses found (if any), derived from
@@ -77,7 +88,9 @@ public class DailyExpenseByDateReport {
 		this.id = ++idCounter;
 
 		this.date = date;
+		stateHist = new StateHistory<>();
 
+		updateDateToString();
 		doReportQuery();
 	}
 
@@ -86,6 +99,10 @@ public class DailyExpenseByDateReport {
 	 */
 	public Date getDate() {
 		return date;
+	}
+	
+	public String getDateToString() {
+		return dateToString;
 	}
 
 	/**
@@ -130,14 +147,14 @@ public class DailyExpenseByDateReport {
 
 		// TODO: to conserve memory cache the query and only change the query parameter
 		// value(s)
-		Query q = QueryToolKit.createSearchQuery(dsm, DailyExpense.class, new String[] { DailyExpense.D_date },
-				new Op[] { Op.EQ },
+		Query q = QueryToolKit.createSearchQuery(dsm, DailyExpense.class, new String[] { DailyExpense.D_dateToString },
+				new Op[] { Op.MATCH },
 
-				new Object[] { date });
+				new Object[] { "%"+dateToString+"%" });
 
 		Map<Oid, DailyExpense> result = qrm.getDom().retrieveObjects(DailyExpense.class, q);
 
-		if (!result.isEmpty()) {
+		if (!(result == null)) {
 			// update the main output data
 			dailyExpense = result.values();
 			// update other output (if any)
@@ -244,5 +261,12 @@ public class DailyExpenseByDateReport {
 	public String toString() {
 		return "DailyExpenseByDateReport (" + id + ", " + date + ")";
 	}
-
+	
+	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
+	@AttrRef(value=R_dateToString)
+	public void updateDateToString() {
+		stateHist.put(R_dateToString, dateToString);
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		dateToString = dateFormat.format(date);
+	}
 }

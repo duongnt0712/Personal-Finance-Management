@@ -1,4 +1,6 @@
 package vn.com.personalfinance.services.expenditure.model;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
@@ -12,6 +14,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
+import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.services.account.Account;
 import vn.com.personalfinance.services.expenditure.report.DailyExpenseByCategoryReport;
 import vn.com.personalfinance.services.expenditure.report.DailyExpenseByDateReport;
@@ -33,6 +36,7 @@ public abstract class DailyExpense {
 	public static final String D_description = "description";
 	public static final String D_rptDailyExpenseByCategory = "rptDailyExpenseByCategory";
 	public static final String D_rptDailyExpenseByDate = "rptDailyExpenseByDate";
+	public static final String D_dateToString = "dateToString";
 
 	// attributes of daily expense
 	@DAttr(name = D_id, id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
@@ -45,6 +49,9 @@ public abstract class DailyExpense {
 
 	@DAttr(name = D_date, type = Type.Date, length = 15, optional = false)
 	private Date date;
+	
+	@DAttr(name = D_dateToString, type = Type.String, auto = true, length = 15, mutable = false, serialisable =true)
+	private String dateToString;
 
 	@DAttr(name = D_category, type = Type.Domain, optional = false)
 	@DAssoc(ascName = "category-has-dailyExpense", role = "category", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Category.class, cardMin = 1, cardMax = 1), dependsOn = true)
@@ -65,16 +72,15 @@ public abstract class DailyExpense {
 
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
-	@DOpt(type = DOpt.Type.RequiredConstructor)
-	protected DailyExpense(@AttrRef("amount") Double amount, @AttrRef("date") Date date,
+	protected DailyExpense(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
 			@AttrRef("category") Category category, @AttrRef("account") Account account,
 			@AttrRef("description") String description) {
-		this(null, amount, date, category, account, description);
+		this(null, amount, date, null, category, account, description);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	protected DailyExpense(String id, Double amount, Date date, Category category, Account account,
+	protected DailyExpense(String id, Double amount, Date date, String dateToString, Category category, Account account,
 			String description) {
 		// generate an id
 		this.id = nextID(id);
@@ -82,6 +88,7 @@ public abstract class DailyExpense {
 		// assign other values
 		this.amount = amount;
 		this.date = date;
+		this.dateToString = updateDateToString(dateToString);
 		this.category = category;
 		this.account = account;
 		this.description = description;
@@ -140,6 +147,10 @@ public abstract class DailyExpense {
 
 	public DailyExpenseByDateReport getRptDailyExpenseByDate() {
 		return rptDailyExpenseByDate;
+	}
+	
+	public String getDateToString() {
+		return dateToString;
 	}
 
 	public abstract String nextID(String currID);
@@ -212,5 +223,13 @@ public abstract class DailyExpense {
 				}
 			}
 		}
+	}
+	
+	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
+	@AttrRef(value=D_dateToString)
+	public String updateDateToString(String dateToString) {
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		dateToString = dateFormat.format(date);
+		return dateToString;
 	}
 }

@@ -21,14 +21,14 @@ public class Expenditure extends DailyExpense{
 			@AttrRef("category") Category category, 
 			@AttrRef("account") Account account,
 			@AttrRef("description") String description) {
-		this(null, amount, date, category, account, description);
+		this(null, amount, date, null, category, account, description);
 		
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public Expenditure(String id, Double amount, Date date, Category category, Account account, String description) {
-		super(id, amount, date, category, account, description);
+	public Expenditure(String id, Double amount, Date date, String dateToString, Category category, Account account, String description) {
+		super(id, amount, date, dateToString, category, account, description);
 		
 	}
 

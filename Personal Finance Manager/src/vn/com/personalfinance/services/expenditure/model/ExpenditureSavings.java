@@ -34,12 +34,13 @@ public class ExpenditureSavings extends Expenditure{
 	
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
+	@DOpt(type=DOpt.Type.RequiredConstructor)
 	public ExpenditureSavings(@AttrRef("amount") Double amount, 
 			@AttrRef("date") Date date,
 			@AttrRef("category") Category category, 
 			@AttrRef("account") Account account,
 			@AttrRef("savings") Savings savings) {
-		this(null, amount, date, category, account, null, savings);
+		this(null, amount, date, null, category, account, null, savings);
 	}
 	
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
@@ -49,13 +50,13 @@ public class ExpenditureSavings extends Expenditure{
 			@AttrRef("account") Account account,
 			@AttrRef("description") String description,
 			@AttrRef("savings") Savings savings) {
-		this(null, amount, date, category, account, description, savings);
+		this(null, amount, date, null, category, account, description, savings);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public ExpenditureSavings(String id, Double amount, Date date, Category category, Account account, String description, Savings savings) {
-		super(id, amount, date, category, account, description);
+	public ExpenditureSavings(String id, Double amount, Date date, String dateToString, Category category, Account account, String description, Savings savings) {
+		super(id, amount, date, dateToString, category, account, description);
 		this.savings = savings;
 	}
 
