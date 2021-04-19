@@ -17,7 +17,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-import vn.com.personalfinance.services.expenditure.model.ExpenditureSavings;
+import vn.com.personalfinance.services.log.Log;
 
 /**
  * Represents savings. The account ID is auto-incremented.
@@ -33,8 +33,6 @@ public abstract class Savings {
 	public static final String S_name = "name";
 	public static final String S_purpose = "purpose";
 	public static final String S_startDate = "startDate";
-	public static final String S_account = "account";
-	public static final String S_expenditureSavings = "expenditureSavings";
 
 	// attributes of savings
 	@DAttr(name = S_id, id = true, type = Type.Integer, auto = true, length = 6, mutable = false, optional = false)
@@ -54,15 +52,15 @@ public abstract class Savings {
 	@DAttr(name = S_startDate, type = Type.Date, length = 15, optional = false) 
 	private Date startDate;
 	
-	@DAttr(name = S_expenditureSavings, type = Type.Collection, serialisable = false, optional = false, 
-			filter = @Select(clazz = ExpenditureSavings.class))
-	@DAssoc(ascName = "savings-has-expenditureSavings", role = "savings", 
-		ascType = AssocType.One2Many, endType = AssocEndType.One, 
-		associate = @Associate(type = ExpenditureSavings.class, cardMin = 1, cardMax = 25))
-	private Collection<ExpenditureSavings> expenditureSavings;
-	
-	// derived attributes
-	private int expenditureSavingsCount;
+	@DAttr(name = "log", type = Type.Collection, optional = false, serialisable = false,
+	filter = @Select(clazz = Log.class))
+	@DAssoc(ascName = "savings-has-log", role = "savings",
+	ascType = AssocType.One2Many, endType = AssocEndType.One,
+	associate = @Associate(type = Log.class, cardMin = 0, cardMax = 30))
+	private Collection<Log> log;
+
+	// derived
+	private int logCount;
 	
 	// static variable to keep track of savings code
 	private static Map<Tuple,Integer> currNums = new LinkedHashMap<Tuple,Integer>();
@@ -111,10 +109,6 @@ public abstract class Savings {
 		return startDate ;
 	}
 
-	public Collection<ExpenditureSavings> getExpenditureSavings() {
-		return expenditureSavings;
-	}
-
 	// setter methods
 	
 	public void setName(String name) {
@@ -125,7 +119,6 @@ public abstract class Savings {
 		this.purpose = purpose;
 	}
 	
-
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
@@ -133,121 +126,6 @@ public abstract class Savings {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	
-	public void setExpenditureSavings(Collection<ExpenditureSavings> eS) {
-		this.expenditureSavings = eS;
-		expenditureSavingsCount = eS.size();
-
-		// v2.6.4.b
-		//computeAverageMark();
-	}
-	
-	//expenditureSavings
-	@DOpt(type = DOpt.Type.LinkCountGetter)
-	public Integer getExpenditureSavingsCount() {
-		return expenditureSavingsCount;
-		// return enrolments.size();
-	}
-
-	@DOpt(type = DOpt.Type.LinkCountSetter)
-	public void setExpenditureSavingsCount(int count) {
-		expenditureSavingsCount = count;
-	}
-
-	/*@DOpt(type = DOpt.Type.LinkAdder)
-	// only need to do this for reflexive association: @MemberRef(name="enrolments")
-	public boolean addExpenditureSavings(ExpenditureSavings e) {
-		if (!expenditureSavings.contains(e))
-			expenditureSavings.add(e);
-
-		// IMPORTANT: enrolment count must be updated separately by invoking
-		// setEnrolmentCount
-		// otherwise computeAverageMark (below) can not be performed correctly
-		// WHY? average mark is not serialisable
-//    enrolmentCount++;
-//    
-//    // v2.6.4.b
-//    computeAverageMark();
-
-		// no other attributes changed
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewExpenditureSavings(ExpenditureSavings e) {
-		expenditureSavings.add(e);
-
-		expenditureSavingsCount++;
-
-		// v2.6.4.b
-		//computeAverageMark();
-
-		// no other attributes changed (average mark is not serialisable!!!)
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkAdder)
-	// @MemberRef(name="enrolments")
-	public boolean addExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
-		boolean added = false;
-		for (ExpenditureSavings e : expSavings) {
-			if (!expenditureSavings.contains(e)) {
-				if (!added)
-					added = true;
-				expenditureSavings.add(e);
-			}
-		}
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
-		expenditureSavings.addAll(expSavings);
-		expenditureSavingsCount += expSavings.size();
-
-		// v2.6.4.b
-		//computeAverageMark();
-
-		// no other attributes changed (average mark is not serialisable!!!)
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkRemover)
-	// @MemberRef(name="enrolments")
-	public boolean removeExpenditureSavings(ExpenditureSavings e) {
-		boolean removed = expenditureSavings.remove(e);
-
-		if (removed) {
-			expenditureSavingsCount--;
-
-			// v2.6.4.b
-			//computeAverageMark();
-		}
-		// no other attributes changed
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkUpdater)
-	// @MemberRef(name="enrolments")
-	public boolean updateExpenditureSavings(ExpenditureSavings e) throws IllegalStateException {
-		// recompute using just the affected enrolment
-		/*
-		 * double totalMark = averageMark * enrolmentCount;
-		 * 
-		 * int oldFinalMark = e.getFinalMark(true);
-		 * 
-		 * int diff = e.getFinalMark() - oldFinalMark;
-		 * 
-		 * // TODO: cache totalMark if needed
-		 * 
-		 * totalMark += diff;
-		 * 
-		 * averageMark = totalMark / enrolmentCount;
-		 */
-
-		// no other attributes changed
-//		return true;
-//	}
 	
 	@Override
 	public String toString() {
@@ -329,5 +207,74 @@ public abstract class Savings {
 		        }
 			}
 		}
+	}
+	
+	// LOG PART
+	public Collection<Log> getLog() {
+		return log;
+	}
+
+	@DOpt(type = DOpt.Type.LinkCountGetter)
+	public Integer getLogCount() {
+		return logCount;
+	}
+
+	@DOpt(type = DOpt.Type.LinkCountSetter)
+	public void setLogCount(int logCount) {
+		this.logCount = logCount;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean addLog(Log s) {
+		if (!this.log.contains(s))
+			log.add(s);
+
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewLog(Log s) {
+		log.add(s);
+		logCount++;
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addLog(Collection<Log> log) {
+		for (Log s : log) {
+			if (!this.log.contains(s)) {
+				this.log.add(s);
+			}
+		}
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewLog(Collection<Log> log) {
+		this.log.addAll(log);
+		logCount += log.size();
+		// no other attributes changed (average mark is not serialisable!!!)
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean removeLog(Log s) {
+		boolean removed = log.remove(s);
+
+		if (removed) {
+			logCount--;
+		}
+		// no other attributes changed
+		return false;
+	}
+
+	public void setLog(Collection<Log> log) {
+		this.log = log;
+		logCount = log.size();
 	}
 }

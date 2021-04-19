@@ -1,21 +1,14 @@
 package vn.com.personalfinance.services.savings;
 
-import java.util.Collection;
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
-import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
-import domainapp.basics.model.meta.DAssoc.AssocEndType;
-import domainapp.basics.model.meta.DAssoc.AssocType;
-import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.cache.StateHistory;
-import vn.com.personalfinance.services.account.Account;
-import vn.com.personalfinance.services.expenditure.model.ExpenditureSavings;
 
 /**
  * Represents a saving book.
@@ -33,13 +26,6 @@ public class SavingsBook extends Savings {
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
 	private int monthlyDuration;
 	
-	@DAttr(name = S_account, type = Type.Domain, length = 20)
-	@DAssoc(ascName = "account-has-savingsBook", role = "savingsBook",
-	ascType = AssocType.One2Many, endType = AssocEndType.Many,
-	associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1),
-	dependsOn=true)
-	private Account account;
-	
 	@DAttr(name = S_interestRate, type = Type.Double, length = 15, optional = false)
 	private double interestRate;
 	
@@ -49,7 +35,6 @@ public class SavingsBook extends Savings {
 
 	private StateHistory<String, Object> stateHist;
 	
-	
 	// constructor methods	
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	public SavingsBook(@AttrRef("name") String name,
@@ -57,21 +42,18 @@ public class SavingsBook extends Savings {
 					   @AttrRef("amount") Double amount,	
 				       @AttrRef("startDate") Date startDate,
 					   @AttrRef("monthlyDuration") Integer monthlyDuration,
-					   Account account,
-					   Double interestRate) {
-		this(null, name, purpose, amount, startDate, monthlyDuration, account, interestRate);
-//		addToExpenditureSavings();
+					   @AttrRef("interestRate") Double interestRate) {
+		this(null, name, purpose, amount, startDate, monthlyDuration, interestRate);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
 	public SavingsBook(Integer id, String name, String purpose, 
 		Double amount, Date startDate, Integer monthlyDuration, 
-		Account account, Double interestRate) throws ConstraintViolationException {
+		Double interestRate) throws ConstraintViolationException {
 		
 		super(id, name, purpose, amount, startDate);
 		this.monthlyDuration = monthlyDuration;
-		this.account = account;
 		this.interestRate = interestRate;
 		
 		stateHist = new StateHistory<>();
@@ -81,14 +63,10 @@ public class SavingsBook extends Savings {
 	// getter methods
 	public int getMonthlyDuration() {
 		return monthlyDuration;
-	}	
+	}
 	
 	public double getInterestRate() {
 		return interestRate;
-	}
-	
-	public Account getAccount() {
-		return account;
 	}
 	
 	//devired attribute
@@ -113,11 +91,13 @@ public class SavingsBook extends Savings {
 
 	// setter methods
 	public void setMonthlyDuration(int monthlyDuration) {
-		this.monthlyDuration = monthlyDuration;
+		setMonthlyDuration(monthlyDuration, false);
 	}
 	
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setMonthlyDuration(int monthlyDuration, boolean computeFinalBalance) {
+		this.monthlyDuration = monthlyDuration;
+		if (computeFinalBalance)
+			computeFinalBalance();
 	}
 	
 	@Override
@@ -147,64 +127,7 @@ public class SavingsBook extends Savings {
 	private void computeFinalBalance() {
 		stateHist.put(S_finalBalance, finalBalance);
 		
-		double interestAmount = getAmount() * interestRate / 12 * getMonthlyDuration();
+		double interestAmount = getAmount() * interestRate / 12 * monthlyDuration;
 		finalBalance = (Double)(getAmount() + interestAmount);
-	}
-	
-
-//	private void addToExpenditureSavings() {
-//		ExpenditureSavings eS = new ExpenditureSavings(getAmount(), getStartDate(), null, getAccount(), null, null);
-//		addNewExpenditureSavings(eS);
-//	}
-	
-	@DOpt(type = DOpt.Type.LinkAdder)
-	// only need to do this for reflexive association: @MemberRef(name="enrolments")
-	public boolean addExpenditureSavings(ExpenditureSavings e) {
-		if (!getExpenditureSavings().contains(e))
-			getExpenditureSavings().add(e);
-		// no other attributes changed
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewExpenditureSavings(ExpenditureSavings e) {
-		getExpenditureSavings().add(e);
-
-		int count = getExpenditureSavingsCount();
-		setExpenditureSavingsCount(count + 1);
-
-		// v2.6.4.b
-		//computeAverageMark();
-
-		// no other attributes changed (average mark is not serialisable!!!)
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkAdder)
-	// @MemberRef(name="enrolments")
-	public boolean addExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
-		boolean added = false;
-		for (ExpenditureSavings e : expSavings) {
-			if (!getExpenditureSavings().contains(e)) {
-				if (!added)
-					added = true;
-				getExpenditureSavings().add(e);
-			}
-		}
-		return false;
-	}
-
-	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewExpenditureSavings(Collection<ExpenditureSavings> expSavings) {
-		getExpenditureSavings().addAll(expSavings);
-		int count = getExpenditureSavingsCount();
-		count += expSavings.size();
-		setExpenditureSavingsCount(count);
-
-		// v2.6.4.b
-		//computeAverageMark();
-
-		// no other attributes changed (average mark is not serialisable!!!)
-		return false;
 	}
 }

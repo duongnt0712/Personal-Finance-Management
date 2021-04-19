@@ -17,8 +17,8 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
+import vn.com.personalfinance.services.log.Log;
 import vn.com.personalfinance.services.expenditure.model.DailyExpense;
-import vn.com.personalfinance.services.savings.SavingsBook;
 
 /**
  * Represents an account. The account ID is auto-incremented from the current year.
@@ -50,16 +50,6 @@ public class Account {
 	@DAttr(name = A_balance, type = Type.Double, length = 15, optional = false)
 	private double balance;
 	
-	@DAttr(name = "savingsBook", type = Type.Collection, optional = false,
-	serialisable = false, filter = @Select(clazz = SavingsBook.class))
-	@DAssoc(ascName = "account-has-savingsBook", role = "account",
-	ascType = AssocType.One2Many, endType = AssocEndType.One, 
-	associate = @Associate(type = SavingsBook.class, cardMin = 0, cardMax = 30))
-	private Collection<SavingsBook> savingsBook;
-	// derived
-	private int savingsBookCount;
-	
-	
 	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false,
 	serialisable = false, filter = @Select(clazz = DailyExpense.class))
 	@DAssoc(ascName = "account-has-dailyExpense", role = "account",
@@ -67,6 +57,16 @@ public class Account {
 	associate = @Associate(type = DailyExpense.class, cardMin = 1, cardMax = MetaConstants.CARD_MORE ))
 	private Collection<DailyExpense> dailyExpense;
 	private int dailyExpenseCount;
+	
+	@DAttr(name = "log", type = Type.Collection, optional = false, 
+	serialisable = false, filter = @Select(clazz = Log.class))
+	@DAssoc(ascName = "account-has-log", role = "account",
+	ascType = AssocType.One2Many, endType = AssocEndType.One,
+	associate = @Associate(type = Log.class, cardMin = 0, cardMax = 30))
+	private Collection<Log> log;
+
+	// derived
+	private int logCount;
 	
 	// constructor methods
 	// form constructor into an object
@@ -91,65 +91,16 @@ public class Account {
 		// generate an id
 	    this.id = nextID(id);
 	    
-	 // assign other values
+	    // assign other values
 	    this.name = name;
 	    this.type = type;
 	    this.balance = balance;
-	    
-	    savingsBook = new ArrayList<>();
-	    savingsBookCount = 0;
+
 	    dailyExpense = new ArrayList<>();
 	    dailyExpenseCount = 0;
-	}
-	
-	@DOpt(type = DOpt.Type.LinkAdder)
-	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean addSavingsBook(SavingsBook s) {
-		if (!this.savingsBook.contains(s)) {
-			savingsBook.add(s);
-		}
-		// no other attributes changed
-		return false;
-	}
-	// add new object into collection directly
-	
-	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewSavingsBook(SavingsBook s) {
-		savingsBook.add(s);
-		savingsBookCount++;
-		// no other attributes changed
-		return false;
-	}
-	
-	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addSavingsBook(Collection<SavingsBook> savingsBook) {
-		for (SavingsBook s : savingsBook) {
-			if (!this.savingsBook.contains(s)) {
-				this.savingsBook.add(s);
-			}
-		}
-		// no other attributes changed
-		return false;
-	}
-	
-	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewSavingsBook(Collection<SavingsBook> savingsBook) {
-		this.savingsBook.addAll(savingsBook);
-		savingsBookCount += savingsBook.size();
-		// no other attributes changed
-		return false;
-	}
-	
-	@DOpt(type = DOpt.Type.LinkRemover)
-	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeSavingsBook(SavingsBook s) {
-		boolean removed = savingsBook.remove(s);
-
-		if (removed) {
-			savingsBookCount--;
-		}
-		// no other attributes changed
-		return false;
+	    
+	    log = new ArrayList<>();
+	    logCount = 0;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
@@ -195,7 +146,7 @@ public class Account {
 		boolean removed = dailyExpense.remove(s);
 
 		if (removed) {
-			savingsBookCount--;
+			dailyExpenseCount--;
 			if(s.getId().contains("I")) {
 				balance-=s.getAmount();
 			} else {
@@ -206,7 +157,55 @@ public class Account {
 		// no other attributes changed
 		return false;
 	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean addLog(Log s) {
+		if (!this.log.contains(s))
+			log.add(s);
 
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewLog(Log s) {
+		log.add(s);
+		logCount++;
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addLog(Collection<Log> log) {
+		for (Log s : log) {
+			if (!this.log.contains(s)) {
+				this.log.add(s);
+			}
+		}
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewLog(Collection<Log> log) {
+		this.log.addAll(log);
+		logCount += log.size();
+		// no other attributes changed (average mark is not serialisable!!!)
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean removeLog(Log s) {
+		boolean removed = log.remove(s);
+
+		if (removed) {
+			logCount--;
+		}
+		// no other attributes changed
+		return false;
+	}
 
 	// getter methods
 	public String getId() {
@@ -224,14 +223,7 @@ public class Account {
 	public double getBalance() {
 		return balance ;
 	}
-
-	public Collection<SavingsBook> getSavingsBook() {
-		return savingsBook;
-	}
 	
-	public int getSavingsCount() {
-		return savingsBookCount;
-	}
 	public Collection<DailyExpense> getDailyExpense() {
 		return dailyExpense;
 	}
@@ -241,8 +233,15 @@ public class Account {
 		return dailyExpenseCount;
 	}
 
+	public Collection<Log> getLog() {
+		return log;
+	}
+	
+	public int getLogCount() {
+		return logCount;
+	}
+	
 	// setter methods
-
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -250,30 +249,28 @@ public class Account {
 	public void setType(AccountType type) {
 		this.type = type;
 	}
-//	
-//	public void setNewType(AccountType type) {
-//		setType(type);
-//	}
 
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
 	
-	public void setSavingsBook(Collection<SavingsBook> savingsBook) {
-		this.savingsBook = savingsBook;
-		savingsBookCount = savingsBook.size();
-	}
-
-	public void setSavingsBookCount(int savingsBookCount) {
-		this.savingsBookCount = savingsBookCount;
-	}
 	public void setDailyExpense(Collection<DailyExpense> dailyExpense) {
 		this.dailyExpense = dailyExpense;
 		dailyExpenseCount = dailyExpense.size();
 	}
+	
 	@DOpt(type=DOpt.Type.LinkCountSetter)
 	public void setDailyExpenseCount(int dailyExpenseCount) {
 		this.dailyExpenseCount = dailyExpenseCount;
+	}
+	
+	public void setLog(Collection<Log> log) {
+		this.log = log;
+		logCount = log.size();
+	}
+	
+	public void setLogCount(int logCount) {
+		this.logCount = logCount;
 	}
 	
 	// override toString

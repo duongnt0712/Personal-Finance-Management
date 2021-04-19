@@ -61,7 +61,6 @@ public class DailyExpenseByDateReport {
 	
 	private StateHistory<String, Object> stateHist;
 
-
 	/**
 	 * output: number of daily expenses found (if any), derived from
 	 * {@link #dailyExpense}

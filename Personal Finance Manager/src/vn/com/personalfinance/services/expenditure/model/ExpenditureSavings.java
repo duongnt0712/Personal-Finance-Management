@@ -25,7 +25,7 @@ public class ExpenditureSavings extends Expenditure{
 	
 	public static final String D_savings = "savings";
 	// additional attribute
-	@DAttr(name =D_savings, type = Type.Domain,  optional = false) 
+	@DAttr(name = D_savings, type = Type.Domain, optional = false) 
 	@DAssoc(ascName = "savings-has-expenditureSavings", role = "expenditureSavings",
 	ascType = AssocType.One2Many, endType = AssocEndType.Many,
 	associate = @Associate(type = Savings.class, cardMin = 1, cardMax = 1),
