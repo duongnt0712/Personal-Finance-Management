@@ -124,7 +124,7 @@ public class SavingsBook extends Savings {
 	// calculate finalBalance from interstRate 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value=S_finalBalance)
-	private void computeFinalBalance() {
+	public void computeFinalBalance() {
 		stateHist.put(S_finalBalance, finalBalance);
 		
 		double interestAmount = getAmount() * interestRate / 12 * monthlyDuration;
