@@ -100,6 +100,7 @@ public class SavingsBook extends Savings {
 			computeFinalBalance();
 	}
 	
+	@Override
 	public void setAmount(double amount) {
 		setAmount(amount, false);
 	}
