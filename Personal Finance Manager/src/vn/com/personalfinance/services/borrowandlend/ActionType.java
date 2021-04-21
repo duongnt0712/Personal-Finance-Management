@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.actions;
+package vn.com.personalfinance.services.borrowandlend;
 
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DAttr.Type;

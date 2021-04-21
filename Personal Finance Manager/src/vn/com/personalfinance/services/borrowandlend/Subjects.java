@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.actions;
+package vn.com.personalfinance.services.borrowandlend;
 
 import java.util.ArrayList;
 import java.util.Collection;

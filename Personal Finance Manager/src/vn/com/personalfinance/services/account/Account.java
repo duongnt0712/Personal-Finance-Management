@@ -18,7 +18,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.log.Log;
-import vn.com.personalfinance.services.actions.BorrowAndLend;
+import vn.com.personalfinance.services.borrowandlend.BorrowAndLend;
 import vn.com.personalfinance.services.expenditure.model.DailyExpense;
 
 /**

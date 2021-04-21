@@ -15,6 +15,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.cache.StateHistory;
+import vn.com.personalfinance.exceptions.DExCode;
 import vn.com.personalfinance.services.log.Log;
 
 /**
@@ -104,6 +105,14 @@ public class SavingsBook extends Savings {
 	}
 
 	// setter methods
+//	@Override
+//	public void setLogCount(int logCount) {
+//		if(logCount < 0 || logCount > 1) {
+//			throw new ConstraintViolationException(DExCode.INVALID_LOG, logCount);
+//		}
+//		super.setLogCount(logCount);
+//	}
+	
 	public void setMonthlyDuration(int monthlyDuration) {
 		setMonthlyDuration(monthlyDuration, false);
 	}
@@ -123,6 +132,44 @@ public class SavingsBook extends Savings {
 		if (computeFinalBalance)
 			computeFinalBalance();
 	}
+	
+	/*
+	 * @DOpt(type = DOpt.Type.LinkAdder) // only need to do this for reflexive
+	 * association: @MemberRef(name="accounts") public boolean addLog(Log s) { if
+	 * (!getLog().contains(s)) getLog().add(s);
+	 * 
+	 * // no other attributes changed return true; }
+	 * 
+	 * @DOpt(type = DOpt.Type.LinkAdderNew) public boolean addNewLog(Log s) {
+	 * if(getLogCount() < 0 || getLogCount() > 1) { throw new
+	 * ConstraintViolationException(DExCode.INVALID_LOG, getLogCount()); }
+	 * getLog().add(s); int count = getLogCount(); setLogCount(count + 1);
+	 * 
+	 * // no other attributes changed return true; }
+	 * 
+	 * @DOpt(type = DOpt.Type.LinkAdder) public boolean addLog(Collection<Log> log)
+	 * { for (Log s : log) { if (!getLog().contains(s)) { getLog().add(s); } } // no
+	 * other attributes changed return true; }
+	 * 
+	 * @DOpt(type = DOpt.Type.LinkAdderNew) public boolean addNewLog(Collection<Log>
+	 * log) { if(getLogCount() < 0 || getLogCount() > 1) { throw new
+	 * ConstraintViolationException(DExCode.INVALID_LOG, getLogCount()); }
+	 * getLog().addAll(log); int count = getLogCount(); count += log.size();
+	 * setLogCount(count);
+	 * 
+	 * // no other attributes changed (average mark is not serialisable!!!) return
+	 * true; }
+	 * 
+	 * @DOpt(type = DOpt.Type.LinkRemover) // only need to do this for reflexive
+	 * association: @MemberRef(name="accounts") public boolean removeLog(Log s) {
+	 * boolean removed = getLog().remove(s);
+	 * 
+	 * if (removed) { int count = getLogCount(); setLogCount(count - 1);
+	 * 
+	 * double currentAccountBalance = s.getAccount().getBalance();
+	 * s.getAccount().setBalance(currentAccountBalance += s.getAmount()); } // no
+	 * other attributes changed return true; }
+	 */
 	
 	// calculate finalBalance 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
