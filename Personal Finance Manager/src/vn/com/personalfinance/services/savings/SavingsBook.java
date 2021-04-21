@@ -34,7 +34,7 @@ public class SavingsBook extends Savings {
 	filter = @Select(clazz = Log.class))
 	@DAssoc(ascName = "savings-has-log", role = "savings",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
-	associate = @Associate(type = Log.class, cardMin = 0, cardMax = 1))
+	associate = @Associate(type = Log.class, cardMin = 1, cardMax = 1))
 	@Override public Collection<Log> getLog() { return super.getLog(); }
 	
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
@@ -124,10 +124,10 @@ public class SavingsBook extends Savings {
 			computeFinalBalance();
 	}
 	
-	// calculate finalBalance from interstRate 
+	// calculate finalBalance 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value=S_finalBalance)
-	private void computeFinalBalance() {
+	public void computeFinalBalance() {
 		stateHist.put(S_finalBalance, finalBalance);
 		
 		double interestAmount = getAmount() * interestRate / 12 * monthlyDuration;

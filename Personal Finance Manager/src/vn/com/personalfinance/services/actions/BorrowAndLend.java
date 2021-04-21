@@ -13,6 +13,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
+import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.services.account.Account;
 
 @DClass(schema="personalfinancemanagement")
@@ -37,15 +38,15 @@ public class BorrowAndLend {
 		private static int idCounter = 0;
 		
 		@DAttr (name = T_account, type = Type.Domain, length = 20, optional = false, cid = true)
-		@DAssoc (ascName = "account-has-action", role = "action", ascType = AssocType.One2Many, endType = AssocEndType.Many,
+		@DAssoc (ascName = "account-has-borrowAndLend", role = "borrowAndLend", ascType = AssocType.One2Many, endType = AssocEndType.Many,
 				associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
 		private Account account; 
 		
-		@DAttr (name = T_name, type = Type.String, length = 30, optional = false)
+		@DAttr (name = T_name, type = Type.String, length = 20, optional = false)
 		private String name;
 		
 		@DAttr (name = T_subject, type = Type.Domain, length = 30, optional = false)
-		@DAssoc (ascName = "subject-has-action", role = "action", ascType = AssocType.One2Many, endType = AssocEndType.Many,
+		@DAssoc (ascName = "subject-has-borrowAndLend", role = "borrowAndLend", ascType = AssocType.One2Many, endType = AssocEndType.Many,
 				associate = @Associate(type = Subjects.class, cardMin = 1, cardMax = 1), dependsOn = true)
 		private Subjects subject;
 		
@@ -65,8 +66,11 @@ public class BorrowAndLend {
 		private double interestedRate;
 		
 //		derived attribute
-		@DAttr (name = T_final_money, type = Type.Double, auto = true, length = 20, mutable = false, optional = false)
+		@DAttr (name = T_final_money, type = Type.Double, auto = true, length = 20, mutable = false, optional = true,
+				serialisable=false, derivedFrom={T_money, T_interested_rate, T_period})
 		private double finalMoney;
+		
+		private StateHistory<String, Object> stateHist;
 		
 //		Constructor method
 		@DOpt(type = DOpt.Type.ObjectFormConstructor)
@@ -74,12 +78,12 @@ public class BorrowAndLend {
 		public BorrowAndLend (@AttrRef("account") Account account, @AttrRef("name") String name,  @AttrRef("subject") Subjects subject, 
 				@AttrRef("type") ActionType type, @AttrRef("money") Double money, @AttrRef("startDate") Date startDate, 
 				@AttrRef("period") Integer period, @AttrRef("interestedRate") Double interestedRate) {
-			this(null, account, name, subject, type, money, startDate, period, interestedRate, null);
+			this(null, account, name, subject, type, money, startDate, period, interestedRate);
 		}
 		
 //		a shared constructor that is invoked by other constructors
 		@DOpt (type = DOpt.Type.DataSourceConstructor)
-		public BorrowAndLend (Integer id, Account account, String name, Subjects subject, ActionType type, Double money, Date startDate, Integer period, Double interestedRate, Double finalMoney) {
+		public BorrowAndLend (Integer id, Account account, String name, Subjects subject, ActionType type, Double money, Date startDate, Integer period, Double interestedRate) {
 		    this.id = nextId(id);
 		    
 		    this.account = account;
@@ -91,7 +95,8 @@ public class BorrowAndLend {
 			this.period = period;
 			this.interestedRate = interestedRate;
 			
-			this.finalMoney = computeFinalMoney(money, interestedRate, period);
+			stateHist = new StateHistory<>();
+			computeFinalMoney();
 		}
 
 //		Getter Method
@@ -122,6 +127,7 @@ public class BorrowAndLend {
 		public Date getStartDate() {
 			return startDate;
 		}
+		
 		public int getPeriod() {
 			return period;
 		}
@@ -130,8 +136,24 @@ public class BorrowAndLend {
 			return interestedRate;
 		}
 
+		//devired attribute
 		public double getFinalMoney() {
-			return finalMoney;
+			return getFinalMoney(false);
+		}
+		
+		public double getFinalMoney(boolean cached) throws IllegalStateException {
+			if (cached) {
+				Object val = stateHist.get(T_final_money);
+
+				if (val == null)
+					throw new IllegalStateException("BorrowAndLend.getFinalMoney: cached value is null");
+				return (Double) val;
+			} else {
+				if (finalMoney != 0)
+					return finalMoney;
+				else
+					return 0;
+			}
 		}
 
 //		Setter Method
@@ -152,7 +174,13 @@ public class BorrowAndLend {
 		}
 		
 		public void setMoney(double money) {
+			setMoney(money,false);
+		}
+		
+		public void setMoney(double money, boolean computeFinalMoney) {
 			this.money = money;
+			if (computeFinalMoney)
+				computeFinalMoney();
 		}
 		
 		public void setStartDate (Date startDate) {
@@ -160,20 +188,28 @@ public class BorrowAndLend {
 		}
 		
 		public void setPeriod (int period) {
+			setPeriod(period,false);
+		}
+		
+		public void setPeriod(int period, boolean computeFinalMoney) {
 			this.period = period;
+			if (computeFinalMoney)
+				computeFinalMoney();
 		}
 
 		public void setInterestedRate(double interestedRate) {
-			this.interestedRate = interestedRate;
+			setInterestedRate(interestedRate,false);
 		}
-
-		public void setFinalMoney(double finalMoney) {
-			this.finalMoney = finalMoney;
+		
+		public void setInterestedRate(double interestedRate, boolean computeFinalMoney) {
+			this.interestedRate = interestedRate;
+			if (computeFinalMoney)
+				computeFinalMoney();
 		}
 
 		@Override
 		public String toString() {
-			return "TackleAndLoan [id=" + id + ", name=" + name + ", subject=" + subject + ", type=" + type + ", money="
+			return "BorrowAndLend [id=" + id + ", name=" + name + ", subject=" + subject + ", type=" + type + ", money="
 					+ money + ", startDate=" + startDate + ", period=" + period + ", interestedRate=" + interestedRate
 					+ ", finalMoney=" + finalMoney + "]";
 		}
@@ -215,9 +251,13 @@ public class BorrowAndLend {
 			}
 		}
 		
-		private double computeFinalMoney(Double money, Double interestedRate, Integer period) {
-			double currMoney = money + (money * (interestedRate / 100 / (double)period));
-			return currMoney;
+		// calculate finalMoney 
+		@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
+		@AttrRef(value=T_final_money)
+		public void computeFinalMoney() {
+			stateHist.put(T_final_money, finalMoney);
+			
+			finalMoney = money + (money * (interestedRate / 100 / (double)period));
 		}
 		
 		@DOpt(type = DOpt.Type.AutoAttributeValueSynchroniser)

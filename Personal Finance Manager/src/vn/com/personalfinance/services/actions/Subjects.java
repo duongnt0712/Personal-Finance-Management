@@ -31,7 +31,7 @@ public class Subjects {
 	
 	@DAttr(name = "borrowAndLend", type = Type.Collection, optional = false, serialisable = false, filter = @Select(clazz = BorrowAndLend.class))
 	@DAssoc(ascName = "subject-has-borrowAndLend", role = "subject", ascType = AssocType.One2Many, endType = AssocEndType.One, 
-			associate = @Associate(type = BorrowAndLend.class, cardMin = 1, cardMax = MetaConstants.CARD_MORE ))
+			associate = @Associate(type = BorrowAndLend.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
 	private Collection<BorrowAndLend> borrowAndLend;
 	private int borrowAndLendCount;
 	 

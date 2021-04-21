@@ -40,7 +40,7 @@ public class Account {
 	// static variable to keep track of account id
 	private static int idCounter = 0;
 	
-	@DAttr(name = A_name, type = Type.String, length = 15, optional = false, cid=true)
+	@DAttr(name = A_name, type = Type.String, length = 20, optional = false, cid=true)
 	private String name;
 	
 	@DAttr(name = A_type, type = Type.Domain, length = 20)
@@ -55,7 +55,7 @@ public class Account {
 	serialisable = false, filter = @Select(clazz = DailyExpense.class))
 	@DAssoc(ascName = "account-has-dailyExpense", role = "account",
 	ascType = AssocType.One2Many, endType = AssocEndType.One, 
-	associate = @Associate(type = DailyExpense.class, cardMin = 1, cardMax = MetaConstants.CARD_MORE ))
+	associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
 	private Collection<DailyExpense> dailyExpense;
 	private int dailyExpenseCount;
 	
@@ -63,7 +63,7 @@ public class Account {
 	serialisable = false, filter = @Select(clazz = Log.class))
 	@DAssoc(ascName = "account-has-log", role = "account",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
-	associate = @Associate(type = Log.class, cardMin = 0, cardMax = 30))
+	associate = @Associate(type = Log.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	private Collection<Log> log;
 	private int logCount;
 	
@@ -71,7 +71,7 @@ public class Account {
 	serialisable = false, filter = @Select(clazz = BorrowAndLend.class))
 	@DAssoc(ascName = "account-has-borrowAndLend", role = "account",
 	ascType = AssocType.One2Many, endType = AssocEndType.One, 
-	associate = @Associate(type = BorrowAndLend.class, cardMin = 1, cardMax = MetaConstants.CARD_MORE ))
+	associate = @Associate(type = BorrowAndLend.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
 	private Collection<BorrowAndLend> borrowAndLend;
 	private int borrowAndLendCount;
 	
@@ -190,7 +190,7 @@ public class Account {
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
 	public boolean addBorrowAndLend(Collection<BorrowAndLend> bL) {
-		for (BorrowAndLend b : borrowAndLend) {
+		for (BorrowAndLend b : bL) {
 			if (!this.borrowAndLend.contains(b)) {
 				this.borrowAndLend.add(b);
 			}
@@ -202,7 +202,7 @@ public class Account {
 	@DOpt(type = DOpt.Type.LinkAdderNew)
 	public boolean addNewBorrowAndLend(Collection<BorrowAndLend> bL) {
 		this.borrowAndLend.addAll(bL);
-		borrowAndLendCount += log.size();
+		borrowAndLendCount += bL.size();
 		// no other attributes changed (average mark is not serialisable!!!)
 		return false;
 	}

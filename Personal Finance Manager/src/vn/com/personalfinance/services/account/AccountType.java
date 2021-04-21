@@ -9,6 +9,7 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
@@ -44,7 +45,7 @@ public class AccountType {
 			filter = @Select(clazz = Account.class))
 	@DAssoc(ascName = "type-has-account", role = "type", 
 		ascType = AssocType.One2Many, endType = AssocEndType.One, 
-		associate = @Associate(type = Account.class, cardMin = 1, cardMax = 25))
+		associate = @Associate(type = Account.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	private Collection<Account> accounts;
 	// derived attributes
 	 private int accountsCount;

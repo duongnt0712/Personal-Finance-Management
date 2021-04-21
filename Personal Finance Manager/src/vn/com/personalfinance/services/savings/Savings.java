@@ -11,6 +11,7 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
@@ -40,7 +41,7 @@ public abstract class Savings {
 	// static variable to keep track of account id
 	private static int idCounter = 0;
 	
-	@DAttr(name = S_name, type = Type.String, length = 15, optional = false, cid=true)
+	@DAttr(name = S_name, type = Type.String, length = 20, optional = false, cid=true)
 	private String name;
 	
 	@DAttr(name = S_purpose, type = Type.String, length = 30, optional = true)
@@ -56,7 +57,7 @@ public abstract class Savings {
 	filter = @Select(clazz = Log.class))
 	@DAssoc(ascName = "savings-has-log", role = "savings",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
-	associate = @Associate(type = Log.class, cardMin = 0, cardMax = 30))
+	associate = @Associate(type = Log.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	private Collection<Log> log;
 
 	// derived
