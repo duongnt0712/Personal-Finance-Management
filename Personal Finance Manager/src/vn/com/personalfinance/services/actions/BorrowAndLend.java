@@ -1,6 +1,5 @@
 package vn.com.personalfinance.services.actions;
 
-import java.util.Calendar;  
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
@@ -40,15 +39,15 @@ public class BorrowAndLend {
 		@DAttr (name = T_account, type = Type.Domain, length = 20, optional = false, cid = true)
 		@DAssoc (ascName = "account-has-action", role = "action", ascType = AssocType.One2Many, endType = AssocEndType.Many,
 				associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
-		private static Account account; 
+		private Account account; 
 		
 		@DAttr (name = T_name, type = Type.String, length = 30, optional = false)
 		private String name;
 		
 		@DAttr (name = T_subject, type = Type.Domain, length = 30, optional = false)
 		@DAssoc (ascName = "subject-has-action", role = "action", ascType = AssocType.One2Many, endType = AssocEndType.Many,
-				associate = @Associate(type = Subject.class, cardMin = 1, cardMax = 1), dependsOn = true)
-		private Subject subject;
+				associate = @Associate(type = Subjects.class, cardMin = 1, cardMax = 1), dependsOn = true)
+		private Subjects subject;
 		
 		@DAttr (name = T_type, type = Type.Domain, length = 30, optional = false)
 		private ActionType type;
@@ -72,7 +71,7 @@ public class BorrowAndLend {
 //		Constructor method
 		@DOpt(type = DOpt.Type.ObjectFormConstructor)
 		@DOpt(type = DOpt.Type.RequiredConstructor)
-		public BorrowAndLend (@AttrRef("account") Account account, @AttrRef("name") String name,  @AttrRef("subject") Subject subject, 
+		public BorrowAndLend (@AttrRef("account") Account account, @AttrRef("name") String name,  @AttrRef("subject") Subjects subject, 
 				@AttrRef("type") ActionType type, @AttrRef("money") Double money, @AttrRef("startDate") Date startDate, 
 				@AttrRef("period") Integer period, @AttrRef("interestedRate") Double interestedRate) {
 			this(null, account, name, subject, type, money, startDate, period, interestedRate, null);
@@ -80,7 +79,7 @@ public class BorrowAndLend {
 		
 //		a shared constructor that is invoked by other constructors
 		@DOpt (type = DOpt.Type.DataSourceConstructor)
-		public BorrowAndLend (Integer id, Account account, String name, Subject subject, ActionType type, Double money, Date startDate, Integer period, Double interestedRate, Double finalMoney) {
+		public BorrowAndLend (Integer id, Account account, String name, Subjects subject, ActionType type, Double money, Date startDate, Integer period, Double interestedRate, Double finalMoney) {
 		    this.id = nextId(id);
 		    
 		    this.account = account;
@@ -108,7 +107,7 @@ public class BorrowAndLend {
 			return name;
 		}
 		
-		public Subject getSubject() {
+		public Subjects getSubject() {
 			return subject;
 		}
 
@@ -144,7 +143,7 @@ public class BorrowAndLend {
 			this.name = name;
 		}
 		
-		public void setSubject (Subject subject) {
+		public void setSubject (Subjects subject) {
 			this.subject = subject;
 		}
 		

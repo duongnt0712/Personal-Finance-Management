@@ -18,6 +18,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.log.Log;
+import vn.com.personalfinance.services.actions.BorrowAndLend;
 import vn.com.personalfinance.services.expenditure.model.DailyExpense;
 
 /**
@@ -64,9 +65,15 @@ public class Account {
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
 	associate = @Associate(type = Log.class, cardMin = 0, cardMax = 30))
 	private Collection<Log> log;
-
-	// derived
 	private int logCount;
+	
+	@DAttr(name = "borrowAndLend", type = Type.Collection, optional = false,
+	serialisable = false, filter = @Select(clazz = BorrowAndLend.class))
+	@DAssoc(ascName = "account-has-borrowAndLend", role = "account",
+	ascType = AssocType.One2Many, endType = AssocEndType.One, 
+	associate = @Associate(type = BorrowAndLend.class, cardMin = 1, cardMax = MetaConstants.CARD_MORE ))
+	private Collection<BorrowAndLend> borrowAndLend;
+	private int borrowAndLendCount;
 	
 	// constructor methods
 	// form constructor into an object
@@ -101,8 +108,12 @@ public class Account {
 	    
 	    log = new ArrayList<>();
 	    logCount = 0;
+	    
+	    borrowAndLend = new ArrayList<>();
+	    borrowAndLendCount = 0;
 	}
 	
+	// DailyExpense Assoc
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
 	public boolean addDailyExpense(DailyExpense s) {
@@ -158,6 +169,57 @@ public class Account {
 		return false;
 	}
 	
+	// BorrowAndLend Assoc
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean addBorrowAndLend(BorrowAndLend bL) {
+		if (!this.borrowAndLend.contains(bL))
+			borrowAndLend.add(bL);
+
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewborrowAndLend(BorrowAndLend bL) {
+		borrowAndLend.add(bL);
+		borrowAndLendCount++;
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addBorrowAndLend(Collection<BorrowAndLend> bL) {
+		for (BorrowAndLend b : borrowAndLend) {
+			if (!this.borrowAndLend.contains(b)) {
+				this.borrowAndLend.add(b);
+			}
+		}
+		// no other attributes changed
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewBorrowAndLend(Collection<BorrowAndLend> bL) {
+		this.borrowAndLend.addAll(bL);
+		borrowAndLendCount += log.size();
+		// no other attributes changed (average mark is not serialisable!!!)
+		return false;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean removeBorrowAndLend(BorrowAndLend bL) {
+		boolean removed = borrowAndLend.remove(bL);
+
+		if (removed) {
+			borrowAndLendCount--;
+		}
+		// no other attributes changed
+		return false;
+	}
+	
+	// Log Assoc
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
 	public boolean addLog(Log s) {
@@ -241,6 +303,14 @@ public class Account {
 		return logCount;
 	}
 	
+	public Collection<BorrowAndLend> getBorrowAndLend() {
+		return borrowAndLend;
+	}
+	
+	public int getBorrowAndLendCount() {
+		return borrowAndLendCount;
+	}
+	
 	// setter methods
 	public void setName(String name) {
 		this.name = name;
@@ -271,6 +341,15 @@ public class Account {
 	
 	public void setLogCount(int logCount) {
 		this.logCount = logCount;
+	}
+	
+	public void setBorrowAndLend(Collection<BorrowAndLend> borrowAndLend) {
+		this.borrowAndLend = borrowAndLend;
+		borrowAndLendCount = borrowAndLend.size();
+	}
+	
+	public void setBorrowAndLend(int borrowAndLendCount) {
+		this.borrowAndLendCount = borrowAndLendCount;
 	}
 	
 	// override toString

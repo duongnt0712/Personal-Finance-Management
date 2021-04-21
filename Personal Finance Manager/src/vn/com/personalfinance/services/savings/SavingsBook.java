@@ -1,14 +1,21 @@
 package vn.com.personalfinance.services.savings;
 
+import java.util.Collection;
 import java.util.Date;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
+import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.Select;
+import domainapp.basics.model.meta.DAssoc.AssocEndType;
+import domainapp.basics.model.meta.DAssoc.AssocType;
+import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.cache.StateHistory;
+import vn.com.personalfinance.services.log.Log;
 
 /**
  * Represents a saving book.
@@ -23,6 +30,13 @@ public class SavingsBook extends Savings {
 	public static final String S_finalBalance = "finalBalance";
 	
 	// attributes of savings book
+	@DAttr(name = "log", type = Type.Collection, optional = false, serialisable = false,
+	filter = @Select(clazz = Log.class))
+	@DAssoc(ascName = "savings-has-log", role = "savings",
+	ascType = AssocType.One2Many, endType = AssocEndType.One,
+	associate = @Associate(type = Log.class, cardMin = 0, cardMax = 1))
+	@Override public Collection<Log> getLog() { return super.getLog(); }
+	
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
 	private int monthlyDuration;
 	
@@ -100,17 +114,6 @@ public class SavingsBook extends Savings {
 			computeFinalBalance();
 	}
 	
-	@Override
-	public void setAmount(double amount) {
-		setAmount(amount, false);
-	}
-	
-	public void setAmount(double amount, boolean computeFinalBalance) {
-		amount = getAmount();
-		if (computeFinalBalance)
-			computeFinalBalance();
-	}
-	
 	public void setInterestRate(double interestRate) {
 		setInterestRate(interestRate, false);
 	}
@@ -124,7 +127,7 @@ public class SavingsBook extends Savings {
 	// calculate finalBalance from interstRate 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value=S_finalBalance)
-	public void computeFinalBalance() {
+	private void computeFinalBalance() {
 		stateHist.put(S_finalBalance, finalBalance);
 		
 		double interestAmount = getAmount() * interestRate / 12 * monthlyDuration;
