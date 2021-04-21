@@ -1,9 +1,13 @@
 package vn.com.personalfinance.software;
 
+import javax.security.auth.Subject;
+
 import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
 import vn.com.personalfinance.services.account.Account;
 import vn.com.personalfinance.services.account.AccountType;
+import vn.com.personalfinance.services.actions.BorrowAndLend;
+import vn.com.personalfinance.services.actions.Subjects;
 import vn.com.personalfinance.services.expenditure.model.Category;
 import vn.com.personalfinance.services.expenditure.model.DailyExpense;
 import vn.com.personalfinance.services.expenditure.model.Expenditure;
@@ -36,6 +40,8 @@ public class PersonalFinanceManagentSoftware {
 	      Income.class,
 	      Category.class,
 	      Log.class,
+	      BorrowAndLend.class,
+	      Subjects.class,
 	      // report
 	      DailyExpenseByCategoryReport.class,
 	      DailyExpenseByDateReport.class

@@ -9,6 +9,7 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
@@ -18,7 +19,7 @@ import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.account.Account;
 
 @DClass(schema="personalfinancemanagement")
-public class Subject {
+public class Subjects {
 //	attributes
 	@DAttr(name = "id", id = true, auto = true, length = 6, mutable = false, type = Type.Integer)
 	private int id; 
@@ -29,29 +30,28 @@ public class Subject {
 	@DAttr(name = "name", type = Type.String, length = 20, optional = false, cid = true) 
 	private String name;
 	
-	@DAttr (name = "actions", type = Type.Collection, serialisable = false, optional = false, filter = @Select(clazz = BorrowAndLend.class))
-	@DAssoc (ascName = "subject-has-action", role = "subject", ascType = AssocType.One2Many, endType = AssocEndType.One,
-			associate = @Associate(type = BorrowAndLend.class, cardMin = 0, cardMax = 30))
-	private Collection<BorrowAndLend> actions;
-	// derived attributes
-	private int actionsCount;
+	@DAttr(name = "borrowAndLend", type = Type.Collection, optional = false, serialisable = false, filter = @Select(clazz = BorrowAndLend.class))
+	@DAssoc(ascName = "subject-has-borrowAndLend", role = "subject", ascType = AssocType.One2Many, endType = AssocEndType.One, 
+			associate = @Associate(type = BorrowAndLend.class, cardMin = 1, cardMax = MetaConstants.CARD_MORE ))
+	private Collection<BorrowAndLend> borrowAndLend;
+	private int borrowAndLendCount;
 	 
 	 
 	// from object form: Account is not included 
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	@DOpt(type=DOpt.Type.RequiredConstructor)
-	public Subject (@AttrRef("name") String name) {
+	public Subjects (@AttrRef("name") String name) {
 		this(null, name);
 	}
 	
 	// from data source
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	public Subject (@AttrRef("id") Integer id, @AttrRef("name") String name ) {
+	public Subjects (@AttrRef("id") Integer id, @AttrRef("name") String name ) {
 		this.id = nextId(id);
 		this.name = name;
 		
-		actions = new ArrayList<>();
-		actionsCount = 0;
+		borrowAndLend = new ArrayList<>();
+		borrowAndLendCount = 0;
 	}
 	
 //	Setter methods
@@ -73,9 +73,9 @@ public class Subject {
 	
 //	add existed object into collection
 	@DOpt (type = DOpt.Type.LinkAdder)
-	public boolean addActions (BorrowAndLend a) {
-		if (!this.actions.contains(a)) {
-			actions.add(a);
+	public boolean addBorrowAndLend(BorrowAndLend a) {
+		if (!this.borrowAndLend.contains(a)) {
+			borrowAndLend.add(a);
 		}
 		// no other attributes changed
 		return false;
@@ -83,64 +83,64 @@ public class Subject {
 	
 //	add new object into collection
 	@DOpt (type = DOpt.Type.LinkAdderNew)
-	public boolean addNewActions (BorrowAndLend a) {
-		actions.add(a);
-		actionsCount++;
+	public boolean addNewborrowAndLend(BorrowAndLend a) {
+		borrowAndLend.add(a);
+		borrowAndLendCount++;
 		return false;
 	}
 	
 	@DOpt (type = DOpt.Type.LinkAdder)
-	public boolean addActions (Collection<BorrowAndLend> actions) {
+	public boolean addBorrowAndLend(Collection<BorrowAndLend> actions) {
 		for (BorrowAndLend a : actions) {
-			if (!this.actions.contains(a)) {
-				this.actions.add(a);
+			if (!this.borrowAndLend.contains(a)) {
+				this.borrowAndLend.add(a);
 			}
 		}
 		return false;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewActions (Collection<BorrowAndLend> actions) {
-		this.actions.addAll(actions);
-		actionsCount += actions.size();
+	public boolean addNewBorrowAndLend(Collection<BorrowAndLend> actions) {
+		this.borrowAndLend.addAll(actions);
+		borrowAndLendCount += actions.size();
 		// no other attributes changed
 		return false;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkRemover)
-	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeActions (BorrowAndLend a) {
-		boolean removed = actions.remove(a);
+	// only need to do this for reflexive association: @MemberRef(name="subjects")
+	public boolean removeBorrowAndLend(BorrowAndLend a) {
+		boolean removed = borrowAndLend.remove(a);
 
 		if (removed) {
-			actionsCount--;
+			borrowAndLendCount--;
 		}
 		// no other attributes changed
 		return false;
 	}
 	
 	@DOpt(type=DOpt.Type.Setter)
-	public void setActions(Collection<BorrowAndLend> actions) {
-		this.actions = actions;
-		actionsCount = actions.size();
+	public void setBorrowAndLend(Collection<BorrowAndLend> actions) {
+		this.borrowAndLend = actions;
+		borrowAndLendCount = actions.size();
 	}
 	
 	@DOpt(type=DOpt.Type.Getter)
-	public Collection<BorrowAndLend> getActions() {
-		return actions;
+	public Collection<BorrowAndLend> getBorrowAndLend() {
+		return borrowAndLend;
 	}
 	
 	/**
 	 * @effects return <tt>accountsCount</tt>
 	 */
 	@DOpt(type=DOpt.Type.LinkCountSetter)
-	public void setActionsCount(int actionsCount) {
-		this.actionsCount = actionsCount;
+	public void setBorrowAndLendCount(int borrowAndLendCount) {
+		this.borrowAndLendCount = borrowAndLendCount;
 	}
 	
 	@DOpt(type=DOpt.Type.LinkCountGetter)
-	public int getActionsCount() {
-		return actionsCount;
+	public int getBorrowAndLendCount() {
+		return borrowAndLendCount;
 	}
 
 	private static int nextId(Integer currID) {
@@ -176,7 +176,7 @@ public class Subject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Subject other = (Subject) obj;
+		Subjects other = (Subjects) obj;
 		if (id != other.id)
 			return false;
 		return true;
