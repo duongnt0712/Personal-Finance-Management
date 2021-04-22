@@ -17,10 +17,11 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-import vn.com.personalfinance.services.log.Log;
+import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
 import vn.com.personalfinance.services.borrowandlend.ActionType;
 import vn.com.personalfinance.services.borrowandlend.BorrowAndLend;
-import vn.com.personalfinance.services.expense.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
 
 /**
  * Represents an account. The account ID is auto-incremented from the current year.
@@ -60,13 +61,21 @@ public class Account {
 	private Collection<DailyExpense> dailyExpense;
 	private int dailyExpenseCount;
 	
-	@DAttr(name = "log", type = Type.Collection, optional = false, 
-	serialisable = false, filter = @Select(clazz = Log.class))
-	@DAssoc(ascName = "account-has-log", role = "account",
+	@DAttr(name = "dailyIncome", type = Type.Collection, optional = false,
+	serialisable = false, filter = @Select(clazz = DailyIncome.class))
+	@DAssoc(ascName = "account-has-dailyExpense", role = "account",
+	ascType = AssocType.One2Many, endType = AssocEndType.One, 
+	associate = @Associate(type = DailyIncome.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
+	private Collection<DailyIncome> dailyIncome;
+	private int dailyIncomeCount;
+	
+	@DAttr(name = "savingsTransaction", type = Type.Collection, optional = false, 
+	serialisable = false, filter = @Select(clazz = SavingsTransaction.class))
+	@DAssoc(ascName = "account-has-savingsTransaction", role = "account",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
-	associate = @Associate(type = Log.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
-	private Collection<Log> log;
-	private int logCount;
+	associate = @Associate(type = SavingsTransaction.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
+	private Collection<SavingsTransaction> savingsTransaction;
+	private int savingsTransactionCount;
 	
 	@DAttr(name = "borrowAndLend", type = Type.Collection, optional = false,
 	serialisable = false, filter = @Select(clazz = BorrowAndLend.class))
@@ -113,8 +122,8 @@ public class Account {
 	    dailyExpense = new ArrayList<>();
 	    dailyExpenseCount = 0;
 	    
-	    log = new ArrayList<>();
-	    logCount = 0;
+	    savingsTransaction = new ArrayList<>();
+	    savingsTransactionCount = 0;
 	    
 	    borrowAndLend = new ArrayList<>();
 	    borrowAndLendCount = 0;
@@ -165,12 +174,58 @@ public class Account {
 
 		if (removed) {
 			dailyExpenseCount--;
-			if(s.getId().contains("I")) {
-				balance-=s.getAmount();
-			} else {
-				balance+=s.getAmount();
+			balance+=s.getAmount();		
+		}
+		// no other attributes changed
+		return false;
+	}
+	
+	// DailyExpense Assoc
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean addDailyIncome(DailyIncome i) {
+		if (!this.dailyIncome.contains(i)) {
+			dailyIncome.add(i);
+		}
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewDailyIncome(DailyIncome i) {
+		dailyIncome.add(i);
+		dailyIncomeCount++;
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addDailyIncome(Collection<DailyIncome> dailyIncome) {
+		for (DailyIncome s : dailyIncome) {
+			if (!this.dailyIncome.contains(s)) {
+				this.dailyIncome.add(s);
 			}
-			
+		}
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewDailyIncome(Collection<DailyIncome> dailyIncome) {
+		this.dailyIncome.addAll(dailyIncome);
+		dailyIncomeCount += dailyIncome.size();
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean removeDailyIncome(DailyIncome i) {
+		boolean removed = dailyIncome.remove(i);
+
+		if (removed) {
+			dailyIncomeCount--;
+			balance -= i.getAmount();
 		}
 		// no other attributes changed
 		return false;
@@ -234,27 +289,27 @@ public class Account {
 	// Log Assoc
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean addLog(Log s) {
-		if (!this.log.contains(s))
-			log.add(s);
+	public boolean addSavingsTransaction(SavingsTransaction s) {
+		if (!this.savingsTransaction.contains(s))
+			savingsTransaction.add(s);
 
 		// no other attributes changed
 		return false;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Log s) {
-		log.add(s);
-		logCount++;
+	public boolean addNewSavingsTransaction(SavingsTransaction s) {
+		savingsTransaction.add(s);
+		savingsTransactionCount++;
 		// no other attributes changed
 		return false;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addLog(Collection<Log> log) {
-		for (Log s : log) {
-			if (!this.log.contains(s)) {
-				this.log.add(s);
+	public boolean addSavingsTransaction(Collection<SavingsTransaction> log) {
+		for (SavingsTransaction s : savingsTransaction) {
+			if (!this.savingsTransaction.contains(s)) {
+				this.savingsTransaction.add(s);
 			}
 		}
 		// no other attributes changed
@@ -262,20 +317,20 @@ public class Account {
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Collection<Log> log) {
-		this.log.addAll(log);
-		logCount += log.size();
+	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> log) {
+		this.savingsTransaction.addAll(savingsTransaction);
+		savingsTransactionCount += savingsTransaction.size();
 		// no other attributes changed (average mark is not serialisable!!!)
 		return false;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkRemover)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeLog(Log s) {
-		boolean removed = log.remove(s);
+	public boolean removeSavingsTransaction(SavingsTransaction s) {
+		boolean removed = savingsTransaction.remove(s);
 
 		if (removed) {
-			logCount--;
+			savingsTransactionCount--;
 			balance += s.getAmount();
 		}
 		// no other attributes changed
@@ -308,20 +363,31 @@ public class Account {
 		return dailyExpenseCount;
 	}
 
-	public Collection<Log> getLog() {
-		return log;
+	public Collection<SavingsTransaction> getSavingsTransaction() {
+		return savingsTransaction;
 	}
 	
-	public int getLogCount() {
-		return logCount;
+	@DOpt(type=DOpt.Type.LinkCountGetter)
+	public int getSavingsTransactionCount() {
+		return savingsTransactionCount;
 	}
 	
 	public Collection<BorrowAndLend> getBorrowAndLend() {
 		return borrowAndLend;
 	}
 	
+	@DOpt(type=DOpt.Type.LinkCountGetter)
 	public int getBorrowAndLendCount() {
 		return borrowAndLendCount;
+	}
+	
+	public Collection<DailyIncome> getDailyIncome() {
+		return dailyIncome;
+	}
+	
+	@DOpt(type=DOpt.Type.LinkCountGetter)
+	public int getDailyIncomeCount() {
+		return dailyIncomeCount;
 	}
 	
 //	public TotalBalance getTotalBalance() {
@@ -351,13 +417,14 @@ public class Account {
 		this.dailyExpenseCount = dailyExpenseCount;
 	}
 	
-	public void setLog(Collection<Log> log) {
-		this.log = log;
-		logCount = log.size();
+	public void setSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		this.savingsTransaction = savingsTransaction;
+		savingsTransactionCount = savingsTransaction.size();
 	}
 	
-	public void setLogCount(int logCount) {
-		this.logCount = logCount;
+	@DOpt(type=DOpt.Type.LinkCountSetter)
+	public void setSavingsTransactionCount(int savingsTransactionCount) {
+		this.savingsTransactionCount = savingsTransactionCount;
 	}
 	
 	public void setBorrowAndLend(Collection<BorrowAndLend> borrowAndLend) {
@@ -365,8 +432,19 @@ public class Account {
 		borrowAndLendCount = borrowAndLend.size();
 	}
 	
-	public void setBorrowAndLend(int borrowAndLendCount) {
+	@DOpt(type=DOpt.Type.LinkCountSetter)
+	public void setBorrowAndLendCount(int borrowAndLendCount) {
 		this.borrowAndLendCount = borrowAndLendCount;
+	}
+	
+	public void setDailyIncome(Collection<DailyIncome> dailyIncome) {
+		this.dailyIncome = dailyIncome;
+		dailyIncomeCount = dailyIncome.size();
+	}
+	
+	@DOpt(type=DOpt.Type.LinkCountSetter)
+	public void setDailyIncomeCount(int dailyIncomeCount) {
+		this.dailyIncomeCount = dailyIncomeCount;
 	}
 	
 //	public void setTotalBalance(TotalBalance totalBalance) {

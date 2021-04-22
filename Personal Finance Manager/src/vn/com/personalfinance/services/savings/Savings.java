@@ -18,7 +18,7 @@ import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
-import vn.com.personalfinance.services.log.Log;
+import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
 
 /**
  * Represents savings. The account ID is auto-incremented.
@@ -54,11 +54,11 @@ public abstract class Savings {
 	private Date startDate;
 	
 	@DAttr(name = "log", type = Type.Collection, optional = false, serialisable = false,
-	filter = @Select(clazz = Log.class))
+	filter = @Select(clazz = SavingsTransaction.class))
 	@DAssoc(ascName = "savings-has-log", role = "savings",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
-	associate = @Associate(type = Log.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
-	private Collection<Log> log;
+	associate = @Associate(type = SavingsTransaction.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
+	private Collection<SavingsTransaction> log;
 
 	// derived
 	private int logCount;
@@ -201,7 +201,7 @@ public abstract class Savings {
 	}
 	
 	// LOG PART
-	public Collection<Log> getLog() {
+	public Collection<SavingsTransaction> getLog() {
 		return log;
 	}
 
@@ -217,7 +217,7 @@ public abstract class Savings {
 
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean addLog(Log s) {
+	public boolean addLog(SavingsTransaction s) {
 		if (!this.log.contains(s))
 			log.add(s);
 
@@ -226,7 +226,7 @@ public abstract class Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Log s) {
+	public boolean addNewLog(SavingsTransaction s) {
 		log.add(s);
 		logCount++;
 		// no other attributes changed
@@ -234,8 +234,8 @@ public abstract class Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addLog(Collection<Log> log) {
-		for (Log s : log) {
+	public boolean addLog(Collection<SavingsTransaction> log) {
+		for (SavingsTransaction s : log) {
 			if (!this.log.contains(s)) {
 				this.log.add(s);
 			}
@@ -245,7 +245,7 @@ public abstract class Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Collection<Log> log) {
+	public boolean addNewLog(Collection<SavingsTransaction> log) {
 		this.log.addAll(log);
 		logCount += log.size();
 		// no other attributes changed (average mark is not serialisable!!!)
@@ -254,7 +254,7 @@ public abstract class Savings {
 
 	@DOpt(type = DOpt.Type.LinkRemover)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeLog(Log s) {
+	public boolean removeLog(SavingsTransaction s) {
 		boolean removed = log.remove(s);
 
 		if (removed) {
@@ -264,7 +264,7 @@ public abstract class Savings {
 		return false;
 	}
 
-	public void setLog(Collection<Log> log) {
+	public void setLog(Collection<SavingsTransaction> log) {
 		this.log = log;
 		logCount = log.size();
 	}

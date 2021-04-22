@@ -1,4 +1,5 @@
-package vn.com.personalfinance.services.expense.model;
+package vn.com.personalfinance.services.expenseandincome.model;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,73 +16,72 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.account.Account;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByCategoryReport;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByDateReport;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByMonthReport;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByYearReport;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByCategoryReport;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByDateReport;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByMonthReport;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByYearReport;
 
 /**
- * Represents daily expense. The account ID is auto-incremented.
+ * Represents income.
  * 
  * @author Nguyen Quynh Nga - Group 2
  * @version 1.0
  */
 @DClass(schema="personalfinancemanagement")
-public abstract class DailyExpense {
-	
-	public static final String D_id = "id";
-	public static final String D_amount = "amount";
-	public static final String D_date = "date";
-	public static final String D_category = "category";
-	public static final String D_account = "account";
-	public static final String D_description = "description";
-	public static final String D_rptDailyExpenseByCategory = "rptDailyExpenseByCategory";
-	public static final String D_rptDailyExpenseByDate = "rptDailyExpenseByDate";
-	public static final String D_rptDailyExpenseByMonth = "rptDailyExpenseByMonth";
-	public static final String D_rptDailyExpenseByYear = "rptDailyExpenseByYear";
-	public static final String D_dateToString = "dateToString";
+public class DailyIncome {
+	public static final String I_id = "id";
+	public static final String I_amount = "amount";
+	public static final String I_date = "date";
+	public static final String I_category = "category";
+	public static final String I_account = "account";
+	public static final String I_description = "description";
+	public static final String I_rptExpenseAndIncomeByCategory = "rptExpenseAndIncomeByCategory";
+	public static final String I_rptExpenseAndIncomeByDate = "rptExpenseAndIncomeByDate";
+	public static final String I_rptExpenseAndIncomeByMonth = "rptExpenseAndIncomeByMonth";
+	public static final String I_rptExpenseAndIncomeByYear = "rptExpenseAndIncomeByYear";
+	public static final String I_dateToLong = "dateToLong";
 
 	// attributes of daily expense
-	@DAttr(name = D_id, id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
+	@DAttr(name = I_id, id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
 	private String id;
 	// static variable to keep track of account id
 	public static int idCounter = 0;
 
-	@DAttr(name = D_amount, type = Type.Double, length = 15, optional = false)
+	@DAttr(name = I_amount, type = Type.Double, length = 15, optional = false)
 	private double amount;
 
-	@DAttr(name = D_date, type = Type.Date, length = 15, optional = false)
+	@DAttr(name = I_date, type = Type.Date, length = 15, optional = false)
 	private Date date;
 	
-	@DAttr(name = D_dateToString, type = Type.String, auto = true, length = 15, mutable = false, serialisable =true)
-	private String dateToString;
+	@DAttr(name = I_dateToLong, type = Type.Long, auto = true, length = 15, mutable = false, serialisable =true)
+	private long dateToLong;
 
-	@DAttr(name = D_category, type = Type.Domain, optional = false)
+	@DAttr(name = I_category, type = Type.Domain, optional = false)
 	@DAssoc(ascName = "category-has-dailyExpense", role = "category", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Category.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Category category;
 
-	@DAttr(name = D_account, type = Type.Domain, optional = false)
+	@DAttr(name = I_account, type = Type.Domain, optional = false)
 	@DAssoc(ascName = "account-has-dailyExpense", role = "account", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Account account;
 
-	@DAttr(name = D_description, type = Type.String, length = 30)
+	@DAttr(name = I_description, type = Type.String, length = 30)
 	private String description;
 
-	@DAttr(name = D_rptDailyExpenseByCategory, type = Type.Domain, serialisable = false, virtual = true)
-	private DailyExpenseByCategoryReport rptDailyExpenseByCategory;
+	@DAttr(name = I_rptExpenseAndIncomeByCategory, type = Type.Domain, serialisable = false, virtual = true)
+	private ExpenseAndIncomeByCategoryReport rptExpenseAndIncomeByCategory;
 
-	@DAttr(name = D_rptDailyExpenseByDate, type = Type.Domain, serialisable = false, virtual = true)
-	private DailyExpenseByDateReport rptDailyExpenseByDate;
+	@DAttr(name = I_rptExpenseAndIncomeByDate, type = Type.Domain, serialisable = false, virtual = true)
+	private ExpenseAndIncomeByDateReport rptExpenseAndIncomeByDate;
 	
-	@DAttr(name = D_rptDailyExpenseByMonth, type = Type.Domain, serialisable = false, virtual = true)
-	private DailyExpenseByMonthReport rptDailyExpenseByMonth;
+	@DAttr(name = I_rptExpenseAndIncomeByMonth, type = Type.Domain, serialisable = false, virtual = true)
+	private ExpenseAndIncomeByMonthReport rptExpenseAndIncomeByMonth;
 	
-	@DAttr(name = D_rptDailyExpenseByYear, type = Type.Domain, serialisable = false, virtual = true)
-	private DailyExpenseByYearReport rptDailyExpenseByYear;
+	@DAttr(name = I_rptExpenseAndIncomeByYear, type = Type.Domain, serialisable = false, virtual = true)
+	private ExpenseAndIncomeByYearReport rptExpenseAndIncomeByYear;
 
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
-	protected DailyExpense(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
+	protected DailyIncome(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
 			@AttrRef("category") Category category, @AttrRef("account") Account account,
 			@AttrRef("description") String description) {
 		this(null, amount, date, null, category, account, description);
@@ -89,7 +89,7 @@ public abstract class DailyExpense {
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	protected DailyExpense(String id, Double amount, Date date, String dateToString, Category category, Account account,
+	protected DailyIncome(String id, Double amount, Date date, String dateToString, Category category, Account account,
 			String description) {
 		// generate an id
 		this.id = nextID(id);
@@ -97,7 +97,7 @@ public abstract class DailyExpense {
 		// assign other values
 		this.amount = amount;
 		this.date = date;
-		this.dateToString = updateDateToString(dateToString);
+		this.dateToLong = updateDateToLong(dateToLong);
 		this.category = category;
 		this.account = account;
 		this.description = description;
@@ -150,30 +150,56 @@ public abstract class DailyExpense {
 		this.description = description;
 	}
 
-	public DailyExpenseByCategoryReport getRptDailyExpenseByCategory() {
-		return rptDailyExpenseByCategory;
+	public ExpenseAndIncomeByCategoryReport getRptExpenseAndIncomeByCategory() {
+		return rptExpenseAndIncomeByCategory;
 	}
 
-	public DailyExpenseByDateReport getRptDailyExpenseByDate() {
-		return rptDailyExpenseByDate;
+	public ExpenseAndIncomeByDateReport getRptExpenseAndIncomeByDate() {
+		return rptExpenseAndIncomeByDate;
 	}
 	
-	public DailyExpenseByMonthReport getRptDailyExpenseByMonth() {
-		return rptDailyExpenseByMonth;
+	public ExpenseAndIncomeByMonthReport getRptExpenseAndIncomeByMonth() {
+		return rptExpenseAndIncomeByMonth;
 	}
 	
-	public DailyExpenseByYearReport getRptDailyExpenseByYear() {
-		return rptDailyExpenseByYear;
+	public ExpenseAndIncomeByYearReport getRptExpenseAndIncomeByYear() {
+		return rptExpenseAndIncomeByYear;
 	}
 	
-	public String getDateToString() {
-		return dateToString;
+	public long getDateToLong() {
+		return dateToLong;
+	}
+	
+	// automatically generate the next account id
+	public String nextID(String id) throws ConstraintViolationException {
+		if (id == null) { // generate a new id
+
+			idCounter++;
+
+			return "I" + idCounter;
+		} else {
+			// update id
+			int num;
+			try {
+				num = Integer.parseInt(id.substring(1));
+			} catch (RuntimeException e) {
+				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+						new Object[] { id });
+			}
+
+			if (num > idCounter) {
+				idCounter = num;
+			}
+
+			return id;
+		}
 	}
 
-	public abstract String nextID(String currID);
-
-	public abstract void computeNewBalance();
-
+	public void computeNewBalance() {
+		double newBalance = getAccount().getBalance() + amount;
+		getAccount().setBalance(newBalance);
+	}
+	
 	@Override
 	public String toString() {
 		return toString(true);
@@ -185,9 +211,9 @@ public abstract class DailyExpense {
 	 */
 	public String toString(boolean full) {
 		if (full)
-			return "DailyExpense(" + id + "," + amount + "," + date + "," + category + "," + account + ")";
+			return "DailyIncome(" + id + "," + amount + "," + date + "," + category + "," + account + ")";
 		else
-			return "DailyExpense(" + id + ")";
+			return "DailyIncome(" + id + ")";
 	}
 
 	@Override
@@ -206,7 +232,7 @@ public abstract class DailyExpense {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DailyExpense other = (DailyExpense) obj;
+		DailyIncome other = (DailyIncome) obj;
 
 		if (!(id.equals(other.id))) {
 			return false;
@@ -241,12 +267,12 @@ public abstract class DailyExpense {
 			}
 		}
 	}
-	
+
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
-	@AttrRef(value=D_dateToString)
-	public String updateDateToString(String dateToString) {
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-		dateToString = dateFormat.format(date);
-		return dateToString;
+	@AttrRef(value=I_dateToLong)
+	public long updateDateToLong(long dateToLong) {
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
+		dateToLong = Long.parseLong(dateFormat.format(date));
+		return dateToLong;
 	}
 }

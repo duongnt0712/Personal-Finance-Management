@@ -16,7 +16,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.exceptions.DExCode;
-import vn.com.personalfinance.services.log.Log;
+import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
 
 /**
  * Represents a saving book.
@@ -25,18 +25,18 @@ import vn.com.personalfinance.services.log.Log;
  * @version 1.0
  */
 @DClass(schema="personalfinancemanagement")
-public class SavingsBook extends Savings {
+public class EconomicalSavings extends Savings {
 	public static final String S_monthlyDuration = "monthlyDuration";
 	public static final String S_interestRate = "interestRate";
 	public static final String S_finalBalance = "finalBalance";
 	
 	// attributes of savings book
 	@DAttr(name = "log", type = Type.Collection, optional = false, serialisable = false,
-	filter = @Select(clazz = Log.class))
+	filter = @Select(clazz = SavingsTransaction.class))
 	@DAssoc(ascName = "savings-has-log", role = "savings",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
-	associate = @Associate(type = Log.class, cardMin = 1, cardMax = 1))
-	@Override public Collection<Log> getLog() { return super.getLog(); }
+	associate = @Associate(type = SavingsTransaction.class, cardMin = 1, cardMax = 1))
+	@Override public Collection<SavingsTransaction> getLog() { return super.getLog(); }
 	
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
 	private int monthlyDuration;
@@ -52,7 +52,7 @@ public class SavingsBook extends Savings {
 	
 	// constructor methods	
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
-	public SavingsBook(@AttrRef("name") String name,
+	public EconomicalSavings(@AttrRef("name") String name,
 					   @AttrRef("purpose") String purpose,
 					   @AttrRef("amount") Double amount,	
 				       @AttrRef("startDate") Date startDate,
@@ -63,7 +63,7 @@ public class SavingsBook extends Savings {
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public SavingsBook(String id, String name, String purpose, 
+	public EconomicalSavings(String id, String name, String purpose, 
 		Double amount, Date startDate, Integer monthlyDuration, 
 		Double interestRate) throws ConstraintViolationException {
 		

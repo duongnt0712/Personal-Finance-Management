@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.expense.report;
+package vn.com.personalfinance.services.expenseandincome.report;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,8 +23,8 @@ import domainapp.basics.model.query.Expression.Op;
 import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
-import vn.com.personalfinance.services.expense.model.Category;
-import vn.com.personalfinance.services.expense.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.Category;
+import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 
 /**
  * @overview 
@@ -35,7 +35,7 @@ import vn.com.personalfinance.services.expense.model.DailyExpense;
  * @version 1.0
  */
 @DClass(schema="personalfinancemanagement",serialisable=false)
-public class DailyExpenseByCategoryReport {
+public class ExpenseAndIncomeByCategoryReport {
 	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
 	private int id;
 	private static int idCounter = 0;
@@ -72,7 +72,7 @@ public class DailyExpenseByCategoryReport {
 	   */
 	  @DOpt(type=DOpt.Type.ObjectFormConstructor)
 	  @DOpt(type=DOpt.Type.RequiredConstructor)
-	  public DailyExpenseByCategoryReport(@AttrRef("category") String category) throws NotPossibleException, DataSourceException {
+	  public ExpenseAndIncomeByCategoryReport(@AttrRef("category") String category) throws NotPossibleException, DataSourceException {
 	    this.id=++idCounter;
 	    
 	    this.category = category;
@@ -130,7 +130,7 @@ public class DailyExpenseByCategoryReport {
 		// TODO: to conserve memory cache the query and only change the query parameter
 		// value(s)
 		Query q = QueryToolKit.createSimpleJoinQuery(dsm, DailyExpense.class, Category.class,
-				DailyExpense.D_category, 
+				DailyExpense.E_category, 
 				Category.C_name, 
 		        Op.MATCH, 
 		        "%"+category+"%");
@@ -222,7 +222,7 @@ public class DailyExpenseByCategoryReport {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DailyExpenseByCategoryReport other = (DailyExpenseByCategoryReport) obj;
+		ExpenseAndIncomeByCategoryReport other = (ExpenseAndIncomeByCategoryReport) obj;
 		if (id != other.id)
 			return false;
 		return true;

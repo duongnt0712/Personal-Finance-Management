@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.log;
+package vn.com.personalfinance.services.savingstransaction;
 
 import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.AttrRef;
@@ -15,7 +15,7 @@ import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 
 @DClass(schema="personalfinancemanagement")
-public class Log implements Comparable {
+public class SavingsTransaction implements Comparable {
 	
 	// attribute
 	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
@@ -40,13 +40,13 @@ public class Log implements Comparable {
 	// constructor
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	@DOpt(type=DOpt.Type.RequiredConstructor)
-	public Log(@AttrRef("account") Account account, 
+	public SavingsTransaction(@AttrRef("account") Account account, 
 	    @AttrRef("savings") Savings savings) throws ConstraintViolationException {
 	  this(null, account, savings, 0.0);
 	}
 
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
-	public Log(@AttrRef("account") Account account, 
+	public SavingsTransaction(@AttrRef("account") Account account, 
 		@AttrRef("savings") Savings savings, 
 	    @AttrRef("amount") Double amount)
 	    throws ConstraintViolationException {
@@ -54,7 +54,7 @@ public class Log implements Comparable {
 	}
 
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	public Log(Integer id, Account account, Savings savings, Double amount) throws ConstraintViolationException {
+	public SavingsTransaction(Integer id, Account account, Savings savings, Double amount) throws ConstraintViolationException {
 	  this.id = nextID(id);
 	  this.account = account;
 	  this.savings = savings;
@@ -122,7 +122,7 @@ public class Log implements Comparable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Log other = (Log) obj;
+		SavingsTransaction other = (SavingsTransaction) obj;
 		if (id != other.id)
 			return false;
 		return true;
@@ -171,10 +171,10 @@ public class Log implements Comparable {
 	}
 	
 	public int compareTo(Object o) {
-		if (o == null || (!(o instanceof Log)))
+		if (o == null || (!(o instanceof SavingsTransaction)))
 			return -1;
 
-		Log e = (Log) o;
+		SavingsTransaction e = (SavingsTransaction) o;
 
 		return this.account.getId().compareTo(e.account.getId());
 	}

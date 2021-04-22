@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.expense.report;
+package vn.com.personalfinance.services.expenseandincome.report;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,7 +27,7 @@ import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
 import domainapp.basics.util.cache.StateHistory;
-import vn.com.personalfinance.services.expense.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 
 /**
  * @overview 
@@ -38,7 +38,7 @@ import vn.com.personalfinance.services.expense.model.DailyExpense;
  * @version 1.0
  */
 @DClass(schema="personalfinancemanagement",serialisable=false)
-public class DailyExpenseByDateReport {
+public class ExpenseAndIncomeByDateReport {
 	public static final String R_dateToString = "dateToString";
 	public static final String R_date = "date";
 	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
@@ -83,7 +83,7 @@ public class DailyExpenseByDateReport {
 	 */
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
 	@DOpt(type = DOpt.Type.RequiredConstructor)
-	public DailyExpenseByDateReport(@AttrRef("date") Date date) throws NotPossibleException, DataSourceException {
+	public ExpenseAndIncomeByDateReport(@AttrRef("date") Date date) throws NotPossibleException, DataSourceException {
 		this.id = ++idCounter;
 
 		this.date = date;
@@ -240,7 +240,7 @@ public class DailyExpenseByDateReport {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DailyExpenseByDateReport other = (DailyExpenseByDateReport) obj;
+		ExpenseAndIncomeByDateReport other = (ExpenseAndIncomeByDateReport) obj;
 		if (id != other.id)
 			return false;
 		return true;

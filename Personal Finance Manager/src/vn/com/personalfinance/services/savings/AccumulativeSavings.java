@@ -10,7 +10,7 @@ import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
 import domainapp.basics.model.meta.DAttr.Type;
-import vn.com.personalfinance.services.log.Log;
+import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
 
 /**
  * Represents an accumulation.
@@ -19,7 +19,7 @@ import vn.com.personalfinance.services.log.Log;
  * @version 1.0
  */
 @DClass(schema="personalfinancemanagement")
-public class Accumulate extends Savings {
+public class AccumulativeSavings extends Savings {
 	public static final String S_remainedAmount = "remainedAmount";
 	
 	@DAttr(name = S_remainedAmount, type = Type.Double, auto = true, length = 15, mutable = false, optional = true,
@@ -28,7 +28,7 @@ public class Accumulate extends Savings {
 	
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
-	public Accumulate(@AttrRef("name") String name,
+	public AccumulativeSavings(@AttrRef("name") String name,
 			@AttrRef("purpose") String purpose,
 			@AttrRef("amount") Double amount, 
 			@AttrRef("startDate") Date startDate) {
@@ -37,11 +37,11 @@ public class Accumulate extends Savings {
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public Accumulate(String id, String name, String purpose, 
+	public AccumulativeSavings(String id, String name, String purpose, 
 		Double amount, Date startDate, Double remainedAmount) throws ConstraintViolationException {
 		super(id, name, purpose, amount, startDate);
 		
-		Collection<Log> log = getLog();
+		Collection<SavingsTransaction> log = getLog();
 		setLog(log = new ArrayList<>());
 		setLogCount(0);
 		
@@ -69,7 +69,7 @@ public class Accumulate extends Savings {
 	private void computeRemainedAmount() {
 		if (getLogCount() >= 0 && remainedAmount <= getAmount() && remainedAmount >= 0) {
 			double accumAmount = 0d;
-			for (Log log : getLog()) {
+			for (SavingsTransaction log : getLog()) {
 				accumAmount += log.getAmount();
 			}
 			if (accumAmount <= getAmount()) {
@@ -82,7 +82,7 @@ public class Accumulate extends Savings {
 
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean addLog(Log s) {
+	public boolean addLog(SavingsTransaction s) {
 		if (!getLog().contains(s))
 			getLog().add(s);
 
@@ -91,7 +91,7 @@ public class Accumulate extends Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Log s) {
+	public boolean addNewLog(SavingsTransaction s) {
 		getLog().add(s);
 		int count = getLogCount();
 		setLogCount(count + 1);
@@ -102,8 +102,8 @@ public class Accumulate extends Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addLog(Collection<Log> log) {
-		for (Log s : log) {
+	public boolean addLog(Collection<SavingsTransaction> log) {
+		for (SavingsTransaction s : log) {
 			if (!getLog().contains(s)) {
 				getLog().add(s);
 			}
@@ -113,7 +113,7 @@ public class Accumulate extends Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Collection<Log> log) {
+	public boolean addNewLog(Collection<SavingsTransaction> log) {
 		getLog().addAll(log);
 		int count = getLogCount();
 		count += log.size();
@@ -126,7 +126,7 @@ public class Accumulate extends Savings {
 
 	@DOpt(type = DOpt.Type.LinkRemover)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeLog(Log s) {
+	public boolean removeLog(SavingsTransaction s) {
 		boolean removed = getLog().remove(s);
 
 		if (removed) {

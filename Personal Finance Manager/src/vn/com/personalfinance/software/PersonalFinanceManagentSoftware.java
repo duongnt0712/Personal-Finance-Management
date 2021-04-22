@@ -7,18 +7,17 @@ import vn.com.personalfinance.services.account.AccountType;
 import vn.com.personalfinance.services.account.TotalBalance;
 import vn.com.personalfinance.services.borrowandlend.BorrowAndLend;
 import vn.com.personalfinance.services.borrowandlend.Subjects;
-import vn.com.personalfinance.services.expense.model.Category;
-import vn.com.personalfinance.services.expense.model.DailyExpense;
-import vn.com.personalfinance.services.expense.model.Expenditure;
-import vn.com.personalfinance.services.expense.model.Income;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByCategoryReport;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByDateReport;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByMonthReport;
-import vn.com.personalfinance.services.expense.report.DailyExpenseByYearReport;
-import vn.com.personalfinance.services.log.Log;
-import vn.com.personalfinance.services.savings.Accumulate;
+import vn.com.personalfinance.services.expenseandincome.model.Category;
+import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByCategoryReport;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByDateReport;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByMonthReport;
+import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeByYearReport;
+import vn.com.personalfinance.services.savings.AccumulativeSavings;
 import vn.com.personalfinance.services.savings.Savings;
-import vn.com.personalfinance.services.savings.SavingsBook;
+import vn.com.personalfinance.services.savings.EconomicalSavings;
+import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
 
 /**
  * @overview 
@@ -35,20 +34,19 @@ public class PersonalFinanceManagentSoftware {
 	      Account.class, 
 	      AccountType.class, 
 	      Savings.class,
-	      SavingsBook.class,
-	      Accumulate.class,
+	      EconomicalSavings.class,
+	      AccumulativeSavings.class,
 	      DailyExpense.class,
-	      Expenditure.class,
-	      Income.class,
+	      DailyIncome.class,
 	      Category.class,
-	      Log.class,
+	      SavingsTransaction.class,
 	      BorrowAndLend.class,
 	      Subjects.class,
 	      // report
-	      DailyExpenseByCategoryReport.class,
-	      DailyExpenseByDateReport.class,
-	      DailyExpenseByMonthReport.class,
-	      DailyExpenseByYearReport.class
+	      ExpenseAndIncomeByCategoryReport.class,
+	      ExpenseAndIncomeByDateReport.class,
+	      ExpenseAndIncomeByMonthReport.class,
+	      ExpenseAndIncomeByYearReport.class
 	  };
 	  
 	  /**

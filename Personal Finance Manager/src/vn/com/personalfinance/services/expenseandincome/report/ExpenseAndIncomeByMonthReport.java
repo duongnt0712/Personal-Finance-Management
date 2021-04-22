@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.expense.report;
+package vn.com.personalfinance.services.expenseandincome.report;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -26,7 +26,7 @@ import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
 import domainapp.basics.util.cache.StateHistory;
-import vn.com.personalfinance.services.expense.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 /**
  * @overview 
  * 	Represent the reports about daily expense by date.
@@ -37,16 +37,16 @@ import vn.com.personalfinance.services.expense.model.DailyExpense;
  */
 @DClass(schema="personalfinancemanagement",serialisable=false)
 
-public class DailyExpenseByYearReport {
-	
-	public static final String R_year = "year";
+public class ExpenseAndIncomeByMonthReport {
+	public static final String R_monthToString = "monthToString";
+	public static final String R_month = "month";
 	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
 	private int id;
 	private static int idCounter = 0;
 
 	/** input: daily expense date */
-	@DAttr(name = R_year, type = Type.String, length = 15, optional = false)
-	private String year;
+	@DAttr(name = R_month, type = Type.String, length = 15, optional = false)
+	private String month;
 	
 	
 	
@@ -91,10 +91,10 @@ public class DailyExpenseByYearReport {
 	 */
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
 	@DOpt(type = DOpt.Type.RequiredConstructor)
-	public DailyExpenseByYearReport(@AttrRef("year")  String year) throws NotPossibleException, DataSourceException {
+	public ExpenseAndIncomeByMonthReport(@AttrRef("month")  String month) throws NotPossibleException, DataSourceException {
 		this.id = ++idCounter;
 
-		this.year = year;
+		this.month = month;
 		
 		
 		doReportQuery();
@@ -103,8 +103,8 @@ public class DailyExpenseByYearReport {
 	/**
 	 * @effects return date
 	 */
-	public String getYear() {
-		return year;
+	public String getMonth() {
+		return month;
 	}
 	
 	
@@ -128,8 +128,8 @@ public class DailyExpenseByYearReport {
 	 *    DataSourceException if fails to read from the data source.
 	 *          </pre>
 	 */
-	public void setYear(String year) throws NotPossibleException, DataSourceException {
-		this.year = year;
+	public void setMonth(String month) throws NotPossibleException, DataSourceException {
+		this.month = month;
 
 		doReportQuery();
 	}
@@ -162,7 +162,7 @@ public class DailyExpenseByYearReport {
 		Query q = QueryToolKit.createSearchQuery(dsm, DailyExpense.class, new String[] { DailyExpense.D_dateToString },
 				new Op[] { Op.MATCH },
 
-				new Object[] { "%"+year+"%" });
+				new Object[] { "%"+month+"%" });
 
 		Map<Oid, DailyExpense> result = qrm.getDom().retrieveObjects(DailyExpense.class, q);
 
@@ -261,7 +261,7 @@ public class DailyExpenseByYearReport {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DailyExpenseByYearReport other = (DailyExpenseByYearReport) obj;
+		ExpenseAndIncomeByMonthReport other = (ExpenseAndIncomeByMonthReport) obj;
 		if (id != other.id)
 			return false;
 		return true;
@@ -279,7 +279,7 @@ public class DailyExpenseByYearReport {
 	 */
 	@Override
 	public String toString() {
-		return "DailyExpenseByMonthReport (" + id + ", " + year + ")";
+		return "DailyExpenseByMonthReport (" + id + ", " + month + ")";
 	}
 	
 	
