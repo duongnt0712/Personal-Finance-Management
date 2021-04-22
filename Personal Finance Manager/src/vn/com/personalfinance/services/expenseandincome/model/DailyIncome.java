@@ -57,11 +57,11 @@ public class DailyIncome {
 	private long dateToLong;
 
 	@DAttr(name = I_category, type = Type.Domain, optional = false)
-	@DAssoc(ascName = "category-has-dailyExpense", role = "category", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Category.class, cardMin = 1, cardMax = 1), dependsOn = true)
+	@DAssoc(ascName = "category-has-dailyIncome", role = "dailyIncome", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Category.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Category category;
 
 	@DAttr(name = I_account, type = Type.Domain, optional = false)
-	@DAssoc(ascName = "account-has-dailyExpense", role = "account", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
+	@DAssoc(ascName = "account-has-dailyIncome", role = "dailyIncome", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Account account;
 
 	@DAttr(name = I_description, type = Type.String, length = 30)
@@ -81,15 +81,15 @@ public class DailyIncome {
 
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
-	protected DailyIncome(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
+	public DailyIncome(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
 			@AttrRef("category") Category category, @AttrRef("account") Account account,
 			@AttrRef("description") String description) {
-		this(null, amount, date, null, category, account, description);
+		this(null, amount, date, 0L, category, account, description);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	protected DailyIncome(String id, Double amount, Date date, String dateToString, Category category, Account account,
+	public DailyIncome(String id, Double amount, Date date, Long dateToLong, Category category, Account account,
 			String description) {
 		// generate an id
 		this.id = nextID(id);

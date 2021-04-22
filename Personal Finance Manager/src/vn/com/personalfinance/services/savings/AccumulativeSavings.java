@@ -41,9 +41,9 @@ public class AccumulativeSavings extends Savings {
 		Double amount, Date startDate, Double remainedAmount) throws ConstraintViolationException {
 		super(id, name, purpose, amount, startDate);
 		
-		Collection<SavingsTransaction> log = getLog();
-		setLog(log = new ArrayList<>());
-		setLogCount(0);
+		Collection<SavingsTransaction> savingsTransaction = getSavingsTransaction();
+		setSavingsTransaction(savingsTransaction = new ArrayList<>());
+		setSavingsTransactionCount(0);
 		
 		this.remainedAmount=remainedAmount;
 	}
@@ -67,10 +67,10 @@ public class AccumulativeSavings extends Savings {
 	
 	// calculate accumulate
 	private void computeRemainedAmount() {
-		if (getLogCount() >= 0 && remainedAmount <= getAmount() && remainedAmount >= 0) {
+		if (getSavingsTransactionCount() >= 0 && remainedAmount <= getAmount() && remainedAmount >= 0) {
 			double accumAmount = 0d;
-			for (SavingsTransaction log : getLog()) {
-				accumAmount += log.getAmount();
+			for (SavingsTransaction savingsTransaction : getSavingsTransaction()) {
+				accumAmount += savingsTransaction.getAmount();
 			}
 			if (accumAmount <= getAmount()) {
 				remainedAmount = getAmount() - accumAmount;
@@ -82,19 +82,19 @@ public class AccumulativeSavings extends Savings {
 
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean addLog(SavingsTransaction s) {
-		if (!getLog().contains(s))
-			getLog().add(s);
+	public boolean addSavingsTransaction(SavingsTransaction s) {
+		if (!getSavingsTransaction().contains(s))
+			getSavingsTransaction().add(s);
 
 		// no other attributes changed
 		return true;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(SavingsTransaction s) {
-		getLog().add(s);
-		int count = getLogCount();
-		setLogCount(count + 1);
+	public boolean addNewSavingsTransaction(SavingsTransaction s) {
+		getSavingsTransaction().add(s);
+		int count = getSavingsTransactionCount();
+		setSavingsTransactionCount(count + 1);
 
 		computeRemainedAmount();
 		// no other attributes changed
@@ -102,10 +102,10 @@ public class AccumulativeSavings extends Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addLog(Collection<SavingsTransaction> log) {
-		for (SavingsTransaction s : log) {
-			if (!getLog().contains(s)) {
-				getLog().add(s);
+	public boolean addSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		for (SavingsTransaction s : savingsTransaction) {
+			if (!getSavingsTransaction().contains(s)) {
+				getSavingsTransaction().add(s);
 			}
 		}
 		// no other attributes changed
@@ -113,11 +113,11 @@ public class AccumulativeSavings extends Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Collection<SavingsTransaction> log) {
-		getLog().addAll(log);
-		int count = getLogCount();
-		count += log.size();
-		setLogCount(count);
+	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		getSavingsTransaction().addAll(savingsTransaction);
+		int count = getSavingsTransactionCount();
+		count += savingsTransaction.size();
+		setSavingsTransactionCount(count);
 
 		computeRemainedAmount();
 		// no other attributes changed (average mark is not serialisable!!!)
@@ -126,12 +126,12 @@ public class AccumulativeSavings extends Savings {
 
 	@DOpt(type = DOpt.Type.LinkRemover)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeLog(SavingsTransaction s) {
-		boolean removed = getLog().remove(s);
+	public boolean removeSavingsTransaction(SavingsTransaction s) {
+		boolean removed = getSavingsTransaction().remove(s);
 
 		if (removed) {
-			int count = getLogCount();
-			setLogCount(count - 1);
+			int count = getSavingsTransactionCount();
+			setSavingsTransactionCount(count - 1);
 
 			double currentAccountBalance = s.getAccount().getBalance();
 			s.getAccount().setBalance(currentAccountBalance += s.getAmount());

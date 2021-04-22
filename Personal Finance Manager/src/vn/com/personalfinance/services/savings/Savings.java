@@ -53,15 +53,15 @@ public abstract class Savings {
 	@DAttr(name = S_startDate, type = Type.Date, length = 15, optional = false) 
 	private Date startDate;
 	
-	@DAttr(name = "log", type = Type.Collection, optional = false, serialisable = false,
+	@DAttr(name = "savingsTransaction", type = Type.Collection, optional = false, serialisable = false,
 	filter = @Select(clazz = SavingsTransaction.class))
-	@DAssoc(ascName = "savings-has-log", role = "savings",
+	@DAssoc(ascName = "savings-has-savingsTransaction", role = "savings",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
 	associate = @Associate(type = SavingsTransaction.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
-	private Collection<SavingsTransaction> log;
+	private Collection<SavingsTransaction> savingsTransaction;
 
 	// derived
-	private int logCount;
+	private int savingsTransactionCount;
 	
 	// constructor methods
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
@@ -200,44 +200,44 @@ public abstract class Savings {
 		}
 	}
 	
-	// LOG PART
-	public Collection<SavingsTransaction> getLog() {
-		return log;
+	// SAVINGSTRANSACTION PART
+	public Collection<SavingsTransaction> getSavingsTransaction() {
+		return savingsTransaction;
 	}
 
 	@DOpt(type = DOpt.Type.LinkCountGetter)
-	public Integer getLogCount() {
-		return logCount;
+	public Integer getSavingsTransactionCount() {
+		return savingsTransactionCount;
 	}
 
 	@DOpt(type = DOpt.Type.LinkCountSetter)
-	public void setLogCount(int logCount) {
-		this.logCount = logCount;
+	public void setSavingsTransactionCount(int savingsTransactionCount) {
+		this.savingsTransactionCount = savingsTransactionCount;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean addLog(SavingsTransaction s) {
-		if (!this.log.contains(s))
-			log.add(s);
+	public boolean addSavingsTransaction(SavingsTransaction s) {
+		if (!this.savingsTransaction.contains(s))
+			savingsTransaction.add(s);
 
 		// no other attributes changed
 		return false;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(SavingsTransaction s) {
-		log.add(s);
-		logCount++;
+	public boolean addNewSavingsTransaction(SavingsTransaction s) {
+		savingsTransaction.add(s);
+		savingsTransactionCount++;
 		// no other attributes changed
 		return false;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addLog(Collection<SavingsTransaction> log) {
-		for (SavingsTransaction s : log) {
-			if (!this.log.contains(s)) {
-				this.log.add(s);
+	public boolean addSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		for (SavingsTransaction s : savingsTransaction) {
+			if (!this.savingsTransaction.contains(s)) {
+				this.savingsTransaction.add(s);
 			}
 		}
 		// no other attributes changed
@@ -245,27 +245,27 @@ public abstract class Savings {
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewLog(Collection<SavingsTransaction> log) {
-		this.log.addAll(log);
-		logCount += log.size();
+	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		this.savingsTransaction.addAll(savingsTransaction);
+		savingsTransactionCount += savingsTransaction.size();
 		// no other attributes changed (average mark is not serialisable!!!)
 		return false;
 	}
 
 	@DOpt(type = DOpt.Type.LinkRemover)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean removeLog(SavingsTransaction s) {
-		boolean removed = log.remove(s);
+	public boolean removeSavingsTransaction(SavingsTransaction s) {
+		boolean removed = savingsTransaction.remove(s);
 
 		if (removed) {
-			logCount--;
+			savingsTransactionCount--;
 		}
 		// no other attributes changed
 		return false;
 	}
 
-	public void setLog(Collection<SavingsTransaction> log) {
-		this.log = log;
-		logCount = log.size();
+	public void setSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		this.savingsTransaction = savingsTransaction;
+		savingsTransactionCount = savingsTransaction.size();
 	}
 }

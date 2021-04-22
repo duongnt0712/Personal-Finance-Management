@@ -31,12 +31,12 @@ public class EconomicalSavings extends Savings {
 	public static final String S_finalBalance = "finalBalance";
 	
 	// attributes of savings book
-	@DAttr(name = "log", type = Type.Collection, optional = false, serialisable = false,
+	@DAttr(name = "savingsTransaction", type = Type.Collection, optional = false, serialisable = false,
 	filter = @Select(clazz = SavingsTransaction.class))
-	@DAssoc(ascName = "savings-has-log", role = "savings",
+	@DAssoc(ascName = "savings-has-savingsTransaction", role = "savings",
 	ascType = AssocType.One2Many, endType = AssocEndType.One,
 	associate = @Associate(type = SavingsTransaction.class, cardMin = 1, cardMax = 1))
-	@Override public Collection<SavingsTransaction> getLog() { return super.getLog(); }
+	@Override public Collection<SavingsTransaction> getSavingsTransaction() { return super.getSavingsTransaction(); }
 	
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
 	private int monthlyDuration;

@@ -63,7 +63,7 @@ public class Account {
 	
 	@DAttr(name = "dailyIncome", type = Type.Collection, optional = false,
 	serialisable = false, filter = @Select(clazz = DailyIncome.class))
-	@DAssoc(ascName = "account-has-dailyExpense", role = "account",
+	@DAssoc(ascName = "account-has-dailyIncome", role = "account",
 	ascType = AssocType.One2Many, endType = AssocEndType.One, 
 	associate = @Associate(type = DailyIncome.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
 	private Collection<DailyIncome> dailyIncome;

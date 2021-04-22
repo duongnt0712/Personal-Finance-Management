@@ -53,15 +53,15 @@ public class DailyExpense {
 	@DAttr(name = E_date, type = Type.Date, length = 15, optional = false)
 	private Date date;
 	
-	@DAttr(name = E_dateToLong, type = Type.Long, auto = true, length = 15, mutable = false, serialisable =true)
+	@DAttr(name = E_dateToLong, type = Type.Long, auto = true, length = 15, mutable = false, serialisable = true)
 	private long dateToLong;
 
 	@DAttr(name = E_category, type = Type.Domain, optional = false)
-	@DAssoc(ascName = "category-has-dailyExpense", role = "category", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Category.class, cardMin = 1, cardMax = 1), dependsOn = true)
+	@DAssoc(ascName = "category-has-dailyExpense", role = "dailyExpense", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Category.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Category category;
 
 	@DAttr(name = E_account, type = Type.Domain, optional = false)
-	@DAssoc(ascName = "account-has-dailyExpense", role = "account", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
+	@DAssoc(ascName = "account-has-dailyExpense", role = "dailyExpense", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Account account;
 
 	@DAttr(name = E_description, type = Type.String, length = 30)
@@ -81,15 +81,15 @@ public class DailyExpense {
 
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
-	protected DailyExpense(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
+	public DailyExpense(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
 			@AttrRef("category") Category category, @AttrRef("account") Account account,
 			@AttrRef("description") String description) {
-		this(null, amount, date, null, category, account, description);
+		this(null, amount, date, 0L, category, account, description);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	protected DailyExpense(String id, Double amount, Date date, String dateToString, Category category, Account account,
+	public DailyExpense(String id, Double amount, Date date, Long dateToLong, Category category, Account account,
 			String description) {
 		// generate an id
 		this.id = nextID(id);

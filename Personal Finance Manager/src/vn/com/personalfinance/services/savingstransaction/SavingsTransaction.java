@@ -23,13 +23,13 @@ public class SavingsTransaction implements Comparable {
 	private static int idCounter = 0;
 	  
 	@DAttr(name = "account", type = Type.Domain, length = 15, optional = false)
-	@DAssoc(ascName = "account-has-log", role = "log", 
+	@DAssoc(ascName = "account-has-savingsTransaction", role = "savingsTransaction", 
 	    ascType = AssocType.One2Many, endType = AssocEndType.Many, 
 	    associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Account account;
 
 	@DAttr(name = "savings", type = Type.Domain, length = 15, optional = false)
-	@DAssoc(ascName = "savings-has-log", role = "log", 
+	@DAssoc(ascName = "savings-has-savingsTransaction", role = "savingsTransaction", 
 	    ascType = AssocType.One2Many, endType = AssocEndType.Many, 
 	    associate = @Associate(type = Savings.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Savings savings;

@@ -25,6 +25,7 @@ import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
 import vn.com.personalfinance.services.expenseandincome.model.Category;
 import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
 
 /**
  * @overview 
@@ -47,8 +48,8 @@ public class ExpenseAndIncomeByCategoryReport {
 	/** output: daily expense which categories match {@link #category} */
 	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false, mutable = false,
 		serialisable = false, filter = @Select(clazz = DailyExpense.class),
-		derivedFrom = { "category" })
-	@DAssoc(ascName = "dailyExpense-by-category-report-has-dailyExpense",
+		derivedFrom = {"category"})
+	@DAssoc(ascName = "expense-and-income-by-category-report-has-dailyExpense",
 	role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, 
 	associate = @Associate(type = DailyExpense.class, cardMin = 0,
 	cardMax = MetaConstants.CARD_MORE))
@@ -59,6 +60,22 @@ public class ExpenseAndIncomeByCategoryReport {
 	@DAttr(name = "numDailyExpense", type = Type.Integer, length = 20, auto = true, mutable = false)
 	@Output
 	private int numDailyExpense;
+	
+	/** output: daily income which categories match {@link #category} */
+	@DAttr(name = "dailyIncome", type = Type.Collection, optional = false, mutable = false,
+		serialisable = false, filter = @Select(clazz = DailyIncome.class),
+		derivedFrom = {"category"})
+	@DAssoc(ascName = "expense-and-income-by-category-report-has-dailyIncome",
+	role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, 
+	associate = @Associate(type = DailyIncome.class, cardMin = 0,
+	cardMax = MetaConstants.CARD_MORE))
+	@Output
+	private Collection<DailyIncome> dailyIncome;
+
+	/** output: number of daily incomes found (if any), derived from {@link #dailyIncome} */
+	@DAttr(name = "numDailyIncome", type = Type.Integer, length = 20, auto = true, mutable = false)
+	@Output
+	private int numDailyIncome;
 
 	/**
 	   * @effects 
@@ -77,7 +94,8 @@ public class ExpenseAndIncomeByCategoryReport {
 	    
 	    this.category = category;
 	    
-	    doReportQuery();
+	    doReportQuery1();
+	    doReportQuery2();
 	  }
 
 	/**
@@ -101,7 +119,8 @@ public class ExpenseAndIncomeByCategoryReport {
 	public void setCategory(String category) throws NotPossibleException, DataSourceException {
 		this.category = category;
 
-		doReportQuery();
+//		doReportQuery1();
+//		doReportQuery2();
 	}
 
 	/**
@@ -120,7 +139,7 @@ public class ExpenseAndIncomeByCategoryReport {
 	 */
 	@DOpt(type = DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value = "dailyExpense")
-	public void doReportQuery() throws NotPossibleException, DataSourceException {
+	public void doReportQuery1() throws NotPossibleException, DataSourceException {
 		// the query manager instance
 
 		QRM qrm = QRM.getInstance();
@@ -129,29 +148,79 @@ public class ExpenseAndIncomeByCategoryReport {
 
 		// TODO: to conserve memory cache the query and only change the query parameter
 		// value(s)
-		Query q = QueryToolKit.createSimpleJoinQuery(dsm, DailyExpense.class, Category.class,
+		Query q1 = QueryToolKit.createSimpleJoinQuery(dsm, DailyExpense.class, Category.class,
 				DailyExpense.E_category, 
 				Category.C_name, 
 		        Op.MATCH, 
 		        "%"+category+"%");
 
-		Map<Oid, DailyExpense> result = qrm.getDom().retrieveObjects(DailyExpense.class, q);
+		Map<Oid, DailyExpense> result1 = qrm.getDom().retrieveObjects(DailyExpense.class, q1);
 		
-		if (result != null) {
-			dailyExpense = result.values();
+		if (result1 != null) {
+			dailyExpense = result1.values();
 			numDailyExpense = dailyExpense.size();
 		} else {
 			// no data found: reset output
-			resetOutput();
+			resetOutput1();
+		}
+	}
+	
+	/**
+	 * This method is invoked when the report input has be set by the user.
+	 * 
+	 * @effects
+	 * 
+	 *          <pre>
+	 *   formulate the object query
+	 *   execute the query to retrieve from the data source the domain objects that satisfy it 
+	 *   update the output attributes accordingly.
+	 *  
+	 *  <p>throws NotPossibleException if failed to generate data source query; 
+	 *  DataSourceException if fails to read from the data source.
+	 *          </pre>
+	 */
+	@DOpt(type = DOpt.Type.DerivedAttributeUpdater)
+	@AttrRef(value = "dailyIncome")
+	public void doReportQuery2() throws NotPossibleException, DataSourceException {
+		// the query manager instance
+
+		QRM qrm = QRM.getInstance();
+
+		DSMBasic dsm = qrm.getDsm();
+
+		// TODO: to conserve memory cache the query and only change the query parameter
+		// value(s)
+		Query q2 = QueryToolKit.createSimpleJoinQuery(dsm, DailyIncome.class, Category.class,
+				DailyIncome.I_category, 
+				Category.C_name, 
+		        Op.MATCH, 
+		        "%"+category+"%");
+
+		Map<Oid, DailyIncome> result2 = qrm.getDom().retrieveObjects(DailyIncome.class, q2);
+		
+		if (result2 != null) {	
+			dailyIncome = result2.values();
+			numDailyIncome = dailyIncome.size();
+		} else {
+			// no data found: reset output
+			resetOutput2();
 		}
 	}
 
 	/**
 	 * @effects reset all output attributes to their initial values
 	 */
-	private void resetOutput() {
+	private void resetOutput1() {
 		dailyExpense = null;
 		numDailyExpense = 0;
+	}
+	
+	/**
+	 * @effects reset all output attributes to their initial values
+	 */
+	private void resetOutput2() {
+		dailyIncome = null;
+		numDailyIncome = 0;
 	}
 
 	/**
@@ -177,6 +246,31 @@ public class ExpenseAndIncomeByCategoryReport {
 	 */
 	public int getNumDailyExpense() {
 		return numDailyExpense;
+	}
+	
+	/**
+	 * A link-adder method for {@link #dailyIncome}, required for the object form to
+	 * function. However, this method is empty because dailyExpense have already be
+	 * recorded in the attribute {@link #dailyIncome}.
+	 */
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addDailyIncome(Collection<DailyIncome> dailyIncome) {
+		// do nothing
+		return false;
+	}
+
+	/**
+	 * @effects return dailyIncome
+	 */
+	public Collection<DailyIncome> getDailyIncome() {
+		return dailyIncome;
+	}
+
+	/**
+	 * @effects return numDailyIncome
+	 */
+	public int getNumDailyIncome() {
+		return numDailyIncome;
 	}
 
 	/**
@@ -240,7 +334,7 @@ public class ExpenseAndIncomeByCategoryReport {
 	 */
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName()+ " (" + id + ", " + dailyExpense + ")";
+		return this.getClass().getSimpleName()+ " (" + id + ", " + dailyExpense + ", " + dailyIncome + ")";
 	}
 
 }
