@@ -17,6 +17,8 @@ import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.account.Account;
 import vn.com.personalfinance.services.expense.report.DailyExpenseByCategoryReport;
 import vn.com.personalfinance.services.expense.report.DailyExpenseByDateReport;
+import vn.com.personalfinance.services.expense.report.DailyExpenseByMonthReport;
+import vn.com.personalfinance.services.expense.report.DailyExpenseByYearReport;
 
 /**
  * Represents daily expense. The account ID is auto-incremented.
@@ -35,6 +37,8 @@ public abstract class DailyExpense {
 	public static final String D_description = "description";
 	public static final String D_rptDailyExpenseByCategory = "rptDailyExpenseByCategory";
 	public static final String D_rptDailyExpenseByDate = "rptDailyExpenseByDate";
+	public static final String D_rptDailyExpenseByMonth = "rptDailyExpenseByMonth";
+	public static final String D_rptDailyExpenseByYear = "rptDailyExpenseByYear";
 	public static final String D_dateToString = "dateToString";
 
 	// attributes of daily expense
@@ -68,6 +72,12 @@ public abstract class DailyExpense {
 
 	@DAttr(name = D_rptDailyExpenseByDate, type = Type.Domain, serialisable = false, virtual = true)
 	private DailyExpenseByDateReport rptDailyExpenseByDate;
+	
+	@DAttr(name = D_rptDailyExpenseByMonth, type = Type.Domain, serialisable = false, virtual = true)
+	private DailyExpenseByMonthReport rptDailyExpenseByMonth;
+	
+	@DAttr(name = D_rptDailyExpenseByYear, type = Type.Domain, serialisable = false, virtual = true)
+	private DailyExpenseByYearReport rptDailyExpenseByYear;
 
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
@@ -146,6 +156,14 @@ public abstract class DailyExpense {
 
 	public DailyExpenseByDateReport getRptDailyExpenseByDate() {
 		return rptDailyExpenseByDate;
+	}
+	
+	public DailyExpenseByMonthReport getRptDailyExpenseByMonth() {
+		return rptDailyExpenseByMonth;
+	}
+	
+	public DailyExpenseByYearReport getRptDailyExpenseByYear() {
+		return rptDailyExpenseByYear;
 	}
 	
 	public String getDateToString() {

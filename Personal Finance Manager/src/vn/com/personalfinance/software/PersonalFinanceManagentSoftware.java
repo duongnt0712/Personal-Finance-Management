@@ -13,6 +13,8 @@ import vn.com.personalfinance.services.expense.model.Expenditure;
 import vn.com.personalfinance.services.expense.model.Income;
 import vn.com.personalfinance.services.expense.report.DailyExpenseByCategoryReport;
 import vn.com.personalfinance.services.expense.report.DailyExpenseByDateReport;
+import vn.com.personalfinance.services.expense.report.DailyExpenseByMonthReport;
+import vn.com.personalfinance.services.expense.report.DailyExpenseByYearReport;
 import vn.com.personalfinance.services.log.Log;
 import vn.com.personalfinance.services.savings.Accumulate;
 import vn.com.personalfinance.services.savings.Savings;
@@ -44,7 +46,9 @@ public class PersonalFinanceManagentSoftware {
 	      Subjects.class,
 	      // report
 	      DailyExpenseByCategoryReport.class,
-	      DailyExpenseByDateReport.class
+	      DailyExpenseByDateReport.class,
+	      DailyExpenseByMonthReport.class,
+	      DailyExpenseByYearReport.class
 	  };
 	  
 	  /**
