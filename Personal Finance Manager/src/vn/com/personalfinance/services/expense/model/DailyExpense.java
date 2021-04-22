@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.expenditure.model;
+package vn.com.personalfinance.services.expense.model;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,8 +15,8 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.account.Account;
-import vn.com.personalfinance.services.expenditure.report.DailyExpenseByCategoryReport;
-import vn.com.personalfinance.services.expenditure.report.DailyExpenseByDateReport;
+import vn.com.personalfinance.services.expense.report.DailyExpenseByCategoryReport;
+import vn.com.personalfinance.services.expense.report.DailyExpenseByDateReport;
 
 /**
  * Represents daily expense. The account ID is auto-incremented.

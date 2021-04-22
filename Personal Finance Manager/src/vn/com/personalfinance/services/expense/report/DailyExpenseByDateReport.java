@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.expenditure.report;
+package vn.com.personalfinance.services.expense.report;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,7 +27,7 @@ import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
 import domainapp.basics.util.cache.StateHistory;
-import vn.com.personalfinance.services.expenditure.model.DailyExpense;
+import vn.com.personalfinance.services.expense.model.DailyExpense;
 
 /**
  * @overview 

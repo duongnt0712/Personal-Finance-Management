@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.expenditure.model;
+package vn.com.personalfinance.services.expense.model;
 
 import java.util.ArrayList;
 import java.util.Collection;

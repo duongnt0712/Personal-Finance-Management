@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.expenditure.report;
+package vn.com.personalfinance.services.expense.report;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,8 +23,8 @@ import domainapp.basics.model.query.Expression.Op;
 import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
-import vn.com.personalfinance.services.expenditure.model.Category;
-import vn.com.personalfinance.services.expenditure.model.DailyExpense;
+import vn.com.personalfinance.services.expense.model.Category;
+import vn.com.personalfinance.services.expense.model.DailyExpense;
 
 /**
  * @overview 

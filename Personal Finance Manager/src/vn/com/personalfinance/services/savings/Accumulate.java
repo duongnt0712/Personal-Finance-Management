@@ -46,7 +46,6 @@ public class Accumulate extends Savings {
 		setLogCount(0);
 		
 		this.remainedAmount=remainedAmount;
-		computeRemainedAmount();
 	}
 	
 	//getter

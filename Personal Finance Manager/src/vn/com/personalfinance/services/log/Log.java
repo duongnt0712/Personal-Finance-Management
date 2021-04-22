@@ -59,6 +59,8 @@ public class Log implements Comparable {
 	  this.account = account;
 	  this.savings = savings;
 	  this.amount = (amount != null) ? amount.doubleValue() : null;
+	  
+	  computeNewBalance();
 	}
 	
 	// setter
@@ -139,6 +141,13 @@ public class Log implements Comparable {
 				idCounter = num;
 			}
 			return currID;
+		}
+	}
+	
+	public void computeNewBalance() {
+		double newBalance = account.getBalance() - getAmount();
+		if (newBalance <= account.getBalance()) {
+			account.setBalance(newBalance);
 		}
 	}
 	
