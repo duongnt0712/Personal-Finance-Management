@@ -39,7 +39,7 @@ public class DailyIncome {
 	public static final String I_rptExpenseAndIncomeByDate = "rptExpenseAndIncomeByDate";
 	public static final String I_rptExpenseAndIncomeByMonth = "rptExpenseAndIncomeByMonth";
 	public static final String I_rptExpenseAndIncomeByYear = "rptExpenseAndIncomeByYear";
-	public static final String I_dateToLong = "dateToLong";
+	public static final String I_dateToString = "dateToString";
 
 	// attributes of daily expense
 	@DAttr(name = I_id, id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
@@ -53,8 +53,8 @@ public class DailyIncome {
 	@DAttr(name = I_date, type = Type.Date, length = 15, optional = false)
 	private Date date;
 	
-	@DAttr(name = I_dateToLong, type = Type.Long, auto = true, length = 15, mutable = false, serialisable =true)
-	private long dateToLong;
+	@DAttr(name = I_dateToString, type = Type.String, auto = true, length = 15, mutable = false, serialisable =true)
+	private String dateToString;
 
 	@DAttr(name = I_category, type = Type.Domain, optional = false)
 	@DAssoc(ascName = "category-has-dailyIncome", role = "dailyIncome", ascType = AssocType.One2Many, endType = AssocEndType.Many, associate = @Associate(type = Category.class, cardMin = 1, cardMax = 1), dependsOn = true)
@@ -84,12 +84,12 @@ public class DailyIncome {
 	public DailyIncome(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
 			@AttrRef("category") Category category, @AttrRef("account") Account account,
 			@AttrRef("description") String description) {
-		this(null, amount, date, 0L, category, account, description);
+		this(null, amount, date, null, category, account, description);
 	}
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public DailyIncome(String id, Double amount, Date date, Long dateToLong, Category category, Account account,
+	public DailyIncome(String id, Double amount, Date date, String dateToString, Category category, Account account,
 			String description) {
 		// generate an id
 		this.id = nextID(id);
@@ -97,7 +97,7 @@ public class DailyIncome {
 		// assign other values
 		this.amount = amount;
 		this.date = date;
-		this.dateToLong = updateDateToLong(dateToLong);
+		this.dateToString = updateDateToString(dateToString);
 		this.category = category;
 		this.account = account;
 		this.description = description;
@@ -166,8 +166,8 @@ public class DailyIncome {
 		return rptExpenseAndIncomeByYear;
 	}
 	
-	public long getDateToLong() {
-		return dateToLong;
+	public String getDateToString() {
+		return dateToString;
 	}
 	
 	// automatically generate the next account id
@@ -269,10 +269,10 @@ public class DailyIncome {
 	}
 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
-	@AttrRef(value=I_dateToLong)
-	public long updateDateToLong(long dateToLong) {
+	@AttrRef(value=I_dateToString)
+	public String updateDateToString(String dateToString) {
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-		dateToLong = Long.parseLong(dateFormat.format(date));
-		return dateToLong;
+		dateToString = dateFormat.format(date);
+		return dateToString;
 	}
 }

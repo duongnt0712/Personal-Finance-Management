@@ -28,6 +28,7 @@ import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
 import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
+import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
 
 /**
  * @overview 
@@ -55,9 +56,16 @@ public class ExpenseAndIncomeByDateReport {
 	/** output: daily expense which date match {@link #date} */
 	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false, mutable = false, serialisable = false, filter = @Select(clazz = DailyExpense.class), derivedFrom = {
 			"date" })
-	@DAssoc(ascName = "dailyExpense-by-date-report-has-dailyExpense", role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
+	@DAssoc(ascName = "expense-and-income-by-date-report-has-dailyExpense", role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	@Output
 	private Collection<DailyExpense> dailyExpense;
+		
+	/** output: daily income which date match {@link #date} */
+	@DAttr(name = "dailyIncome", type = Type.Collection, optional = false, mutable = false, serialisable = false, filter = @Select(clazz = DailyIncome.class), derivedFrom = {
+			"date" })
+	@DAssoc(ascName = "expense-and-income-by-date-report-has-dailyIncome", role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, associate = @Associate(type = DailyIncome.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
+	@Output
+	private Collection<DailyIncome> dailyIncome;
 	
 	private StateHistory<String, Object> stateHist;
 
@@ -68,6 +76,14 @@ public class ExpenseAndIncomeByDateReport {
 	@DAttr(name = "numDailyExpense", type = Type.Integer, length = 20, auto = true, mutable = false)
 	@Output
 	private int numDailyExpense;
+	
+	/**
+	 * output: number of daily incomes found (if any), derived from
+	 * {@link #dailyIncome}
+	 */
+	@DAttr(name = "numDailyIncome", type = Type.Integer, length = 20, auto = true, mutable = false)
+	@Output
+	private int numDailyIncome;
 
 	/**
 	 * @effects 
@@ -90,7 +106,8 @@ public class ExpenseAndIncomeByDateReport {
 		stateHist = new StateHistory<>();
 
 		updateDateToString();
-		doReportQuery();
+		doReportQuery1();
+		doReportQuery2();
 	}
 
 	/**
@@ -118,7 +135,9 @@ public class ExpenseAndIncomeByDateReport {
 	public void setDate(Date date) throws NotPossibleException, DataSourceException {
 		this.date = date;
 
-		doReportQuery();
+		updateDateToString();
+		doReportQuery1();
+		doReportQuery2();
 	}
 
 	/**
@@ -137,7 +156,7 @@ public class ExpenseAndIncomeByDateReport {
 	 */
 	@DOpt(type = DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value = "dailyExpense")
-	public void doReportQuery() throws NotPossibleException, DataSourceException {
+	public void doReportQuery1() throws NotPossibleException, DataSourceException {
 		// the query manager instance
 
 		QRM qrm = QRM.getInstance();
@@ -146,30 +165,81 @@ public class ExpenseAndIncomeByDateReport {
 
 		// TODO: to conserve memory cache the query and only change the query parameter
 		// value(s)
-		Query q = QueryToolKit.createSearchQuery(dsm, DailyExpense.class, new String[] { DailyExpense.D_dateToString },
+		Query q1 = QueryToolKit.createSearchQuery(dsm, DailyExpense.class, new String[] { DailyExpense.E_dateToString },
 				new Op[] { Op.MATCH },
 
 				new Object[] { "%"+dateToString+"%" });
 
-		Map<Oid, DailyExpense> result = qrm.getDom().retrieveObjects(DailyExpense.class, q);
+		Map<Oid, DailyExpense> result1 = qrm.getDom().retrieveObjects(DailyExpense.class, q1);
 
-		if (!(result == null)) {
+		if (!(result1 == null)) {
 			// update the main output data
-			dailyExpense = result.values();
+			dailyExpense = result1.values();
 			// update other output (if any)
 			numDailyExpense = dailyExpense.size();
 		} else {
 			// no data found: reset output
-			resetOutput();
+			resetOutput1();
+		}
+	}
+	
+	/**
+	 * This method is invoked when the report input has be set by the user.
+	 * 
+	 * @effects
+	 * 
+	 *          <pre>
+	 *   formulate the object query
+	 *   execute the query to retrieve from the data source the domain objects that satisfy it 
+	 *   update the output attributes accordingly.
+	 *  
+	 *  <p>throws NotPossibleException if failed to generate data source query; 
+	 *  DataSourceException if fails to read from the data source.
+	 *          </pre>
+	 */
+	@DOpt(type = DOpt.Type.DerivedAttributeUpdater)
+	@AttrRef(value = "dailyIncome")
+	public void doReportQuery2() throws NotPossibleException, DataSourceException {
+		// the query manager instance
+
+		QRM qrm = QRM.getInstance();
+
+		DSMBasic dsm = qrm.getDsm();
+
+		// TODO: to conserve memory cache the query and only change the query parameter
+		// value(s)
+		Query q2 = QueryToolKit.createSearchQuery(dsm, DailyIncome.class, new String[] { DailyIncome.I_dateToString },
+				new Op[] { Op.MATCH },
+
+				new Object[] { "%"+dateToString+"%" });
+
+		Map<Oid, DailyIncome> result2 = qrm.getDom().retrieveObjects(DailyIncome.class, q2);
+
+		if (!(result2 == null)) {
+			// update the main output data
+			dailyIncome = result2.values();
+			// update other output (if any)
+			numDailyIncome = dailyIncome.size();
+		} else {
+			// no data found: reset output
+			resetOutput2();
 		}
 	}
 
 	/**
 	 * @effects reset all output attributes to their initial values
 	 */
-	private void resetOutput() {
+	private void resetOutput1() {
 		dailyExpense = null;
 		numDailyExpense = 0;
+	}
+	
+	/**
+	 * @effects reset all output attributes to their initial values
+	 */
+	private void resetOutput2() {
+		dailyIncome = null;
+		numDailyIncome = 0;
 	}
 
 	/**
@@ -178,6 +248,7 @@ public class ExpenseAndIncomeByDateReport {
 	 * be recorded in the attribute {@link #dailyExpense}.
 	 */
 	@DOpt(type = DOpt.Type.LinkAdder)
+	@AttrRef(value = "dailyExpense")
 	public boolean addDailyExpense(Collection<DailyExpense> dailyExpense) {
 		// do nothing
 		return false;
@@ -195,6 +266,32 @@ public class ExpenseAndIncomeByDateReport {
 	 */
 	public int getNumDailyExpense() {
 		return numDailyExpense;
+	}
+	
+	/**
+	 * A link-adder method for {@link #dailyIncome}, required for the object form
+	 * to function. However, this method is empty because dailyIncome have already
+	 * be recorded in the attribute {@link #dailyIncome}.
+	 */
+	@DOpt(type = DOpt.Type.LinkAdder)
+	@AttrRef(value = "dailyIncome")
+	public boolean addDailyIncome(Collection<DailyIncome> dailyIncome) {
+		// do nothing
+		return false;
+	}
+
+	/**
+	 * @effects return dailyIncome
+	 */
+	public Collection<DailyIncome> getDailyIncome() {
+		return dailyIncome;
+	}
+
+	/**
+	 * @effects return numDailyIncome
+	 */
+	public int getNumDailyIncome() {
+		return numDailyIncome;
 	}
 
 	/**
@@ -258,14 +355,14 @@ public class ExpenseAndIncomeByDateReport {
 	 */
 	@Override
 	public String toString() {
-		return "DailyExpenseByDateReport (" + id + ", " + date + ")";
+		return "ExpenseAndIncomeByDateReport (" + id + ", " + date + ")";
 	}
 	
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value=R_dateToString)
 	public void updateDateToString() {
 		stateHist.put(R_dateToString, dateToString);
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
 		dateToString = dateFormat.format(date);
 	}
 }

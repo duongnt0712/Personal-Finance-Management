@@ -119,8 +119,8 @@ public class ExpenseAndIncomeByCategoryReport {
 	public void setCategory(String category) throws NotPossibleException, DataSourceException {
 		this.category = category;
 
-//		doReportQuery1();
-//		doReportQuery2();
+		doReportQuery1();
+		doReportQuery2();
 	}
 
 	/**
@@ -229,6 +229,7 @@ public class ExpenseAndIncomeByCategoryReport {
 	 * recorded in the attribute {@link #dailyExpense}.
 	 */
 	@DOpt(type = DOpt.Type.LinkAdder)
+	@AttrRef(value = "dailyExpense")
 	public boolean addDailyExpense(Collection<DailyExpense> dailyExpense) {
 		// do nothing
 		return false;
@@ -254,6 +255,7 @@ public class ExpenseAndIncomeByCategoryReport {
 	 * recorded in the attribute {@link #dailyIncome}.
 	 */
 	@DOpt(type = DOpt.Type.LinkAdder)
+	@AttrRef(value = "dailyIncome")
 	public boolean addDailyIncome(Collection<DailyIncome> dailyIncome) {
 		// do nothing
 		return false;
