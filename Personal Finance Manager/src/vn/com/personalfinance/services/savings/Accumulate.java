@@ -37,7 +37,7 @@ public class Accumulate extends Savings {
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public Accumulate(Integer id, String name, String purpose, 
+	public Accumulate(String id, String name, String purpose, 
 		Double amount, Date startDate, Double remainedAmount) throws ConstraintViolationException {
 		super(id, name, purpose, amount, startDate);
 		
@@ -140,5 +140,29 @@ public class Accumulate extends Savings {
 		}
 		// no other attributes changed
 		return true;
+	}
+	
+	// automatically generate the next account id
+	@Override
+	public String nextID(String id) throws ConstraintViolationException {
+		if (id == null) { // generate a new id
+			idCounter++;
+			return "A" + idCounter;
+		} else {
+			// update id
+			int num;
+			try {
+				num = Integer.parseInt(id.substring(1));
+			} catch (RuntimeException e) {
+				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+						new Object[] { id });
+			}
+
+			if (num > idCounter) {
+				idCounter = num;
+			}
+
+			return id;
+		}
 	}
 }

@@ -63,7 +63,7 @@ public class SavingsBook extends Savings {
 
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type = DOpt.Type.DataSourceConstructor)
-	public SavingsBook(Integer id, String name, String purpose, 
+	public SavingsBook(String id, String name, String purpose, 
 		Double amount, Date startDate, Integer monthlyDuration, 
 		Double interestRate) throws ConstraintViolationException {
 		
@@ -179,5 +179,29 @@ public class SavingsBook extends Savings {
 		
 		double interestAmount = getAmount() * interestRate / 12 * monthlyDuration;
 		finalBalance = (Double)(getAmount() + interestAmount);
+	}
+	
+	// automatically generate the next account id
+	@Override
+	public String nextID(String id) throws ConstraintViolationException {
+		if (id == null) { // generate a new id
+			idCounter++;
+			return "S" + idCounter;
+		} else {
+			// update id
+			int num;
+			try {
+				num = Integer.parseInt(id.substring(1));
+			} catch (RuntimeException e) {
+				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+						new Object[] { id });
+			}
+
+			if (num > idCounter) {
+				idCounter = num;
+			}
+
+			return id;
+		}
 	}
 }

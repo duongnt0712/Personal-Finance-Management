@@ -36,10 +36,10 @@ public abstract class Savings {
 	public static final String S_startDate = "startDate";
 
 	// attributes of savings
-	@DAttr(name = S_id, id = true, type = Type.Integer, auto = true, length = 6, mutable = false, optional = false)
-	private int id;
+	@DAttr(name = S_id, id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
+	private String id;
 	// static variable to keep track of account id
-	private static int idCounter = 0;
+	public static int idCounter = 0;
 	
 	@DAttr(name = S_name, type = Type.String, length = 20, optional = false, cid=true)
 	private String name;
@@ -63,9 +63,6 @@ public abstract class Savings {
 	// derived
 	private int logCount;
 	
-	// static variable to keep track of savings code
-	private static Map<Tuple,Integer> currNums = new LinkedHashMap<Tuple,Integer>();
-	
 	// constructor methods
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	protected Savings(@AttrRef("name") String name,
@@ -77,7 +74,7 @@ public abstract class Savings {
 		
 	// a shared constructor that is invoked by other constructors
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	protected Savings (Integer id, String name, String purpose, 
+	protected Savings (String id, String name, String purpose, 
 		Double amount,  Date startDate) throws ConstraintViolationException {
 		// generate an id
 		this.id = nextID(id);   
@@ -90,7 +87,7 @@ public abstract class Savings {
 	
 	// getter methods
 	
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 	
@@ -137,7 +134,7 @@ public abstract class Savings {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + Integer.parseInt(id.substring(1));
 		return result;
 	}
 	
@@ -150,30 +147,30 @@ public abstract class Savings {
 		if (getClass() != obj.getClass())
 			return false;
 		Savings other = (Savings) obj;
-		if (id == 0) {
-			if (other.id != 0)
-				return false;
-		} else if (!(id == other.id))
+		
+		if (!(id.equals(other.id)))
 			return false;
 		return true;
 	}
 	
-	private static int nextID(Integer currID) {
-		if (currID == null) { 
-			// generate one
-			idCounter++;
-			return idCounter;
-		} else { 
-			// update
-			int num;
-			num = currID.intValue();
-
-			if (num > idCounter) {
-				idCounter = num;
-			}
-			return currID;
-		}
-	}
+	public abstract String nextID(String currID);
+	
+//	private static int nextID(Integer currID) {
+//		if (currID == null) { 
+//			// generate one
+//			idCounter++;
+//			return "S" + idCounter;
+//		} else { 
+//			// update
+//			int num;
+//			num = currID.intValue();
+//
+//			if (num > idCounter) {
+//				idCounter = num;
+//			}
+//			return currID;
+//		}
+//	}
 	 
 	/**
 	 * @requires minVal != null /\ maxVal != null
@@ -186,26 +183,19 @@ public abstract class Savings {
 		if (minVal != null && maxVal != null) {
 			// check the right attribute
 			if (attrib.name().equals("id")) {
-				int maxIdVal = (Integer) maxVal;
-				if (maxIdVal > idCounter)
-					idCounter = maxIdVal;
-			} else if (attrib.name().equals("code")) {
-		        String maxCode = (String) maxVal;
-		        
-		        try {
-		          int maxCodeNum = Integer.parseInt(maxCode.substring(1));
-		          
-		          // current max num for the semester
-		          Integer currNum = currNums.get(derivingValue);
-		          
-		          if (currNum == null || maxCodeNum > currNum) {
-		            currNums.put(derivingValue, maxCodeNum);
-		          }
-		          
-		        } catch (RuntimeException e) {
-		          throw new ConstraintViolationException(
-		              ConstraintViolationException.Code.INVALID_VALUE, e, new Object[] {maxCode});
-		        }
+				String maxID = (String) maxVal;
+
+				try {
+					int maxIDNum = Integer.parseInt(maxID.substring(1));
+
+					if (maxIDNum > idCounter) {
+						idCounter = maxIDNum;
+					}
+
+				} catch (RuntimeException e) {
+					throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+							new Object[] { maxID });
+				}
 			}
 		}
 	}
