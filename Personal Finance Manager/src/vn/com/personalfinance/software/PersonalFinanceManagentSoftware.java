@@ -4,6 +4,7 @@ import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
 import vn.com.personalfinance.services.account.Account;
 import vn.com.personalfinance.services.account.AccountType;
+import vn.com.personalfinance.services.account.TotalBalance;
 import vn.com.personalfinance.services.borrowandlend.BorrowAndLend;
 import vn.com.personalfinance.services.borrowandlend.Subjects;
 import vn.com.personalfinance.services.expense.model.Category;
@@ -28,6 +29,7 @@ import vn.com.personalfinance.services.savings.SavingsBook;
 public class PersonalFinanceManagentSoftware {
 	  // the domain model of software
 	  static final Class[] model = {
+//		  TotalBalance.class,
 	      Account.class, 
 	      AccountType.class, 
 	      Savings.class,

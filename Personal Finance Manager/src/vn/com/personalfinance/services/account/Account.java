@@ -18,6 +18,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.log.Log;
+import vn.com.personalfinance.services.borrowandlend.ActionType;
 import vn.com.personalfinance.services.borrowandlend.BorrowAndLend;
 import vn.com.personalfinance.services.expense.model.DailyExpense;
 
@@ -74,6 +75,12 @@ public class Account {
 	associate = @Associate(type = BorrowAndLend.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
 	private Collection<BorrowAndLend> borrowAndLend;
 	private int borrowAndLendCount;
+	
+//	@DAttr(name = "totalBalance", type = Type.Domain)
+//	@DAssoc(ascName = "totalBalance-has-account", role = "account",
+//	ascType = AssocType.One2Many, endType = AssocEndType.Many, 
+//	associate = @Associate(type = TotalBalance.class, cardMin = 1, cardMax = 1), dependsOn = true)
+//	private TotalBalance totalBalance;
 	
 	// constructor methods
 	// form constructor into an object
@@ -214,6 +221,11 @@ public class Account {
 
 		if (removed) {
 			borrowAndLendCount--;
+			if(bL.getType().equals(ActionType.Borrow_money) & bL.getType().equals(ActionType.Collect_debts)) {
+				balance -= bL.getMoney();
+			} else if (bL.getType().equals(ActionType.Lend_money) & bL.getType().equals(ActionType.Repay_money)) {
+				balance += bL.getMoney();
+			}
 		}
 		// no other attributes changed
 		return false;
@@ -312,6 +324,10 @@ public class Account {
 		return borrowAndLendCount;
 	}
 	
+//	public TotalBalance getTotalBalance() {
+//		return totalBalance;
+//	}
+	
 	// setter methods
 	public void setName(String name) {
 		this.name = name;
@@ -352,6 +368,10 @@ public class Account {
 	public void setBorrowAndLend(int borrowAndLendCount) {
 		this.borrowAndLendCount = borrowAndLendCount;
 	}
+	
+//	public void setTotalBalance(TotalBalance totalBalance) {
+//		this.totalBalance = totalBalance;
+//	}
 	
 	// override toString
 	/**

@@ -97,6 +97,7 @@ public class BorrowAndLend {
 			
 			stateHist = new StateHistory<>();
 			computeFinalMoney();
+			computeNewBalance();
 		}
 
 //		Getter Method
@@ -258,6 +259,17 @@ public class BorrowAndLend {
 			stateHist.put(T_final_money, finalMoney);
 			
 			finalMoney = money + (money * (interestedRate / 100 / (double)period));
+		}
+		
+		public void computeNewBalance() {
+			double newBalance = 0;
+			if (type.equals(ActionType.Borrow_money) || type.equals(ActionType.Collect_debts)) {
+				newBalance = account.getBalance() + getMoney();
+				
+			} else if (type.equals(ActionType.Lend_money) || type.equals(ActionType.Repay_money)){
+				newBalance = account.getBalance() - getMoney();
+			}
+			account.setBalance(newBalance);
 		}
 		
 		@DOpt(type = DOpt.Type.AutoAttributeValueSynchroniser)
