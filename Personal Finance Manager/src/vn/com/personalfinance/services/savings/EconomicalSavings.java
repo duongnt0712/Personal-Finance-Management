@@ -133,43 +133,63 @@ public class EconomicalSavings extends Savings {
 			computeFinalBalance();
 	}
 	
-	/*
-	 * @DOpt(type = DOpt.Type.LinkAdder) // only need to do this for reflexive
-	 * association: @MemberRef(name="accounts") public boolean addLog(Log s) { if
-	 * (!getLog().contains(s)) getLog().add(s);
-	 * 
-	 * // no other attributes changed return true; }
-	 * 
-	 * @DOpt(type = DOpt.Type.LinkAdderNew) public boolean addNewLog(Log s) {
-	 * if(getLogCount() < 0 || getLogCount() > 1) { throw new
-	 * ConstraintViolationException(DExCode.INVALID_LOG, getLogCount()); }
-	 * getLog().add(s); int count = getLogCount(); setLogCount(count + 1);
-	 * 
-	 * // no other attributes changed return true; }
-	 * 
-	 * @DOpt(type = DOpt.Type.LinkAdder) public boolean addLog(Collection<Log> log)
-	 * { for (Log s : log) { if (!getLog().contains(s)) { getLog().add(s); } } // no
-	 * other attributes changed return true; }
-	 * 
-	 * @DOpt(type = DOpt.Type.LinkAdderNew) public boolean addNewLog(Collection<Log>
-	 * log) { if(getLogCount() < 0 || getLogCount() > 1) { throw new
-	 * ConstraintViolationException(DExCode.INVALID_LOG, getLogCount()); }
-	 * getLog().addAll(log); int count = getLogCount(); count += log.size();
-	 * setLogCount(count);
-	 * 
-	 * // no other attributes changed (average mark is not serialisable!!!) return
-	 * true; }
-	 * 
-	 * @DOpt(type = DOpt.Type.LinkRemover) // only need to do this for reflexive
-	 * association: @MemberRef(name="accounts") public boolean removeLog(Log s) {
-	 * boolean removed = getLog().remove(s);
-	 * 
-	 * if (removed) { int count = getLogCount(); setLogCount(count - 1);
-	 * 
-	 * double currentAccountBalance = s.getAccount().getBalance();
-	 * s.getAccount().setBalance(currentAccountBalance += s.getAmount()); } // no
-	 * other attributes changed return true; }
-	 */
+//	@DOpt(type = DOpt.Type.LinkAdder)
+//	// only need to do this for reflexive association: @MemberRef(name="accounts")
+//	public boolean addSavingsTransaction(SavingsTransaction s) {
+//		if (!getSavingsTransaction().contains(s))
+//			getSavingsTransaction().add(s);
+//
+//		// no other attributes changed
+//		return true;
+//	}
+//
+//	@DOpt(type = DOpt.Type.LinkAdderNew)
+//	public boolean addNewSavingsTransaction(SavingsTransaction s) {
+//		getSavingsTransaction().add(s);
+//		int count = getSavingsTransactionCount();
+//		setSavingsTransactionCount(count + 1);
+//
+//		// no other attributes changed
+//		return true;
+//	}
+//
+//	@DOpt(type = DOpt.Type.LinkAdder)
+//	public boolean addSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+//		for (SavingsTransaction s : savingsTransaction) {
+//			if (!getSavingsTransaction().contains(s)) {
+//				getSavingsTransaction().add(s);
+//			}
+//		}
+//		// no other attributes changed
+//		return true;
+//	}
+//
+//	@DOpt(type = DOpt.Type.LinkAdderNew)
+//	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+//		getSavingsTransaction().addAll(savingsTransaction);
+//		int count = getSavingsTransactionCount();
+//		count += savingsTransaction.size();
+//		setSavingsTransactionCount(count);
+//
+//		// no other attributes changed (average mark is not serialisable!!!)
+//		return true;
+//	}
+//
+//	@DOpt(type = DOpt.Type.LinkRemover)
+//	// only need to do this for reflexive association: @MemberRef(name="accounts")
+//	public boolean removeSavingsTransaction(SavingsTransaction s) {
+//		boolean removed = getSavingsTransaction().remove(s);
+//
+//		if (removed) {
+//			int count = getSavingsTransactionCount();
+//			setSavingsTransactionCount(count - 1);
+//
+//			double currentAccountBalance = s.getAccount().getBalance();
+//			s.getAccount().setBalance(currentAccountBalance += s.getAmount());
+//		}
+//		// no other attributes changed
+//		return true;
+//	}
 	
 	// calculate finalBalance 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)

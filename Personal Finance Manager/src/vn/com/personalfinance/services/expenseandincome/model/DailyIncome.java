@@ -97,11 +97,12 @@ public class DailyIncome {
 		// assign other values
 		this.amount = amount;
 		this.date = date;
-		this.dateToString = updateDateToString(dateToString);
+		this.dateToString = dateToString;
 		this.category = category;
 		this.account = account;
 		this.description = description;
 
+		updateDateToString();
 		computeNewBalance();
 	}
 	// getter and setter method
@@ -124,6 +125,8 @@ public class DailyIncome {
 
 	public void setDate(Date date) {
 		this.date = date;
+		
+		updateDateToString();
 	}
 
 	public Category getCategory() {
@@ -173,9 +176,7 @@ public class DailyIncome {
 	// automatically generate the next account id
 	public String nextID(String id) throws ConstraintViolationException {
 		if (id == null) { // generate a new id
-
 			idCounter++;
-
 			return "I" + idCounter;
 		} else {
 			// update id
@@ -183,8 +184,7 @@ public class DailyIncome {
 			try {
 				num = Integer.parseInt(id.substring(1));
 			} catch (RuntimeException e) {
-				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
-						new Object[] { id });
+				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e, new Object[] { id });
 			}
 
 			if (num > idCounter) {
@@ -270,9 +270,8 @@ public class DailyIncome {
 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value=I_dateToString)
-	public String updateDateToString(String dateToString) {
+	public void updateDateToString() {
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-		dateToString = dateFormat.format(date);
-		return dateToString;
+		this.dateToString = dateFormat.format(date);
 	}
 }

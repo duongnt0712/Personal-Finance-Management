@@ -53,7 +53,7 @@ public class DailyExpense {
 	@DAttr(name = E_date, type = Type.Date, length = 15, optional = false)
 	private Date date;
 	
-	@DAttr(name = E_dateToString, type = Type.String, auto = true, length = 15, mutable = false, serialisable = true)
+	@DAttr(name = E_dateToString, type = Type.String, auto = true, length = 15, mutable = false, serialisable = true, derivedFrom = {E_date})
 	private String dateToString;
 
 	@DAttr(name = E_category, type = Type.Domain, optional = false)
@@ -78,7 +78,7 @@ public class DailyExpense {
 	
 	@DAttr(name = E_rptExpenseAndIncomeByYear, type = Type.Domain, serialisable = false, virtual = true)
 	private ExpenseAndIncomeByYearReport rptExpenseAndIncomeByYear;
-
+	
 	// constructor methods
 	@DOpt(type = DOpt.Type.ObjectFormConstructor)
 	public DailyExpense(@AttrRef("amount") Double amount, @AttrRef("date") Date date, 
@@ -97,11 +97,12 @@ public class DailyExpense {
 		// assign other values
 		this.amount = amount;
 		this.date = date;
-		this.dateToString = updateDateToString(dateToString);
+		this.dateToString = dateToString;
 		this.category = category;
 		this.account = account;
 		this.description = description;
-
+		
+		updateDateToString();
 		computeNewBalance();
 	}
 	// getter and setter method
@@ -124,6 +125,8 @@ public class DailyExpense {
 
 	public void setDate(Date date) {
 		this.date = date;
+		
+		updateDateToString();
 	}
 
 	public Category getCategory() {
@@ -170,7 +173,8 @@ public class DailyExpense {
 		return dateToString;
 	}
 
-	public String nextID(String currID) throws ConstraintViolationException {
+	// automatically generate the next account id
+	public String nextID(String id) throws ConstraintViolationException {
 		if (id == null) { // generate a new id
 			idCounter++;
 			return "E" + idCounter;
@@ -268,9 +272,8 @@ public class DailyExpense {
 	
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
 	@AttrRef(value=E_dateToString)
-	public String updateDateToString(String dateToString) {
+	public void updateDateToString() {
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-		dateToString = dateFormat.format(date);
-		return dateToString;
+		this.dateToString = dateFormat.format(date);
 	}
 }
