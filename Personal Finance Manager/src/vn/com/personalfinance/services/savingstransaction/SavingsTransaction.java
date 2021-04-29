@@ -18,14 +18,14 @@ import domainapp.basics.util.Tuple;
 public class SavingsTransaction implements Comparable {
 	
 	// attribute
-	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
-	private int id;
+	@DAttr(name = "id", id = true, auto = true, type = Type.String, length = 5, optional = false, mutable = false)
+	private String id;
 	private static int idCounter = 0;
 	  
 	@DAttr(name = "account", type = Type.Domain, length = 15, optional = false)
 	@DAssoc(ascName = "account-has-savingsTransaction", role = "savingsTransaction", 
 	    ascType = AssocType.One2Many, endType = AssocEndType.Many, 
-	    associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1), dependsOn = true)
+	    associate = @Associate(type = Account.class, cardMin = 1, cardMax = 1))
 	private Account account;
 
 	@DAttr(name = "savings", type = Type.Domain, length = 15, optional = false)
@@ -34,33 +34,36 @@ public class SavingsTransaction implements Comparable {
 	    associate = @Associate(type = Savings.class, cardMin = 1, cardMax = 1), dependsOn = true)
 	private Savings savings;
 	
-	@DAttr(name = "amount", type = Type.Double, length = 15, optional = true)
-	private Double amount;
+	@DAttr(name = "amount", type = Type.Double, length = 15, optional = false)
+	private double amount;
+	
+	@DAttr(name = "description", type = Type.String, length = 30)
+	private String description;
 	
 	// constructor
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	@DOpt(type=DOpt.Type.RequiredConstructor)
 	public SavingsTransaction(@AttrRef("account") Account account, 
 	    @AttrRef("savings") Savings savings) throws ConstraintViolationException {
-	  this(null, account, savings, 0.0);
+	  this(null, account, savings, 0.0, null);
 	}
 
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	public SavingsTransaction(@AttrRef("account") Account account, 
 		@AttrRef("savings") Savings savings, 
-	    @AttrRef("amount") Double amount)
+	    @AttrRef("amount") Double amount, 
+	    @AttrRef("description") String description)
 	    throws ConstraintViolationException {
-	  this(null, account, savings, amount);
+	  this(null, account, savings, amount, description);
 	}
 
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	public SavingsTransaction(Integer id, Account account, Savings savings, Double amount) throws ConstraintViolationException {
+	public SavingsTransaction(String id, Account account, Savings savings, Double amount, String description) throws ConstraintViolationException {
 	  this.id = nextID(id);
 	  this.account = account;
 	  this.savings = savings;
 	  this.amount = (amount != null) ? amount.doubleValue() : null;
-	  
-	  computeNewBalance();
+	  this.description = description;
 	}
 	
 	// setter
@@ -72,12 +75,16 @@ public class SavingsTransaction implements Comparable {
 		this.savings = savings;
 	}
 	
-	public void setAmount(Double amount) {
+	public void setAmount(double amount) {
 		this.amount = amount;
 	}
 	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	// getter
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -89,8 +96,12 @@ public class SavingsTransaction implements Comparable {
 		return savings;
 	}
 
-	public Double getAmount() {
+	public double getAmount() {
 		return amount;
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 	
 	@Override
@@ -100,17 +111,17 @@ public class SavingsTransaction implements Comparable {
 
 	public String toString(boolean full) {
 		if (full)
-			return "Log(" + account + "," + savings + ")";
+			return "SavingsTransaction(" + account + "," + savings + ")";
 		else
-			return "Log(" + getId() + "," + ((account != null) ? account.getId() : "null") + ","
-					+ ((savings != null) ? savings.getId() : "null") + ")";
+			return "SavingsTransaction(" + getId() + "," + ((account != null) ? account.getId() : "null") + ","
+					+ ((savings != null) ? savings.getId() : "null") + "," + description + ")";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + Integer.parseInt(id);
 		return result;
 	}
 
@@ -129,25 +140,24 @@ public class SavingsTransaction implements Comparable {
 	}
 	
 	
-	private static int nextID(Integer currID) {
-		if (currID == null) { // generate one
+	private static String nextID(String id) {
+		if (id == null) { // generate a new id
 			idCounter++;
-			return idCounter;
-		} else { // update
+			return "ST" + idCounter;
+		} else {
+			// update id
 			int num;
-			num = currID.intValue();
+			try {
+				num = Integer.parseInt(id.substring(1));
+			} catch (RuntimeException e) {
+				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e, new Object[] { id });
+			}
 
 			if (num > idCounter) {
 				idCounter = num;
 			}
-			return currID;
-		}
-	}
-	
-	public void computeNewBalance() {
-		double newBalance = account.getBalance() - getAmount();
-		if (newBalance <= account.getBalance()) {
-			account.setBalance(newBalance);
+
+			return id;
 		}
 	}
 	
@@ -162,9 +172,19 @@ public class SavingsTransaction implements Comparable {
 		if (minVal != null && maxVal != null) {
 			// check the right attribute
 			if (attrib.name().equals("id")) {
-				int maxIdVal = (Integer) maxVal;
-				if (maxIdVal > idCounter)
-					idCounter = maxIdVal;
+				String maxID = (String) maxVal;
+
+				try {
+					int maxIDNum = Integer.parseInt(maxID.substring(2));
+
+					if (maxIDNum > idCounter) {
+						idCounter = maxIDNum;
+					}
+
+				} catch (RuntimeException e) {
+					throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+							new Object[] { maxID });
+				}
 			}
 			// TODO add support for other attributes here
 		}

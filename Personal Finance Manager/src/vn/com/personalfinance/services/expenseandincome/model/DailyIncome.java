@@ -103,7 +103,7 @@ public class DailyIncome {
 		this.description = description;
 
 		updateDateToString();
-		computeNewBalance();
+//		computeNewBalance();
 	}
 	// getter and setter method
 
@@ -195,10 +195,10 @@ public class DailyIncome {
 		}
 	}
 
-	public void computeNewBalance() {
-		double newBalance = getAccount().getBalance() + amount;
-		getAccount().setBalance(newBalance);
-	}
+//	public void computeNewBalance() {
+//		double newBalance = getAccount().getBalance() + amount;
+//		getAccount().setBalance(newBalance);
+//	}
 	
 	@Override
 	public String toString() {

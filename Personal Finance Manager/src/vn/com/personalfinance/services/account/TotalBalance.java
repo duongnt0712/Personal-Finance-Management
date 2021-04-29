@@ -1,8 +1,10 @@
 package vn.com.personalfinance.services.account;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 
+import domainapp.basics.exceptions.ConstraintViolationException;
 import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
@@ -13,37 +15,54 @@ import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
+import domainapp.basics.util.Tuple;
 
 @DClass(schema="personalfinancemanagement")
 public class TotalBalance {
 	public static final String A_totalBalance = "totalBalance";
 	public static final String A_accounts = "accounts";
 	
+	@DAttr(name = "id", id = true, type = Type.String, auto = true, length = 6, mutable = false, optional = false)
+	private String id;
+	private static int idCounter = 0;
+	
 	@DAttr(name = A_totalBalance, type = Type.Double, auto = true, length = 15, mutable = false, optional = true)
-	private Double totalBalance;
+	private double totalBalance;
 	
 	@DAttr(name = A_accounts, type = Type.Collection, optional = false,
 	serialisable = false, filter = @Select(clazz = Account.class))
 	@DAssoc(ascName = "totalBalance-has-account", role = "totalBalance",
 	ascType = AssocType.One2Many, endType = AssocEndType.One, 
-	associate = @Associate(type = Account.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE ))
+	associate = @Associate(type = Account.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	private Collection<Account> accounts;
 	private int accountsCount;
 	
+	@DOpt(type=DOpt.Type.ObjectFormConstructor)
+	public TotalBalance() {
+		this(null, 0.0);
+	}
+	
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	public TotalBalance(Double totalBalance) {    
+	public TotalBalance(String id, Double totalBalance) {    
 	    // assign other values
-	    this.totalBalance = totalBalance;
+		this.id = nextID(id);
+//	    this.totalBalance = totalBalance;
+	    computeTotalBalance(totalBalance);
 	    
 	    accounts = new ArrayList<>();
 	    accountsCount = 0;
-	    
-	    computeTotalBalance();
 	}
 	
+	public String getId() {
+		return id;
+	}
+
+	public double getTotalBalance() {
+		return totalBalance;
+	}
+
 	@DOpt(type = DOpt.Type.LinkAdder)
-	// only need to do this for reflexive association: @MemberRef(name="accounts")
-	public boolean addDailyExpense(Account a) {
+	public boolean addAccount(Account a) {
 		if (!this.accounts.contains(a)) {
 			accounts.add(a);
 		}
@@ -52,17 +71,17 @@ public class TotalBalance {
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewDailyExpense(Account a) {
+	public boolean addNewAccount(Account a) {
 		accounts.add(a);
 		accountsCount++;
-		
-		computeTotalBalance();
+
 		// no other attributes changed
-		return false;
+		computeTotalBalance(0.0);
+		return true;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addDailyExpense(Collection<Account> account) {
+	public boolean addAccount(Collection<Account> account) {
 		for (Account a : account) {
 			if (!this.accounts.contains(a)) {
 				this.accounts.add(a);
@@ -73,13 +92,19 @@ public class TotalBalance {
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewDailyExpense(Collection<Account> accounts) {
+	public boolean addNewAccount(Collection<Account> accounts) {
 		this.accounts.addAll(accounts);
 		accountsCount += accounts.size();
 		
-		computeTotalBalance();
 		// no other attributes changed
-		return false;
+		computeTotalBalance(0.0);
+		return true;
+	}
+	
+	@DOpt(type = DOpt.Type.LinkUpdater)
+	public boolean updateAccount(Account a) {
+		computeTotalBalance(0.0);
+		return true;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkRemover)
@@ -89,7 +114,7 @@ public class TotalBalance {
 
 		if (removed) {
 			accountsCount--;	
-			computeTotalBalance();
+			computeTotalBalance(0.0);
 		}
 		// no other attributes changed
 		return false;
@@ -108,6 +133,7 @@ public class TotalBalance {
 	public void setAccounts(Collection<Account> account) {
 		this.accounts = account;
 		accountsCount = account.size();
+		computeTotalBalance(0.0);
 	}
 	
 	@DOpt(type=DOpt.Type.LinkCountSetter)
@@ -115,9 +141,64 @@ public class TotalBalance {
 		this.accountsCount = accountsCount;
 	}
 	
-	private void computeTotalBalance() {
-		for(Account a : accounts) {
-			totalBalance += a.getBalance();
+	private void computeTotalBalance(double totalBalance) {
+		if(accountsCount > 0) {
+			double tempBalance = 0.0;
+			for(Account a : accounts) {
+				tempBalance += a.getBalance();
+			}
+			this.totalBalance = tempBalance;
+		} else {
+			this.totalBalance = totalBalance;
+		}
+	}
+	
+	private String nextID(String id) throws ConstraintViolationException {
+		if (id == null) { // generate a new id
+			if (idCounter == 0) {
+				idCounter = Calendar.getInstance().get(Calendar.YEAR);
+			} else {
+				idCounter++;
+			}
+			return "T" + idCounter;
+		} else {
+			// update id
+			int num;
+			try {
+				num = Integer.parseInt(id.substring(1));
+			} catch (RuntimeException e) {
+				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+						new Object[] { id });
+			}
+
+			if (num > idCounter) {
+				idCounter = num;
+			}
+			return id;
+		}
+	}
+	
+	@DOpt(type = DOpt.Type.AutoAttributeValueSynchroniser)
+	public static void updateAutoGeneratedValue(DAttr attrib, Tuple derivingValue, Object minVal, Object maxVal)
+			throws ConstraintViolationException {
+
+		if (minVal != null && maxVal != null) {
+			// TODO: update this for the correct attribute if there are more than one auto
+			// attributes of this class
+			if (attrib.name().equals("id")) {
+				String maxId = (String) maxVal;
+
+				try {
+					int maxIdNum = Integer.parseInt(maxId.substring(1));
+
+					if (maxIdNum > idCounter) // extra check
+						idCounter = maxIdNum;
+
+				} catch (RuntimeException e) {
+					throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e,
+							new Object[] { maxId });
+				}
+			}
 		}
 	}
 }

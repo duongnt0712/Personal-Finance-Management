@@ -31,13 +31,6 @@ public class EconomicalSavings extends Savings {
 	public static final String S_finalBalance = "finalBalance";
 	
 	// attributes of savings book
-	@DAttr(name = "savingsTransaction", type = Type.Collection, optional = false, serialisable = false,
-	filter = @Select(clazz = SavingsTransaction.class))
-	@DAssoc(ascName = "savings-has-savingsTransaction", role = "savings",
-	ascType = AssocType.One2Many, endType = AssocEndType.One,
-	associate = @Associate(type = SavingsTransaction.class, cardMin = 1, cardMax = 1))
-	@Override public Collection<SavingsTransaction> getSavingsTransaction() { return super.getSavingsTransaction(); }
-	
 	@DAttr(name = S_monthlyDuration, type = Type.Integer, length = 2, optional = false) 
 	private int monthlyDuration;
 	
@@ -106,11 +99,12 @@ public class EconomicalSavings extends Savings {
 
 	// setter methods
 //	@Override
-//	public void setLogCount(int logCount) {
-//		if(logCount < 0 || logCount > 1) {
-//			throw new ConstraintViolationException(DExCode.INVALID_LOG, logCount);
+//	public void setSavingsTransactionCount(int count) {
+//		if (count < 0 || count > 1) {
+//			throw new ConstraintViolationException(DExCode.INVALID_LOG, count);
 //		}
-//		super.setLogCount(logCount);
+//		System.out.println("Line 121");
+//		super.setSavingsTransactionCount(count);
 //	}
 	
 	public void setMonthlyDuration(int monthlyDuration) {
@@ -132,64 +126,30 @@ public class EconomicalSavings extends Savings {
 		if (computeFinalBalance)
 			computeFinalBalance();
 	}
-	
-//	@DOpt(type = DOpt.Type.LinkAdder)
-//	// only need to do this for reflexive association: @MemberRef(name="accounts")
-//	public boolean addSavingsTransaction(SavingsTransaction s) {
-//		if (!getSavingsTransaction().contains(s))
-//			getSavingsTransaction().add(s);
-//
-//		// no other attributes changed
-//		return true;
-//	}
-//
-//	@DOpt(type = DOpt.Type.LinkAdderNew)
-//	public boolean addNewSavingsTransaction(SavingsTransaction s) {
-//		getSavingsTransaction().add(s);
-//		int count = getSavingsTransactionCount();
-//		setSavingsTransactionCount(count + 1);
-//
-//		// no other attributes changed
-//		return true;
-//	}
-//
-//	@DOpt(type = DOpt.Type.LinkAdder)
-//	public boolean addSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
-//		for (SavingsTransaction s : savingsTransaction) {
-//			if (!getSavingsTransaction().contains(s)) {
-//				getSavingsTransaction().add(s);
-//			}
-//		}
-//		// no other attributes changed
-//		return true;
-//	}
-//
-//	@DOpt(type = DOpt.Type.LinkAdderNew)
-//	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
-//		getSavingsTransaction().addAll(savingsTransaction);
-//		int count = getSavingsTransactionCount();
-//		count += savingsTransaction.size();
-//		setSavingsTransactionCount(count);
-//
-//		// no other attributes changed (average mark is not serialisable!!!)
-//		return true;
-//	}
-//
-//	@DOpt(type = DOpt.Type.LinkRemover)
-//	// only need to do this for reflexive association: @MemberRef(name="accounts")
-//	public boolean removeSavingsTransaction(SavingsTransaction s) {
-//		boolean removed = getSavingsTransaction().remove(s);
-//
-//		if (removed) {
-//			int count = getSavingsTransactionCount();
-//			setSavingsTransactionCount(count - 1);
-//
-//			double currentAccountBalance = s.getAccount().getBalance();
-//			s.getAccount().setBalance(currentAccountBalance += s.getAmount());
-//		}
-//		// no other attributes changed
-//		return true;
-//	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewSavingsTransaction(SavingsTransaction s) {
+		int count = getSavingsTransactionCount();
+		if (count < 0 || count > 1) {
+			throw new ConstraintViolationException(DExCode.INVALID_LOG, count);
+		}
+		super.addNewSavingsTransaction(s);		
+		System.out.println("Line 157: " + getSavingsTransactionCount());
+		// no other attributes changed
+		return true;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdderNew)
+	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		int count = getSavingsTransactionCount();
+		if (count < 0 || count > 1) {
+			throw new ConstraintViolationException(DExCode.INVALID_LOG, count);
+		}
+		super.addNewSavingsTransaction(savingsTransaction);		
+
+		// no other attributes changed (average mark is not serialisable!!!)
+		return true;
+	}
 	
 	// calculate finalBalance 
 	@DOpt(type=DOpt.Type.DerivedAttributeUpdater)

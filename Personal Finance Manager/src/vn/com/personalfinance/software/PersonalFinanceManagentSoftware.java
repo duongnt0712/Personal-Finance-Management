@@ -30,7 +30,7 @@ import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
 public class PersonalFinanceManagentSoftware {
 	  // the domain model of software
 	  static final Class[] model = {
-//		  TotalBalance.class,
+		  TotalBalance.class,
 	      Account.class, 
 	      AccountType.class, 
 	      Savings.class,

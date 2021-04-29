@@ -230,7 +230,7 @@ public abstract class Savings {
 		savingsTransaction.add(s);
 		savingsTransactionCount++;
 		// no other attributes changed
-		return false;
+		return true;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)

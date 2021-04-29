@@ -103,7 +103,6 @@ public class DailyExpense {
 		this.description = description;
 		
 		updateDateToString();
-		computeNewBalance();
 	}
 	// getter and setter method
 
@@ -192,13 +191,6 @@ public class DailyExpense {
 			}
 
 			return id;
-		}
-	}
-
-	public void computeNewBalance() {
-		double newBalance = getAccount().getBalance() - amount;
-		if (newBalance >= 0) {
-			getAccount().setBalance(newBalance);
 		}
 	}
 

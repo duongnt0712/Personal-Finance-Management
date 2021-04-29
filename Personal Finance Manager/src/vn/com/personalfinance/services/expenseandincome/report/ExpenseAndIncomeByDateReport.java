@@ -73,7 +73,7 @@ public class ExpenseAndIncomeByDateReport {
 	 * output: number of daily expenses found (if any), derived from
 	 * {@link #dailyExpense}
 	 */
-	@DAttr(name = "numDailyExpense", type = Type.Integer, length = 20, auto = true, mutable = false)
+	@DAttr(name = "numDailyExpense", type = Type.Integer, length = 5, auto = true, mutable = false)
 	@Output
 	private int numDailyExpense;
 	
@@ -81,9 +81,17 @@ public class ExpenseAndIncomeByDateReport {
 	 * output: number of daily incomes found (if any), derived from
 	 * {@link #dailyIncome}
 	 */
-	@DAttr(name = "numDailyIncome", type = Type.Integer, length = 20, auto = true, mutable = false)
+	@DAttr(name = "numDailyIncome", type = Type.Integer, length = 5, auto = true, mutable = false)
 	@Output
 	private int numDailyIncome;
+	
+	@DAttr(name = "totalExpense", type = Type.Double, length = 5, auto = true, mutable = false)
+	@Output
+	private double totalExpense;
+	
+	@DAttr(name = "totalIncome", type = Type.Double, length = 5, auto = true, mutable = false)
+	@Output
+	private double totalIncome;
 
 	/**
 	 * @effects 
@@ -119,6 +127,14 @@ public class ExpenseAndIncomeByDateReport {
 	
 	public String getDateToString() {
 		return dateToString;
+	}
+	
+	public double getTotalExpense() {
+		return totalExpense;
+	}
+
+	public double getTotalIncome() {
+		return totalIncome;
 	}
 
 	/**
@@ -177,6 +193,9 @@ public class ExpenseAndIncomeByDateReport {
 			dailyExpense = result1.values();
 			// update other output (if any)
 			numDailyExpense = dailyExpense.size();
+			for(DailyExpense d: dailyExpense) {
+				totalExpense+=d.getAmount();
+			}
 		} else {
 			// no data found: reset output
 			resetOutput1();
@@ -220,6 +239,9 @@ public class ExpenseAndIncomeByDateReport {
 			dailyIncome = result2.values();
 			// update other output (if any)
 			numDailyIncome = dailyIncome.size();
+			for(DailyIncome d: dailyIncome) {
+				totalIncome+=d.getAmount();
+			}
 		} else {
 			// no data found: reset output
 			resetOutput2();

@@ -8,7 +8,7 @@ public enum DExCode implements InfoCode{
 	/**
 	 * 0: date of birth
 	 */
-	INVALID_LOG("Log cardinality {0} is over maximum log");
+	INVALID_LOG("SavingsTransaction cardinality {0} is over maximum transaction");
 	
 	/**
 	 * THE FOLLOWING CODE (EXCEPT FOR THE CONSTRUCTOR NAME) MUST BE KEPT AS IS

@@ -57,7 +57,7 @@ public class ExpenseAndIncomeByCategoryReport {
 	private Collection<DailyExpense> dailyExpense;
 
 	/** output: number of daily expenses found (if any), derived from {@link #dailyExpense} */
-	@DAttr(name = "numDailyExpense", type = Type.Integer, length = 20, auto = true, mutable = false)
+	@DAttr(name = "numDailyExpense", type = Type.Integer, length = 5, auto = true, mutable = false)
 	@Output
 	private int numDailyExpense;
 	
@@ -73,9 +73,17 @@ public class ExpenseAndIncomeByCategoryReport {
 	private Collection<DailyIncome> dailyIncome;
 
 	/** output: number of daily incomes found (if any), derived from {@link #dailyIncome} */
-	@DAttr(name = "numDailyIncome", type = Type.Integer, length = 20, auto = true, mutable = false)
+	@DAttr(name = "numDailyIncome", type = Type.Integer, length = 5, auto = true, mutable = false)
 	@Output
 	private int numDailyIncome;
+	
+	@DAttr(name = "totalExpense", type = Type.Double, length = 20, auto = true, mutable = false)
+	@Output
+	private double totalExpense;
+	
+	@DAttr(name = "totalIncome", type = Type.Double, length = 20, auto = true, mutable = false)
+	@Output
+	private double totalIncome;
 
 	/**
 	   * @effects 
@@ -103,6 +111,14 @@ public class ExpenseAndIncomeByCategoryReport {
 	 */
 	public String getCategory() {
 		return category;
+	}
+	
+	public double getTotalExpense() {
+		return totalExpense;
+	}
+
+	public double getTotalIncome() {
+		return totalIncome;
 	}
 
 	/**
@@ -159,6 +175,12 @@ public class ExpenseAndIncomeByCategoryReport {
 		if (result1 != null) {
 			dailyExpense = result1.values();
 			numDailyExpense = dailyExpense.size();
+			
+			double tempAmount = 0.0;
+			for(DailyExpense d: dailyExpense) {
+				tempAmount+=d.getAmount();
+			}
+			totalExpense = tempAmount;
 		} else {
 			// no data found: reset output
 			resetOutput1();
@@ -201,6 +223,12 @@ public class ExpenseAndIncomeByCategoryReport {
 		if (result2 != null) {	
 			dailyIncome = result2.values();
 			numDailyIncome = dailyIncome.size();
+			
+			double tempAmount = 0.0;
+			for(DailyIncome d: dailyIncome) {
+				tempAmount+=d.getAmount();
+			}
+			totalIncome = tempAmount;
 		} else {
 			// no data found: reset output
 			resetOutput2();

@@ -32,7 +32,7 @@ public class DomMainUtilities {
 //      deleteDomainModel(sw, SClass.class);
       
       // delete multiple domain model fragments 
-//      deleteDomainModel(sw, Main.model);
+//      deleteDomainModel(sw, PersonalFinanceManagentSoftware.model);
 
 //      printMaterialisedDomainModel(sw);
     } catch (Exception e) {

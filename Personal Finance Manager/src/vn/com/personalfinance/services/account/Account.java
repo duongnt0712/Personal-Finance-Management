@@ -85,32 +85,35 @@ public class Account {
 	private Collection<BorrowAndLend> borrowAndLend;
 	private int borrowAndLendCount;
 	
-//	@DAttr(name = "totalBalance", type = Type.Domain)
-//	@DAssoc(ascName = "totalBalance-has-account", role = "account",
-//	ascType = AssocType.One2Many, endType = AssocEndType.Many, 
-//	associate = @Associate(type = TotalBalance.class, cardMin = 1, cardMax = 1), dependsOn = true)
-//	private TotalBalance totalBalance;
+	private Collection<String> allClassID;
+	
+	@DAttr(name = "totalBalance", type = Type.Domain, length = 15, optional = false)
+	@DAssoc(ascName = "totalBalance-has-account", role = "account",
+	ascType = AssocType.One2Many, endType = AssocEndType.Many, 
+	associate = @Associate(type = TotalBalance.class, cardMin = 1, cardMax = 1), dependsOn=true)
+	private TotalBalance totalBalance;
 	
 	// constructor methods
 	// form constructor into an object
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	@DOpt(type=DOpt.Type.RequiredConstructor)
 	public Account(@AttrRef("name") String name, 
-			@AttrRef("balance") Double balance) {
-		this(null, name, null, balance);
+			@AttrRef("balance") Double balance, @AttrRef("totalBalance") TotalBalance totalBalance) {
+		this(null, name, null, balance, totalBalance);
 	}
 	
 	@DOpt(type=DOpt.Type.ObjectFormConstructor)
 	public Account(@AttrRef("name") String name, 
 			@AttrRef("type") AccountType type,
-			@AttrRef("balance") Double balance) {
-		this(null, name, type, balance);
+			@AttrRef("balance") Double balance,
+			@AttrRef("totalBalance") TotalBalance totalBalance) {
+		this(null, name, type, balance, totalBalance);
 	}
 	
 	// a shared constructor that is invoked by other constructors
 	// load db 
 	@DOpt(type=DOpt.Type.DataSourceConstructor)
-	public Account (String id, String name, AccountType type, Double balance) throws ConstraintViolationException{
+	public Account (String id, String name, AccountType type, Double balance, TotalBalance totalBalance) throws ConstraintViolationException{
 		// generate an id
 	    this.id = nextID(id);
 	    
@@ -118,15 +121,21 @@ public class Account {
 	    this.name = name;
 	    this.type = type;
 	    this.balance = balance;
+	    this.totalBalance = totalBalance;
 
 	    dailyExpense = new ArrayList<>();
 	    dailyExpenseCount = 0;
+	    
+	    dailyIncome = new ArrayList<>();
+	    dailyIncomeCount = 0;
 	    
 	    savingsTransaction = new ArrayList<>();
 	    savingsTransactionCount = 0;
 	    
 	    borrowAndLend = new ArrayList<>();
 	    borrowAndLendCount = 0;
+	    
+	    allClassID = new ArrayList<>();
 	}
 	
 	// DailyExpense Assoc
@@ -135,6 +144,9 @@ public class Account {
 	public boolean addDailyExpense(DailyExpense s) {
 		if (!this.dailyExpense.contains(s)) {
 			dailyExpense.add(s);
+		}
+		if (!this.allClassID.contains(s.getId())) {
+			allClassID.add(s.getId());
 		}
 		// no other attributes changed
 		return false;
@@ -145,7 +157,8 @@ public class Account {
 		dailyExpense.add(s);
 		dailyExpenseCount++;
 		// no other attributes changed
-		return false;
+		updateExpenseAccountBalance();
+		return true;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
@@ -154,6 +167,8 @@ public class Account {
 			if (!this.dailyExpense.contains(s)) {
 				this.dailyExpense.add(s);
 			}
+			if(!this.allClassID.contains(s.getId()))
+				allClassID.add(s.getId());
 		}
 		// no other attributes changed
 		return false;
@@ -173,6 +188,7 @@ public class Account {
 		boolean removed = dailyExpense.remove(s);
 
 		if (removed) {
+			allClassID.remove(s.getId());
 			dailyExpenseCount--;
 			balance+=s.getAmount();		
 		}
@@ -180,12 +196,26 @@ public class Account {
 		return false;
 	}
 	
-	// DailyExpense Assoc
+	private void updateExpenseAccountBalance() {
+		if (dailyExpenseCount > 0) {
+			for (DailyExpense e : dailyExpense) {
+				if (!allClassID.contains(e.getId())) {
+					this.balance -= e.getAmount();
+					allClassID.add(e.getId());
+				}
+			}
+		} 
+	}
+	
+	// DailyIncome Assoc
 	@DOpt(type = DOpt.Type.LinkAdder)
 	// only need to do this for reflexive association: @MemberRef(name="accounts")
 	public boolean addDailyIncome(DailyIncome i) {
 		if (!this.dailyIncome.contains(i)) {
 			dailyIncome.add(i);
+		}
+		if (!this.allClassID.contains(i.getId())) {
+			allClassID.add(i.getId());
 		}
 		// no other attributes changed
 		return false;
@@ -196,7 +226,8 @@ public class Account {
 		dailyIncome.add(i);
 		dailyIncomeCount++;
 		// no other attributes changed
-		return false;
+		updateIncomeAccountBalance();
+		return true;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)
@@ -205,6 +236,8 @@ public class Account {
 			if (!this.dailyIncome.contains(s)) {
 				this.dailyIncome.add(s);
 			}
+			if(!this.allClassID.contains(s.getId()))
+				allClassID.add(s.getId());
 		}
 		// no other attributes changed
 		return false;
@@ -224,11 +257,23 @@ public class Account {
 		boolean removed = dailyIncome.remove(i);
 
 		if (removed) {
+			allClassID.remove(i.getId());
 			dailyIncomeCount--;
 			balance -= i.getAmount();
 		}
 		// no other attributes changed
 		return false;
+	}
+	
+	private void updateIncomeAccountBalance() {
+		if (dailyIncomeCount > 0) {
+			for (DailyIncome i : dailyIncome) {
+				if (!allClassID.contains(i.getId())) {
+					this.balance += i.getAmount();
+					allClassID.add(i.getId());
+				}
+			}
+		} 
 	}
 	
 	// BorrowAndLend Assoc
@@ -292,6 +337,9 @@ public class Account {
 	public boolean addSavingsTransaction(SavingsTransaction s) {
 		if (!this.savingsTransaction.contains(s))
 			savingsTransaction.add(s);
+		if (!this.allClassID.contains(s.getId())) {
+			allClassID.add(s.getId());
+		}
 
 		// no other attributes changed
 		return false;
@@ -302,22 +350,25 @@ public class Account {
 		savingsTransaction.add(s);
 		savingsTransactionCount++;
 		// no other attributes changed
-		return false;
+		updateSavingsTransactionAccountBalance();
+		return true;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
-	public boolean addSavingsTransaction(Collection<SavingsTransaction> log) {
+	public boolean addSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
 		for (SavingsTransaction s : savingsTransaction) {
 			if (!this.savingsTransaction.contains(s)) {
 				this.savingsTransaction.add(s);
 			}
+			if(!this.allClassID.contains(s.getId()))
+				allClassID.add(s.getId());
 		}
 		// no other attributes changed
 		return false;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdderNew)
-	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> log) {
+	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
 		this.savingsTransaction.addAll(savingsTransaction);
 		savingsTransactionCount += savingsTransaction.size();
 		// no other attributes changed (average mark is not serialisable!!!)
@@ -330,13 +381,25 @@ public class Account {
 		boolean removed = savingsTransaction.remove(s);
 
 		if (removed) {
+			allClassID.remove(s.getId());
 			savingsTransactionCount--;
 			balance += s.getAmount();
 		}
 		// no other attributes changed
 		return false;
 	}
-
+	
+	private void updateSavingsTransactionAccountBalance() {
+		if (savingsTransactionCount > 0) {
+			for (SavingsTransaction t : savingsTransaction) {
+				if (!allClassID.contains(t.getId())) {
+					this.balance -= t.getAmount();
+					allClassID.add(t.getId());
+				}
+			}
+		} 
+	}
+	
 	// getter methods
 	public String getId() {
 		return id;
@@ -352,6 +415,14 @@ public class Account {
 
 	public double getBalance() {
 		return balance ;
+	}
+	
+	public TotalBalance getTotalBalance() {
+		return totalBalance;
+	}
+	
+	public void setTotalBalance(TotalBalance totalBalance) {
+		this.totalBalance = totalBalance;
 	}
 	
 	public Collection<DailyExpense> getDailyExpense() {
