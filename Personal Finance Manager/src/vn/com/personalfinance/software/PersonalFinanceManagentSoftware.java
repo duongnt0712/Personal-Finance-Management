@@ -8,6 +8,7 @@ import vn.com.personalfinance.services.account.TotalBalance;
 import vn.com.personalfinance.services.borrowandlend.model.ActionType;
 import vn.com.personalfinance.services.borrowandlend.model.BorrowAndLend;
 import vn.com.personalfinance.services.borrowandlend.model.Subjects;
+import vn.com.personalfinance.services.borrowandlend.report.BorrowAndLendByActionTypeReport;
 import vn.com.personalfinance.services.expenseandincome.model.Category;
 import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
@@ -48,7 +49,8 @@ public class PersonalFinanceManagentSoftware {
 	      ExpenseAndIncomeByCategoryReport.class,
 	      ExpenseAndIncomeByDateReport.class,
 	      ExpenseAndIncomeByMonthReport.class,
-	      ExpenseAndIncomeByYearReport.class
+	      ExpenseAndIncomeByYearReport.class,
+	      BorrowAndLendByActionTypeReport.class
 	  };
 	  
 	  /**
