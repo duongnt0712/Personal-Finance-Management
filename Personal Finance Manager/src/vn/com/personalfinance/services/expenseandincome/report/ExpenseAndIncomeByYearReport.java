@@ -169,9 +169,11 @@ public class ExpenseAndIncomeByYearReport {
 			if(numDailyTransaction == 0) {
 				totalExpense = 0;
 			} else {
+				double temp = 0.0;
 				for(DailyExpense d: dailyExpense) {
-					totalExpense+=d.getAmount();
+					temp+=d.getAmount();
 				}
+				totalExpense = temp;
 			}
 		} else {
 			// no data found: reset output
@@ -206,9 +208,11 @@ public class ExpenseAndIncomeByYearReport {
 			if(numDailyTransaction == 0) {
 				totalIncome = 0;
 			} else {
+				double temp = 0.0;
 				for(DailyIncome d: dailyIncome) {
-					totalIncome+=d.getAmount();
+					temp+=d.getAmount();
 				}
+				totalIncome = temp;
 			}
 		} else {
 			// no data found: reset output

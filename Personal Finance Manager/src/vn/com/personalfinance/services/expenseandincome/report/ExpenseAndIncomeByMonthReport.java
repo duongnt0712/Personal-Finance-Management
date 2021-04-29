@@ -181,9 +181,11 @@ public class ExpenseAndIncomeByMonthReport {
 			// update other output (if any)
 			numDailyTransaction += dailyExpense.size();
 			
+			double temp = 0.0;
 			for(DailyExpense d: dailyExpense) {
-				totalExpense+=d.getAmount();
+				temp+=d.getAmount();
 			}
+			totalExpense = temp;
 		} else {
 			// no data found: reset output
 			resetOutputDailyExpense();
@@ -214,9 +216,11 @@ public class ExpenseAndIncomeByMonthReport {
 			// update other output (if any)
 			numDailyTransaction += dailyIncome.size();
 
+			double temp = 0.0;
 			for(DailyIncome d: dailyIncome) {
-				totalIncome+=d.getAmount();
+				temp+=d.getAmount();
 			}
+			totalIncome = temp;
 		} else {
 			// no data found: reset output
 			resetOutputDailyIncome();

@@ -124,7 +124,6 @@ public class BorrowAndLendByActionTypeReport {
 		this.actionType = actionType;
 
 		doReportQuery();
-//		doReportQuery2();
 	}
 
 	/**
@@ -163,20 +162,29 @@ public class BorrowAndLendByActionTypeReport {
 		if (result != null) {
 			borrowAndLend = result.values();
 			numBorrowAndLend = borrowAndLend.size();
+			
+			double tempTotalCollectedDebts = 0.0;
+			double tempTotalBorrowedMoney = 0.0;
+			double tempTotalRepayedMoney = 0.0;
+			double tempTotalLendedMoney = 0.0;
 			for (BorrowAndLend a : borrowAndLend) {
 				if (a.getActionType().getId() == 1) {
-					totalCollectedDebts += a.getFinalMoney();
+					tempTotalCollectedDebts += a.getFinalMoney();
 				}
 				else if (a.getActionType().getId() == 2) {
-					totalBorrowedMoney += a.getFinalMoney();
+					tempTotalBorrowedMoney += a.getFinalMoney();
 				}
 				else if (a.getActionType().getId() == 3) {
-					totalRepayedMoney += a.getFinalMoney();
+					tempTotalRepayedMoney += a.getFinalMoney();
 				}
 				else if (a.getActionType().getId() == 4) {
-					totalLendedMoney += a.getFinalMoney();
+					tempTotalLendedMoney += a.getFinalMoney();
 				}
 			}
+			totalCollectedDebts = tempTotalCollectedDebts;
+			totalBorrowedMoney = tempTotalBorrowedMoney;
+			totalRepayedMoney = tempTotalRepayedMoney;
+			totalLendedMoney = tempTotalLendedMoney;
 		} else {
 			// no data found: reset output
 			resetOutput();
