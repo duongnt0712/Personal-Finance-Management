@@ -1,5 +1,6 @@
 package vn.com.personalfinance.services.savings;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -64,6 +65,9 @@ public class EconomicalSavings extends Savings {
 		this.monthlyDuration = monthlyDuration;
 		this.interestRate = interestRate;
 		
+		Collection<SavingsTransaction> savingsTransaction = getSavingsTransaction();
+		setSavingsTransaction(savingsTransaction = new ArrayList<>());
+		setSavingsTransactionCount(0);
 		stateHist = new StateHistory<>();
 		computeFinalBalance();
 	}
@@ -103,7 +107,6 @@ public class EconomicalSavings extends Savings {
 //		if (count < 0 || count > 1) {
 //			throw new ConstraintViolationException(DExCode.INVALID_LOG, count);
 //		}
-//		System.out.println("Line 121");
 //		super.setSavingsTransactionCount(count);
 //	}
 	
@@ -126,28 +129,63 @@ public class EconomicalSavings extends Savings {
 		if (computeFinalBalance)
 			computeFinalBalance();
 	}
+	
+	@DOpt(type = DOpt.Type.LinkAdder)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean addSavingsTransaction(SavingsTransaction s) {
+		if (!getSavingsTransaction().contains(s))
+			getSavingsTransaction().add(s);
+
+		// no other attributes changed
+		return true;
+	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
+	@Override
 	public boolean addNewSavingsTransaction(SavingsTransaction s) {
-		int count = getSavingsTransactionCount();
-		if (count < 0 || count > 1) {
-			throw new ConstraintViolationException(DExCode.INVALID_LOG, count);
+		if(getSavingsTransactionCount() < 1) {
+			getSavingsTransaction().add(s);
+			setSavingsTransactionCount(getSavingsTransactionCount() + 1);
+		} else {
+			throw new ConstraintViolationException(DExCode.INVALID_LOG, getSavingsTransactionCount());
 		}
-		super.addNewSavingsTransaction(s);		
-		System.out.println("Line 157: " + getSavingsTransactionCount());
+
+		// no other attributes changed
+		return false;
+	}
+
+	@DOpt(type = DOpt.Type.LinkAdder)
+	public boolean addSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		for (SavingsTransaction s : savingsTransaction) {
+			if (!getSavingsTransaction().contains(s)) {
+				getSavingsTransaction().add(s);
+			}
+		}
 		// no other attributes changed
 		return true;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdderNew)
 	public boolean addNewSavingsTransaction(Collection<SavingsTransaction> savingsTransaction) {
+		getSavingsTransaction().addAll(savingsTransaction);
 		int count = getSavingsTransactionCount();
-		if (count < 0 || count > 1) {
-			throw new ConstraintViolationException(DExCode.INVALID_LOG, count);
-		}
-		super.addNewSavingsTransaction(savingsTransaction);		
+		count += savingsTransaction.size();
+		setSavingsTransactionCount(count);
 
 		// no other attributes changed (average mark is not serialisable!!!)
+		return true;
+	}
+
+	@DOpt(type = DOpt.Type.LinkRemover)
+	// only need to do this for reflexive association: @MemberRef(name="accounts")
+	public boolean removeSavingsTransaction(SavingsTransaction s) {
+		boolean removed = getSavingsTransaction().remove(s);
+
+		if (removed) {
+			int count = getSavingsTransactionCount();
+			setSavingsTransactionCount(count - 1);
+		}
+		// no other attributes changed
 		return true;
 	}
 	

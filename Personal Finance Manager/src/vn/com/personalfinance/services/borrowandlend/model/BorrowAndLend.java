@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.borrowandlend;
+package vn.com.personalfinance.services.borrowandlend.model;
 
 import java.util.Date;
 
@@ -15,6 +15,7 @@ import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.services.account.Account;
+import vn.com.personalfinance.services.borrowandlend.report.BorrowAndLendByActionTypeReport;
 
 @DClass(schema="personalfinancemanagement")
 public class BorrowAndLend {
@@ -23,12 +24,13 @@ public class BorrowAndLend {
 		public static final String T_account = "account";
 		public static final String T_name = "name";
 		public static final String T_subject = "subject";
-		public static final String T_type = "type";
+		public static final String T_actionType = "actionType";
 		public static final String T_money = "money";
 		public static final String T_start_date = "startDate";
 		public static final String T_period = "period";
-		public static final String T_interested_rate = "interestedRate";
-		public static final String T_final_money = "finalMoney";
+		public static final String T_interestedRate = "interestedRate";
+		public static final String T_finalMoney = "finalMoney";
+		public static final String T_rptBorrowAndLendByType = "rptBorrowAndLendByType";
 		
 //		attributes
 		@DAttr (name = T_id, id = true, type = Type.Integer, auto = true, length = 6, mutable = false, optional = false)
@@ -50,8 +52,8 @@ public class BorrowAndLend {
 				associate = @Associate(type = Subjects.class, cardMin = 1, cardMax = 1), dependsOn = true)
 		private Subjects subject;
 		
-		@DAttr (name = T_type, type = Type.Domain, length = 30, optional = false)
-		private ActionType type;
+		@DAttr (name = T_actionType, type = Type.Domain, length = 30, optional = false)
+		private ActionType actionType;
 		
 		@DAttr (name = T_money, type = Type.Double, length = 15, optional = false)
 		private double money;
@@ -62,13 +64,16 @@ public class BorrowAndLend {
 		@DAttr (name = T_period, type = Type.Integer, length = 20, mutable = true, optional = false)
 		private int period;
 		
-		@DAttr (name = T_interested_rate, type = Type.Double, length = 20, optional = false)
+		@DAttr (name = T_interestedRate, type = Type.Double, length = 20, optional = false)
 		private double interestedRate;
 		
 //		derived attribute
-		@DAttr (name = T_final_money, type = Type.Double, auto = true, length = 20, mutable = false, optional = true,
-				serialisable=false, derivedFrom={T_money, T_interested_rate, T_period})
+		@DAttr (name = T_finalMoney, type = Type.Double, auto = true, length = 20, mutable = false, optional = true,
+				serialisable=false, derivedFrom={T_money, T_interestedRate, T_period})
 		private double finalMoney;
+		
+		@DAttr (name = T_rptBorrowAndLendByType, type = Type.Domain, serialisable = false, virtual = true)
+		private BorrowAndLendByActionTypeReport rptBorrowAndLendByType;
 		
 		private StateHistory<String, Object> stateHist;
 		
@@ -83,13 +88,13 @@ public class BorrowAndLend {
 		
 //		a shared constructor that is invoked by other constructors
 		@DOpt (type = DOpt.Type.DataSourceConstructor)
-		public BorrowAndLend (Integer id, Account account, String name, Subjects subject, ActionType type, Double money, Date startDate, Integer period, Double interestedRate) {
+		public BorrowAndLend (Integer id, Account account, String name, Subjects subject, ActionType actionType, Double money, Date startDate, Integer period, Double interestedRate) {
 		    this.id = nextId(id);
 		    
 		    this.account = account;
 			this.name = name;
 			this.subject = subject;
-			this.type = type;
+			this.actionType = actionType;
 			this.money = money;
 			this.startDate = startDate;
 			this.period = period;
@@ -97,7 +102,6 @@ public class BorrowAndLend {
 			
 			stateHist = new StateHistory<>();
 			computeFinalMoney();
-			computeNewBalance();
 		}
 
 //		Getter Method
@@ -117,8 +121,8 @@ public class BorrowAndLend {
 			return subject;
 		}
 
-		public ActionType getType() {
-			return type;
+		public ActionType getActionType() {
+			return actionType;
 		}
 
 		public double getMoney() {
@@ -136,6 +140,10 @@ public class BorrowAndLend {
 		public double getInterestedRate() {
 			return interestedRate;
 		}
+		
+		public BorrowAndLendByActionTypeReport getRptBorrowAndLendByType() {
+			return rptBorrowAndLendByType;
+		}
 
 		//devired attribute
 		public double getFinalMoney() {
@@ -144,7 +152,7 @@ public class BorrowAndLend {
 		
 		public double getFinalMoney(boolean cached) throws IllegalStateException {
 			if (cached) {
-				Object val = stateHist.get(T_final_money);
+				Object val = stateHist.get(T_finalMoney);
 
 				if (val == null)
 					throw new IllegalStateException("BorrowAndLend.getFinalMoney: cached value is null");
@@ -170,8 +178,8 @@ public class BorrowAndLend {
 			this.subject = subject;
 		}
 		
-		public void setType (ActionType type) {
-			this.type = type;
+		public void setActionType(ActionType actionType) {
+			this.actionType = actionType;
 		}
 		
 		public void setMoney(double money) {
@@ -210,7 +218,7 @@ public class BorrowAndLend {
 
 		@Override
 		public String toString() {
-			return "BorrowAndLend [id=" + id + ", name=" + name + ", subject=" + subject + ", type=" + type + ", money="
+			return "BorrowAndLend [id=" + id + ", name=" + name + ", subject=" + subject + ", actionType=" + actionType + ", money="
 					+ money + ", startDate=" + startDate + ", period=" + period + ", interestedRate=" + interestedRate
 					+ ", finalMoney=" + finalMoney + "]";
 		}
@@ -254,24 +262,13 @@ public class BorrowAndLend {
 		
 		// calculate finalMoney 
 		@DOpt(type=DOpt.Type.DerivedAttributeUpdater)
-		@AttrRef(value=T_final_money)
+		@AttrRef(value=T_finalMoney)
 		public void computeFinalMoney() {
-			stateHist.put(T_final_money, finalMoney);
+			stateHist.put(T_finalMoney, finalMoney);
 			
 			finalMoney = money + (money * (interestedRate / 100 / (double)period));
 		}
-		
-		public void computeNewBalance() {
-			double newBalance = 0;
-			if (type.equals(ActionType.Borrow_money) || type.equals(ActionType.Collect_debts)) {
-				newBalance = account.getBalance() + getMoney();
-				
-			} else if (type.equals(ActionType.Lend_money) || type.equals(ActionType.Repay_money)){
-				newBalance = account.getBalance() - getMoney();
-			}
-			account.setBalance(newBalance);
-		}
-		
+
 		@DOpt(type = DOpt.Type.AutoAttributeValueSynchroniser)
 		public static void updateAutoGeneratedValue(DAttr attrib, Tuple derivingValue, Object minVal, Object maxVal)
 				throws ConstraintViolationException {

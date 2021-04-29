@@ -5,6 +5,7 @@ import domainapp.basics.exceptions.NotFoundException;
 import domainapp.software.SoftwareFactory;
 import domainapp.softwareimpl.DomSoftware;
 import vn.com.personalfinance.services.account.TotalBalance;
+import vn.com.personalfinance.services.borrowandlend.model.ActionType;
 
 /**
  * @overview 
@@ -24,12 +25,14 @@ public class DomMainData {
     try {
       // register a domain model fragment concerning Student
 		Class[] domFrag = { 
-			TotalBalance.class
+			TotalBalance.class,
+			ActionType.class
 		};
 		sw.addClasses(domFrag);
       
-      // create some Student objects
+      // create some objects
 		createTotalBalance(sw);
+		createActionType(sw);
     } catch (DataSourceException e) {
       e.printStackTrace();
     }
@@ -39,8 +42,16 @@ public class DomMainData {
    * @effects 
    * 
    */
-  private static void createTotalBalance(DomSoftware sw) throws NotFoundException, DataSourceException {
-    // create a TotalBalance
-    sw.addObject(TotalBalance.class, new TotalBalance());    
-  }
+	private static void createTotalBalance(DomSoftware sw) throws NotFoundException, DataSourceException {
+		// create a TotalBalance
+		sw.addObject(TotalBalance.class, new TotalBalance());
+	}
+
+	private static void createActionType(DomSoftware sw) throws NotFoundException, DataSourceException {
+		// create ActionType objects
+		sw.addObject(ActionType.class, new ActionType("Collect debts"));
+		sw.addObject(ActionType.class, new ActionType("Borrow money"));
+		sw.addObject(ActionType.class, new ActionType("Repay money"));
+		sw.addObject(ActionType.class, new ActionType("Lend money"));
+	}
 }

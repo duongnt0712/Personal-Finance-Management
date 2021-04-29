@@ -148,7 +148,7 @@ public class SavingsTransaction implements Comparable {
 			// update id
 			int num;
 			try {
-				num = Integer.parseInt(id.substring(1));
+				num = Integer.parseInt(id.substring(2));
 			} catch (RuntimeException e) {
 				throw new ConstraintViolationException(ConstraintViolationException.Code.INVALID_VALUE, e, new Object[] { id });
 			}

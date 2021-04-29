@@ -154,23 +154,6 @@ public abstract class Savings {
 	}
 	
 	public abstract String nextID(String currID);
-	
-//	private static int nextID(Integer currID) {
-//		if (currID == null) { 
-//			// generate one
-//			idCounter++;
-//			return "S" + idCounter;
-//		} else { 
-//			// update
-//			int num;
-//			num = currID.intValue();
-//
-//			if (num > idCounter) {
-//				idCounter = num;
-//			}
-//			return currID;
-//		}
-//	}
 	 
 	/**
 	 * @requires minVal != null /\ maxVal != null
@@ -230,7 +213,7 @@ public abstract class Savings {
 		savingsTransaction.add(s);
 		savingsTransactionCount++;
 		// no other attributes changed
-		return true;
+		return false;
 	}
 
 	@DOpt(type = DOpt.Type.LinkAdder)

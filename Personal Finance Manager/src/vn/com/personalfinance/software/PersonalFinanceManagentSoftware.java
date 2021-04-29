@@ -5,8 +5,9 @@ import domainapp.softwareimpl.DomSoftware;
 import vn.com.personalfinance.services.account.Account;
 import vn.com.personalfinance.services.account.AccountType;
 import vn.com.personalfinance.services.account.TotalBalance;
-import vn.com.personalfinance.services.borrowandlend.BorrowAndLend;
-import vn.com.personalfinance.services.borrowandlend.Subjects;
+import vn.com.personalfinance.services.borrowandlend.model.ActionType;
+import vn.com.personalfinance.services.borrowandlend.model.BorrowAndLend;
+import vn.com.personalfinance.services.borrowandlend.model.Subjects;
 import vn.com.personalfinance.services.expenseandincome.model.Category;
 import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
@@ -42,6 +43,7 @@ public class PersonalFinanceManagentSoftware {
 	      SavingsTransaction.class,
 	      BorrowAndLend.class,
 	      Subjects.class,
+	      ActionType.class,
 	      // report
 	      ExpenseAndIncomeByCategoryReport.class,
 	      ExpenseAndIncomeByDateReport.class,

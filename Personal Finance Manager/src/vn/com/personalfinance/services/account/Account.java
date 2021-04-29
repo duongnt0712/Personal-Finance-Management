@@ -18,8 +18,8 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
-import vn.com.personalfinance.services.borrowandlend.ActionType;
-import vn.com.personalfinance.services.borrowandlend.BorrowAndLend;
+import vn.com.personalfinance.services.borrowandlend.model.ActionType;
+import vn.com.personalfinance.services.borrowandlend.model.BorrowAndLend;
 import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
 
@@ -292,7 +292,8 @@ public class Account {
 		borrowAndLend.add(bL);
 		borrowAndLendCount++;
 		// no other attributes changed
-		return false;
+		updateBnLAccountBalance();
+		return true;
 	}
 	
 	@DOpt(type = DOpt.Type.LinkAdder)
@@ -321,14 +322,27 @@ public class Account {
 
 		if (removed) {
 			borrowAndLendCount--;
-			if(bL.getType().equals(ActionType.Borrow_money) & bL.getType().equals(ActionType.Collect_debts)) {
-				balance -= bL.getMoney();
-			} else if (bL.getType().equals(ActionType.Lend_money) & bL.getType().equals(ActionType.Repay_money)) {
+			if(bL.getActionType().getId() == 1 & bL.getActionType().getId() == 2) {
 				balance += bL.getMoney();
+			} else if (bL.getActionType().getId() == 3 & bL.getActionType().getId() == 4) {
+				balance -= bL.getMoney();
 			}
 		}
 		// no other attributes changed
 		return false;
+	}
+	
+	private void updateBnLAccountBalance() {
+		for (BorrowAndLend bL : borrowAndLend) {
+			String temp = ""+bL.getId();
+			if (!allClassID.contains(temp)) {
+				if (bL.getActionType().getId() == 1 || bL.getActionType().getId() == 2)
+					this.balance += bL.getMoney();		
+				if (bL.getActionType().getId() == 3 || bL.getActionType().getId() == 4)
+					this.balance -= bL.getMoney();
+				allClassID.add(temp);
+			}
+		}
 	}
 	
 	// Log Assoc

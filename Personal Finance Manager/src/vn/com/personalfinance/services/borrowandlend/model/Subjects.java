@@ -1,4 +1,4 @@
-package vn.com.personalfinance.services.borrowandlend;
+package vn.com.personalfinance.services.borrowandlend.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="test")
 public class Subjects {
 //	attributes
 	@DAttr(name = "id", id = true, auto = true, length = 6, mutable = false, type = Type.Integer)
