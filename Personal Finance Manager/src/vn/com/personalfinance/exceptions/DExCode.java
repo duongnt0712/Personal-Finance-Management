@@ -6,9 +6,14 @@ import domainapp.basics.util.InfoCode;
 
 public enum DExCode implements InfoCode{
 	/**
-	 * 0: date of birth
+	 * 0: savingsTransaction
 	 */
-	INVALID_LOG("SavingsTransaction cardinality {0} is over maximum transaction");
+	INVALID_LOG("SavingsTransaction cardinality {0} is over maximum transaction"),
+	
+	/**
+	 * 0: Balance
+	 */
+	INVALID_BALANCE("Account balance {0} is invalid");
 	
 	/**
 	 * THE FOLLOWING CODE (EXCEPT FOR THE CONSTRUCTOR NAME) MUST BE KEPT AS IS

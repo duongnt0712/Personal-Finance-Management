@@ -33,8 +33,6 @@ public class DomMainUtilities {
       
       // delete multiple domain model fragments 
 //      deleteDomainModel(sw, PersonalFinanceManagentSoftware.model);
-
-//      printMaterialisedDomainModel(sw);
     } catch (Exception e) {
       e.printStackTrace();
     }

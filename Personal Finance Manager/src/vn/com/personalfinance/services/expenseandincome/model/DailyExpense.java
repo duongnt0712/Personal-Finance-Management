@@ -47,7 +47,7 @@ public class DailyExpense {
 	// static variable to keep track of account id
 	public static int idCounter = 0;
 
-	@DAttr(name = E_amount, type = Type.Double, length = 15, optional = false)
+	@DAttr(name = E_amount, type = Type.Double, length = 15, optional = false, min = 0)
 	private double amount;
 
 	@DAttr(name = E_date, type = Type.Date, length = 15, optional = false)

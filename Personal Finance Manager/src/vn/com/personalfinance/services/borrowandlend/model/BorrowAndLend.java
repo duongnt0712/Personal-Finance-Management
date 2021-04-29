@@ -55,7 +55,7 @@ public class BorrowAndLend {
 		@DAttr (name = T_actionType, type = Type.Domain, length = 30, optional = false)
 		private ActionType actionType;
 		
-		@DAttr (name = T_money, type = Type.Double, length = 15, optional = false)
+		@DAttr (name = T_money, type = Type.Double, length = 15, optional = false, min = 0)
 		private double money;
 		
 		@DAttr (name = T_start_date, type = Type.Date, length = 20, optional = false)

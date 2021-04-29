@@ -18,7 +18,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
-import vn.com.personalfinance.services.borrowandlend.model.ActionType;
+import vn.com.personalfinance.exceptions.DExCode;
 import vn.com.personalfinance.services.borrowandlend.model.BorrowAndLend;
 import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
@@ -50,7 +50,7 @@ public class Account {
 	endType = AssocEndType.Many, associate = @Associate(type = AccountType.class, cardMin = 1, cardMax = 1), dependsOn=true)
 	private AccountType type;
 	
-	@DAttr(name = A_balance, type = Type.Double, length = 15, optional = false)
+	@DAttr(name = A_balance, type = Type.Double, length = 15, optional = false, min = 0)
 	private double balance;
 	
 	@DAttr(name = "dailyExpense", type = Type.Collection, optional = false,
@@ -435,10 +435,6 @@ public class Account {
 		return totalBalance;
 	}
 	
-	public void setTotalBalance(TotalBalance totalBalance) {
-		this.totalBalance = totalBalance;
-	}
-	
 	public Collection<DailyExpense> getDailyExpense() {
 		return dailyExpense;
 	}
@@ -488,8 +484,15 @@ public class Account {
 		this.type = type;
 	}
 
-	public void setBalance(double balance) {
+	public void setBalance(double balance)  throws ConstraintViolationException {
+		if (balance < 0) {
+			throw new ConstraintViolationException(DExCode.INVALID_BALANCE, balance);
+		}
 		this.balance = balance;
+	}
+	
+	public void setTotalBalance(TotalBalance totalBalance) {
+		this.totalBalance = totalBalance;
 	}
 	
 	public void setDailyExpense(Collection<DailyExpense> dailyExpense) {
