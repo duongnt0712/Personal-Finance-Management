@@ -22,7 +22,6 @@ import domainapp.basics.model.query.Expression.Op;
 import domainapp.basics.model.query.Query;
 import domainapp.basics.model.query.QueryToolKit;
 import domainapp.basics.modules.report.model.meta.Output;
-import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.services.expenseandincome.model.DailyExpense;
 import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
 /**
@@ -49,13 +48,13 @@ public class ExpenseAndIncomeByYearReport {
 	private String year;
 	
 	/** output: daily expense which date match {@link #date} */
-	@DAttr(name = R_dailyExpense, type = Type.Collection, optional = false, mutable = false, serialisable = false, filter = @Select(clazz = DailyExpense.class), derivedFrom = {"month" })
+	@DAttr(name = R_dailyExpense, type = Type.Collection, optional = false, mutable = false, serialisable = false, filter = @Select(clazz = DailyExpense.class), derivedFrom = {"year" })
 	@DAssoc(ascName = "expenseAndIncome-by-month-report-has-dailyExpense", role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	@Output
 	private Collection<DailyExpense> dailyExpense;
 	
 	@DAttr(name = R_dailyIncome, type = Type.Collection, optional = false, mutable = false, serialisable = false, filter = @Select(clazz = DailyIncome.class), derivedFrom = {"year"})
-	@DAssoc(ascName = "expenseAndIncome-by-month-report-has-dailyIncome", role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, associate = @Associate(type = DailyExpense.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
+	@DAssoc(ascName = "expenseAndIncome-by-month-report-has-dailyIncome", role = "report", ascType = AssocType.One2Many, endType = AssocEndType.One, associate = @Associate(type = DailyIncome.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	@Output
 	private Collection<DailyIncome> dailyIncome;
 

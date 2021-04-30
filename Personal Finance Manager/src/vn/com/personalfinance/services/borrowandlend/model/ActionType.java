@@ -17,7 +17,7 @@ import domainapp.basics.model.meta.DOpt;
 import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
 
-@DClass (schema = "test")
+@DClass (schema = "personalfinancemanagement")
 public class ActionType {
 	public static final String A_name = "name";
 	

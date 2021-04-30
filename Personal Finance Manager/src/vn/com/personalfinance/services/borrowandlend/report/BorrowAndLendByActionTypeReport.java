@@ -11,6 +11,7 @@ import domainapp.basics.model.Oid;
 import domainapp.basics.model.meta.AttrRef;
 import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
+import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
 import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
@@ -25,8 +26,7 @@ import domainapp.basics.modules.report.model.meta.Output;
 import vn.com.personalfinance.services.borrowandlend.model.ActionType;
 import vn.com.personalfinance.services.borrowandlend.model.BorrowAndLend;
 
-
-
+@DClass(schema="personalfinancemanagement",serialisable=false)
 public class BorrowAndLendByActionTypeReport {
 	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
 	private int id;
