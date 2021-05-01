@@ -18,7 +18,7 @@ import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
  * @author Nguyen Hai - Group 2
  * @version 1.0
  */
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class AccumulativeSavings extends Savings {
 	public static final String S_remainedAmount = "remainedAmount";
 	

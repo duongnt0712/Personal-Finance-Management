@@ -20,7 +20,7 @@ import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
  * @author Nguyen Hai - Group 2
  * @version 1.0
  */
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class EconomicalSavings extends Savings {
 	public static final String S_monthlyDuration = "monthlyDuration";
 	public static final String S_interestRate = "interestRate";
@@ -199,7 +199,7 @@ public class EconomicalSavings extends Savings {
 	public String nextID(String id) throws ConstraintViolationException {
 		if (id == null) { // generate a new id
 			idCounter++;
-			return "S" + idCounter;
+			return "E" + idCounter;
 		} else {
 			// update id
 			int num;

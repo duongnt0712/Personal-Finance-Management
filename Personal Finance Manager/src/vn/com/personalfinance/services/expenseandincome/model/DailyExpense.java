@@ -27,7 +27,7 @@ import vn.com.personalfinance.services.expenseandincome.report.ExpenseAndIncomeB
  * @author Nguyen Quynh Nga - Group 2
  * @version 1.0
  */
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class DailyExpense {
 	public static final String E_id = "id";
 	public static final String E_amount = "amount";

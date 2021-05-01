@@ -38,7 +38,7 @@ import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
  *
  * @version 1.0
  */
-@DClass(schema="personalfinancemanagement",serialisable=false)
+@DClass(schema="personalfinancemanager",serialisable=false)
 public class ExpenseAndIncomeByDateReport {
 	public static final String R_dateToString = "dateToString";
 	public static final String R_date = "date";

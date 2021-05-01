@@ -14,7 +14,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class SavingsTransaction implements Comparable {
 	
 	// attribute

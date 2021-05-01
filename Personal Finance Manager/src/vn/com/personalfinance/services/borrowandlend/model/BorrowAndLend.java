@@ -8,6 +8,7 @@ import domainapp.basics.model.meta.DAssoc;
 import domainapp.basics.model.meta.DAttr;
 import domainapp.basics.model.meta.DClass;
 import domainapp.basics.model.meta.DOpt;
+import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.DAssoc.AssocEndType;
 import domainapp.basics.model.meta.DAssoc.AssocType;
 import domainapp.basics.model.meta.DAssoc.Associate;
@@ -17,7 +18,7 @@ import domainapp.basics.util.cache.StateHistory;
 import vn.com.personalfinance.services.account.Account;
 import vn.com.personalfinance.services.borrowandlend.report.BorrowAndLendByActionTypeReport;
 
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class BorrowAndLend {
 //		static final attribute
 		public static final String T_id = "id";
@@ -52,7 +53,9 @@ public class BorrowAndLend {
 				associate = @Associate(type = Subjects.class, cardMin = 1, cardMax = 1), dependsOn = true)
 		private Subjects subject;
 		
-		@DAttr (name = T_actionType, type = Type.Domain, length = 30, optional = false)
+		@DAttr (name = T_actionType, type = Type.Domain, optional = false)
+		@DAssoc (ascName = "borrowAndLend-has-actionType", role = "borrowAndLend", ascType = AssocType.One2Many, endType = AssocEndType.Many, 
+		associate = @Associate(type = ActionType.class, cardMin = 1, cardMax = 1), dependsOn = true)
 		private ActionType actionType;
 		
 		@DAttr (name = T_money, type = Type.Double, length = 15, optional = false, min = 0)

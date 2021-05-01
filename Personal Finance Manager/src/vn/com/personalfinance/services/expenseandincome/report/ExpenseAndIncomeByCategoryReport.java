@@ -35,7 +35,7 @@ import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
  *
  * @version 1.0
  */
-@DClass(schema="personalfinancemanagement",serialisable=false)
+@DClass(schema="personalfinancemanager",serialisable=false)
 public class ExpenseAndIncomeByCategoryReport {
 	@DAttr(name = "id", id = true, auto = true, type = Type.Integer, length = 5, optional = false, mutable = false)
 	private int id;

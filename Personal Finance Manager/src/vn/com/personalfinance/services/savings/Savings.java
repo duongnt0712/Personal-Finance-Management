@@ -25,7 +25,7 @@ import vn.com.personalfinance.services.savingstransaction.SavingsTransaction;
  * @version 1.0
  */
 
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public abstract class Savings {
 	public static final String S_id = "id";
 	public static final String S_amount = "amount";

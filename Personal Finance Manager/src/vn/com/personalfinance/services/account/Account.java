@@ -29,7 +29,7 @@ import vn.com.personalfinance.services.expenseandincome.model.DailyIncome;
  * @author Group 2
  * @version 1.0
  */
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class Account {
 	public static final String A_id = "id";
 	public static final String A_name = "name";

@@ -17,7 +17,7 @@ import domainapp.basics.model.meta.DAssoc.Associate;
 import domainapp.basics.model.meta.DAttr.Type;
 import domainapp.basics.util.Tuple;
 
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class TotalBalance {
 	public static final String A_totalBalance = "totalBalance";
 	public static final String A_accounts = "accounts";

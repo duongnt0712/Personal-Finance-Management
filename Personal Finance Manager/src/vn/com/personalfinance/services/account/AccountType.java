@@ -29,7 +29,7 @@ import domainapp.basics.util.Tuple;
  * @author Group 2
  *
  */
-@DClass(schema="personalfinancemanagement")
+@DClass(schema="personalfinancemanager")
 public class AccountType {
 
 	@DAttr(name="id",id=true,auto=true,length=6,mutable=false,type=Type.Integer)

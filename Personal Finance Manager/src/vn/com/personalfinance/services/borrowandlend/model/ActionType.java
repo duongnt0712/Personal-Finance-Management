@@ -17,7 +17,7 @@ import domainapp.basics.model.meta.DOpt;
 import domainapp.basics.model.meta.MetaConstants;
 import domainapp.basics.model.meta.Select;
 
-@DClass (schema = "personalfinancemanagement")
+@DClass (schema = "personalfinancemanager")
 public class ActionType {
 	public static final String A_name = "name";
 	
@@ -30,7 +30,7 @@ public class ActionType {
 	private String name;
 	
 	@DAttr (name = "borrowAndLend", type = Type.Collection, serialisable = false, optional = false, filter = @Select(clazz = BorrowAndLend.class))
-	@DAssoc (ascName = "borrowAndLend-has-actionType", role = "actionType", ascType = AssocType.One2Many, endType = AssocEndType.Many, 
+	@DAssoc (ascName = "borrowAndLend-has-actionType", role = "actionType", ascType = AssocType.One2Many, endType = AssocEndType.One, 
 			associate = @Associate(type = BorrowAndLend.class, cardMin = 0, cardMax = MetaConstants.CARD_MORE))
 	private Collection<BorrowAndLend> borrowAndLend;
 	// derived attributes
